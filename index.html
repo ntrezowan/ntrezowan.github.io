@@ -274,6 +274,20 @@ jQuery(document).ready(function($) {
                   "\n" + availableCommands.join(' ')+ '\n') 
     }
 
+      function source() {
+          term.echo("        _______            \n"+
+                    "       |       |           \n"+
+                    "       |       |           \n"+
+                    "       |_______|_______    \n"+
+	                "               |       |   \n"+
+                    "               |       |   \n"+
+                    " ______________|_______|   \n"+
+                    "|      |       |       |   \n"+
+                    "|      |       |       |   \n"+
+                    "|______|_______|_______|   \n"+
+                    "[[;red;]May the source be with you]\n"+
+                    "[[;grey;]https://github.com/4s3ti/terminalcv\n");
+      }
     
     function progress(percent, width) {
         var size = Math.round(width*percent/100);
