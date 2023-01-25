@@ -1,4 +1,6 @@
 
+# How to recreate this site
+
 1. Install Hugo
 
 ``` bash
