@@ -43,10 +43,10 @@ jQuery(document).ready(function($) {
     var availableCommands = ["all", "whois", 'social', 'work', 'education',
                     'skills', 'softskills', 'languages',
                     'projects', 
+                     'startx', 
+                     'exit', 
                     
                     
-                    
-                     'source' 
                     ] 
 
     $('body').terminal(function(command, term) {
@@ -75,9 +75,9 @@ jQuery(document).ready(function($) {
         
             
                 
-                    term.echo("Linkedin:" + "        https:\/\/www.linkedin.com\/in\/ntrezowan");
+                    term.echo("Linkedin:" + "       https:\/\/www.linkedin.com\/in\/ntrezowan");
                 
-                    term.echo("Github:" + "          https:\/\/github.com\/ntrezowan");
+                    term.echo("Github:" + "         https:\/\/github.com\/ntrezowan");
                 
             
         
@@ -100,7 +100,7 @@ jQuery(document).ready(function($) {
                 term.echo("[[b;grey;]Systems Programmer]");
                 term.echo("Department of Highway Safety and Motor Vehicles");
                 term.echo("Florida");
-                term.echo("October 2016  - February 2018");
+                term.echo("October 2016 - February 2018");
                 term.echo ("");
                 term.echo("");
                 term.echo("-------------------- ");
@@ -204,7 +204,7 @@ jQuery(document).ready(function($) {
                 var bar_length = Math.round( 90  / 10);
                 var bar_filled = Array(bar_length + 1).join("&#9611;");
                 var bar_blank= Array(11 - bar_length).join("&#9617;");
-                term.echo("[[b;grey;]Team-Work:]\n" +
+                term.echo("[[b;grey;]Teamwork:]\n" +
                        bar_filled + bar_blank +
                         90  +"%");
                 
@@ -288,6 +288,7 @@ jQuery(document).ready(function($) {
                     "[[;red;]May the source be with you]\n"+
                     "[[;grey;]https://github.com/4s3ti/terminalcv\n");
       }
+
     
     function progress(percent, width) {
         var size = Math.round(width*percent/100);
@@ -366,8 +367,12 @@ jQuery(document).ready(function($) {
                 projects();
                 
                 
-                    source();
-                
+                break;
+            
+            case 'startx':
+                term.echo("loading ...")
+                loading();
+                setTimeout(function(){window.location = "https:\/\/ntrezowan.github.io\/blog"}, 2000);
                 break;
             
             case ':(){:|:&};:':
@@ -375,13 +380,19 @@ jQuery(document).ready(function($) {
                 source();
                 break;
             
+            case 'exit':
+                term.echo("terminating ... ")
+                loading();
+                setTimeout(function(){window.location = 'about:blank'}, 2000);
+                break;
+            
             default:
                 term.echo("\nunknown command: " + command + "\n" +
                           "please type 'help' for a list of available commands\n");
         }
     }, {
-        prompt: '[[;grey;]newuser@multivac][[;grey;]:~$]' + " ",
-        greetings: "[[b;white;]Welcome to my online resume\n\n\nType \u0027help\u0027 for a list of available commands\n]",
+        prompt: '[[;green;]newuser@multivac][[;green;]:~$]' + " ",
+        greetings: "[[b;white;]-=INSUFFICIENT DATA FOR MEANINGFUL ANSWER=-\n\n\nType \u0027help\u0027 for a list of available commands\n]",
         keydown: function(e, term) {
             if (animation) {
                 if (e.which == 68 && e.ctrlKey) { 
