@@ -1,5 +1,5 @@
 
-# How to recreate this site
+## How to recreate this site
 
 1. Install Hugo
 
