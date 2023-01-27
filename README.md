@@ -32,4 +32,4 @@ $ hugo
 
 6. Upload content of `/Users/$/ntrezowan.github.io/public` to `ntrezowan/ntrezowan.github.io`.
 
-8. Visit https://ntrezowan.github.io
+8. Verify https://ntrezowan.github.io
