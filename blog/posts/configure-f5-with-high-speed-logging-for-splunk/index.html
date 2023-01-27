@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+  Configure F5 with High Speed Logging for Splunk · johndoeyo
+</title>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="John De">
+<meta name="description" content="Environment Link to heading F51 self IP for VLAN1 = 11.11.11.2
+F52 self IP for VLAN1 = 11.11.11.3
+F5SERV Floating IP for VLAN1 = 11.11.11.1
+F51 self IP for management VLAN = 10.1.1.2
+F52 self IP for management VLAN = 10.1.1.3
+F5SERV Floating IP for management VLAN = 10.1.1.1
+Splunk IP = 10.10.10.1
+Splunk TCP Port = 9515 (for ASM)
+Splunk UDP Port = 9514 (for SYSLOG, HSL and APM)">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Configure F5 with High Speed Logging for Splunk"/>
+<meta name="twitter:description" content="Environment Link to heading F51 self IP for VLAN1 = 11.11.11.2
+F52 self IP for VLAN1 = 11.11.11.3
+F5SERV Floating IP for VLAN1 = 11.11.11.1
+F51 self IP for management VLAN = 10.1.1.2
+F52 self IP for management VLAN = 10.1.1.3
+F5SERV Floating IP for management VLAN = 10.1.1.1
+Splunk IP = 10.10.10.1
+Splunk TCP Port = 9515 (for ASM)
+Splunk UDP Port = 9514 (for SYSLOG, HSL and APM)"/>
+
+<meta property="og:title" content="Configure F5 with High Speed Logging for Splunk" />
+<meta property="og:description" content="Environment Link to heading F51 self IP for VLAN1 = 11.11.11.2
+F52 self IP for VLAN1 = 11.11.11.3
+F5SERV Floating IP for VLAN1 = 11.11.11.1
+F51 self IP for management VLAN = 10.1.1.2
+F52 self IP for management VLAN = 10.1.1.3
+F5SERV Floating IP for management VLAN = 10.1.1.1
+Splunk IP = 10.10.10.1
+Splunk TCP Port = 9515 (for ASM)
+Splunk UDP Port = 9514 (for SYSLOG, HSL and APM)" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.example.com/posts/configure-f5-with-high-speed-logging-for-splunk/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-08-02T01:18:37-05:00" />
+<meta property="article:modified_time" content="2018-08-02T01:18:37-05:00" />
+
+
+
+
+<link rel="canonical" href="http://www.example.com/posts/configure-f5-with-high-speed-logging-for-splunk/">
+
+
+<link rel="preload" href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.36f76aaf39a14ecf5c3a3c6250dcaf06c238b3d8365d17d646f95cb1874e852b.css" integrity="sha256-NvdqrzmhTs9cOjxiUNyvBsI4s9g2XRfWRvlcsYdOhSs=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.593028e7f7ac55c003b79c230d1cd411bb4ca53b31556c3abb7f027170e646e9.css" integrity="sha256-WTAo5/esVcADt5wjDRzUEbtMpTsxVWw6u38CcXDmRuk=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<meta name="generator" content="Hugo 0.110.0">
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">
+      johndoeyo
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/posts/">Blog</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.example.com/posts/configure-f5-with-high-speed-logging-for-splunk/">
+              Configure F5 with High Speed Logging for Splunk
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              <time datetime="2018-08-02T01:18:37-05:00">
+                Aug 2, 2018
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              11-minute read
+            </span>
+          </div>
+          
+          
+          
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <h3 id="environment">
+  Environment
+  <a class="heading-link" href="#environment">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>F51 self IP for VLAN1 = 11.11.11.2<br>
+F52 self IP for VLAN1 = 11.11.11.3<br>
+F5SERV Floating IP for VLAN1 = 11.11.11.1<br>
+F51 self IP for management VLAN = 10.1.1.2<br>
+F52 self IP for management VLAN = 10.1.1.3<br>
+F5SERV Floating IP for management VLAN = 10.1.1.1<br>
+Splunk IP = 10.10.10.1<br>
+Splunk TCP Port = 9515 (for ASM)<br>
+Splunk UDP Port = 9514 (for SYSLOG, HSL and APM)</p>
+<hr>
+<h3 id="log-flow">
+  Log Flow
+  <a class="heading-link" href="#log-flow">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<blockquote>
+<p>Virtual Server &raquo; Logging Profile &raquo; Log Publisher &raquo; Log Destination &raquo; Pool &raquo; Splunk Log Server</p>
+</blockquote>
+<hr>
+<h3 id="a-check-network-connectivity">
+  A. Check network connectivity
+  <a class="heading-link" href="#a-check-network-connectivity">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Ping Splunk log server from F5;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># ping 10.10.10.1
+</span></span><span style="display:flex;"><span>PING 10.10.10.1 (10.10.10.1) 56(84) bytes of data.
+</span></span><span style="display:flex;"><span>64 bytes from 10.10.10.1: icmp_seq=1 ttl=63 time=0.838 ms
+</span></span><span style="display:flex;"><span>^C
+</span></span></code></pre></div><p>If ping is down, it does not necessarily mean that no log will go to Splunk server because F5 will send logs to a predefined TCP/UDP port. But we need to have ping enabled so that we can use <code>gateway_icmp</code> for monitoring when we create a pool.</p>
+<ol start="2">
+<li>Check how F5 is reaching Splunk log server;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># ip route get 10.10.10.1
+</span></span><span style="display:flex;"><span>10.10.10.1 via 20.20.20.1 prd vlan1  src 11.11.11.2
+</span></span><span style="display:flex;"><span>cache
+</span></span></code></pre></div><p>Here <code>11.11.11.2</code> is the TMM interface (also self non-floating IP for <code>F51</code>) which will be the source when logs are send to <code>10.10.10.1</code>.
+If there is no route to Splunk, add a static route and verify;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># ip route add 10.10.10.1/32 via vlan1
+</span></span><span style="display:flex;"><span># route -n
+</span></span><span style="display:flex;"><span>Kernel IP routing table
+</span></span><span style="display:flex;"><span>Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+</span></span><span style="display:flex;"><span>0.0.0.0         20.20.20.1      0.0.0.0         UG    0      0        0 vlan1
+</span></span><span style="display:flex;"><span>0.0.0.0         10.1.1.1        0.0.0.0         UG    9      0        0 mgmt
+</span></span><span style="display:flex;"><span>10.1.1.0        0.0.0.0         255.255.254.0   U     0      0        0 mgmt
+</span></span><span style="display:flex;"><span>127.1.1.0       0.0.0.0         255.255.255.0   U     0      0        0 tmm
+</span></span><span style="display:flex;"><span>127.7.0.0       127.1.1.253     255.255.0.0     UG    0      0        0 tmm
+</span></span><span style="display:flex;"><span>127.20.0.0      0.0.0.0         255.255.0.0     U     0      0        0 tmm_bp
+</span></span><span style="display:flex;"><span>10.10.10.1      0.0.0.0         255.255.255.255 U     0      0        0 vlan1
+</span></span><span style="display:flex;"><span>20.20.20.0      0.0.0.0         255.255.255.0   U     0      0        0 vlan1
+</span></span></code></pre></div><ol start="3">
+<li>Run Netcat to check if you can send logs to a specific remote port of Splunk server.<br>
+To test if you can reach a UDP remote port, run the following and then search in Splunk with <code>HOST=f51* f51-UDP</code>.</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># route echo &#39;&lt;0&gt;f51-UDP&#39; | nc -w 1 -u 10.10.10.1 9514
+</span></span></code></pre></div><p>To test if you can reach a TCP remote port, run the following and then search in Splunk with <code>HOST=f51* f51-TCP</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># route echo &#39;&lt;0&gt;f51-TCP&#39; | nc -w 1 -t 10.10.10.1 9515
+</span></span></code></pre></div><ol start="4">
+<li>You can also do a tcpdump to check if you can send logs to a specific remote port of Splunk server.<br>
+Run the following in one terminal to monitor TCP port;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tcpdump -A -nni vlan1 host 10.10.10.1 and port 9515
+</span></span></code></pre></div><p>While tcpdump is running, open another terminal and run the following and check if this log shows in tcpdump output. Also check <code>/var/log/ltm</code> and search in Splunk server with <code>HOST=f51* DUMPLING</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># logger -p local0.notice &#34;DUMPLING”
+</span></span></code></pre></div><p>If <code>nc</code> or <code>tcpdump</code> works, it means F5 can send logs to specific Splunk ports without any issue. If any of them did not worked, check &ldquo;Check Network Connectivity&rdquo; section again.</p>
+<hr>
+<h3 id="b-configure-f5-and-splunk-server">
+  B. Configure F5 and Splunk server
+  <a class="heading-link" href="#b-configure-f5-and-splunk-server">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>In F5, check <code>syslog-ng</code> global and local configuration;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># cat /var/run/config/syslog-ng.conf
+</span></span></code></pre></div><p>Check default log path of SYSLOG, APM and ASM;<br>
+SYSLOG  -&gt; # local0.*<br>
+APM     -&gt; # local1.*<br>
+ASM     -&gt; # local3.*</p>
+<ol start="2">
+<li>Check if there is any pre-configured remote log server in F5;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tmsh list /sys syslog remote-servers
+</span></span><span style="display:flex;"><span>sys syslog {
+</span></span><span style="display:flex;"><span>    remote-servers none
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>If there is any remote log server, we need to remove it because this type of configuration does not allow us to set severity level of outgoing logs. To remove <code>remote-servers</code>, run the following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tmsh
+</span></span><span style="display:flex;"><span>(tmos)# modify /sys syslog remote-servers none
+</span></span><span style="display:flex;"><span>(tmos)# save /sys config
+</span></span></code></pre></div><ol start="3">
+<li>Now add Splunk server as a <code>include</code> which will allow us to filter outgoing logs;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(tmos)# edit /sys syslog all-properties
+</span></span><span style="display:flex;"><span>sys syslog {
+</span></span><span style="display:flex;"><span>    auth-priv-from notice
+</span></span><span style="display:flex;"><span>    auth-priv-to emerg
+</span></span><span style="display:flex;"><span>    clustered-host-slot enabled
+</span></span><span style="display:flex;"><span>    clustered-message-slot disabled
+</span></span><span style="display:flex;"><span>    console-log enabled
+</span></span><span style="display:flex;"><span>    cron-from warning
+</span></span><span style="display:flex;"><span>    cron-to emerg
+</span></span><span style="display:flex;"><span>    daemon-from notice
+</span></span><span style="display:flex;"><span>    daemon-to emerg
+</span></span><span style="display:flex;"><span>    description none
+</span></span><span style="display:flex;"><span>    include &#34;
+</span></span><span style="display:flex;"><span>    filter f_ssl_acc_req {
+</span></span><span style="display:flex;"><span>        not (facility(local6) and level(info) and filter(f_httpd_ssl_acc)) and
+</span></span><span style="display:flex;"><span>        not (facility(local6) and level(info) and filter(f_httpd_ssl_req)) and
+</span></span><span style="display:flex;"><span>        level(info..emerg);
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    destination d_remote_loghost {
+</span></span><span style="display:flex;"><span>        tcp(\&#34;10.10.10.1\&#34; port(9515));
+</span></span><span style="display:flex;"><span>        udp(\&#34;10.10.10.1\&#34; port(9514));
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    log {
+</span></span><span style="display:flex;"><span>        source(s_syslog_pipe);
+</span></span><span style="display:flex;"><span>        filter(f_ssl_acc_req);
+</span></span><span style="display:flex;"><span>        destination(d_remote_loghost);
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    &#34;
+</span></span><span style="display:flex;"><span>    iso-date enabled
+</span></span><span style="display:flex;"><span>    kern-from debug
+</span></span><span style="display:flex;"><span>    kern-to emerg
+</span></span><span style="display:flex;"><span>    local6-from notice
+</span></span><span style="display:flex;"><span>    local6-to emerg
+</span></span><span style="display:flex;"><span>    mail-from notice
+</span></span><span style="display:flex;"><span>    mail-to emerg
+</span></span><span style="display:flex;"><span>    messages-from notice
+</span></span><span style="display:flex;"><span>    messages-to warning
+</span></span><span style="display:flex;"><span>    remote-servers none
+</span></span><span style="display:flex;"><span>    user-log-from notice
+</span></span><span style="display:flex;"><span>    user-log-to emerg
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Here under <code>include</code> section, <code>10.10.10.1</code> is Splunk server IP and F5 will send logs to <code>9514/udp</code> and <code>9515/tcp</code> port of Splunk. In filter section, we set the severity level from informational to emergency for SYSLOG (/var/logs/ltm).</p>
+<ol start="4">
+<li>Change date format to <code>iso-date</code>;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(tmos)# modify sys syslog iso-date enabled
+</span></span><span style="display:flex;"><span>(tmos)# save /sys config
+</span></span></code></pre></div><ol start="5">
+<li>In Splunk server, modify <code>inputs.conf</code> so that F5 source-type matches with <code>inputs.conf</code>;<br>
+F5 Source Type -&gt;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>SYSLOG  (/var/log/ltm) -&gt; f5:bigip:syslog
+</span></span><span style="display:flex;"><span>APM     (/var/log/apm) -&gt; f5:bigip:apm:syslog
+</span></span><span style="display:flex;"><span>ASM     (/var/log/asm) -&gt; f5:bigip:asm:syslog
+</span></span></code></pre></div><p>inputs.conf -&gt;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>[udp://9514]
+</span></span><span style="display:flex;"><span>disabled = true
+</span></span><span style="display:flex;"><span>connection_host=ip
+</span></span><span style="display:flex;"><span>sourcetype = f5:bigip:syslog
+</span></span><span style="display:flex;"><span>[udp://9514]
+</span></span><span style="display:flex;"><span>disabled = true
+</span></span><span style="display:flex;"><span>connection_host=ip
+</span></span><span style="display:flex;"><span>sourcetype = f5:bigip:apm:syslog
+</span></span><span style="display:flex;"><span>[tcp://9515]
+</span></span><span style="display:flex;"><span>disabled = true
+</span></span><span style="display:flex;"><span>connection_host=ip
+</span></span><span style="display:flex;"><span>sourcetype = f5:bigip:asm:syslog
+</span></span></code></pre></div><p>In here, SYSLOG and APM is using <code>9514/udp</code> and ASM is using <code>9515/tcp</code>.</p>
+<ol start="6">
+<li>Go to Splunk and search with the following to verify that SYSLOG (/var/log/ltm) shows up in Splunk;</li>
+</ol>
+<ul>
+<li>Search <code>host=f51* mcpd</code> to see if it’s getting <code>mcpd</code> logs</li>
+<li>Search <code>host=f51* tmm*</code> to see if it’s getting <code>tmm</code> logs</li>
+</ul>
+<hr>
+<h3 id="c-configure-hsl-to-use-tmm-ports">
+  C. Configure HSL to use TMM ports
+  <a class="heading-link" href="#c-configure-hsl-to-use-tmm-ports">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Create a pool and add Splunk as a backend server of the pool.
+Go to <code>Local Traffic &gt; Pools</code>. Click Create, select Advanced from Configuration and configure as following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Name = splunk_pool
+</span></span><span style="display:flex;"><span>Pool Health Monitor = gateway_icmp
+</span></span><span style="display:flex;"><span>Node Health Monitor = udp
+</span></span><span style="display:flex;"><span>Address = 10.10.10.1
+</span></span><span style="display:flex;"><span>Service Port = 9514
+</span></span></code></pre></div><ol start="2">
+<li>Create an iRule and add it to a VIP.
+Go to <code>Local Traffic &gt; iRules &gt; iRules List</code>. Click Create and here is a sample iRule which does Apache like HTTP Request/Response logging;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>when CLIENT_ACCEPTED {
+</span></span><span style="display:flex;"><span>    set client_address [IP::client_addr]
+</span></span><span style="display:flex;"><span>    set vip [IP::local_addr]
+</span></span><span style="display:flex;"><span>    set hsl [HSL::open -proto TCP -pool /Common/splunk_pool]
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>when HTTP_REQUEST {
+</span></span><span style="display:flex;"><span>    set http_host [HTTP::host]:[TCP::local_port]
+</span></span><span style="display:flex;"><span>    set http_uri [HTTP::uri]
+</span></span><span style="display:flex;"><span>    set http_url $http_host$http_uri
+</span></span><span style="display:flex;"><span>    set http_method [HTTP::method]
+</span></span><span style="display:flex;"><span>    set http_version [HTTP::version]
+</span></span><span style="display:flex;"><span>    set http_user_agent [HTTP::header &#34;User-Agent&#34;]
+</span></span><span style="display:flex;"><span>    set http_content_type [HTTP::header &#34;Content-Type&#34;]
+</span></span><span style="display:flex;"><span>    set http_referrer [HTTP::header &#34;Referer&#34;]
+</span></span><span style="display:flex;"><span>    set tcp_start_time [clock clicks -milliseconds]
+</span></span><span style="display:flex;"><span>    set req_start_time [clock format [clock seconds] -format &#34;%Y/%m/%d %H:%M:%S&#34;]
+</span></span><span style="display:flex;"><span>    set cookie [HTTP::cookie names]
+</span></span><span style="display:flex;"><span>    set user [HTTP::username]
+</span></span><span style="display:flex;"><span>    set virtual_server [LB::server]
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>    if { [HTTP::header Content-Length] &gt; 0 } then {
+</span></span><span style="display:flex;"><span>        set req_length [HTTP::header &#34;Content-Length&#34;]
+</span></span><span style="display:flex;"><span>    } else {
+</span></span><span style="display:flex;"><span>        set req_length 0
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>when HTTP_RESPONSE {
+</span></span><span style="display:flex;"><span>#    set res_start_time [clock format [clock seconds] -format &#34;%Y/%m/%d %H:%M:%S&#34;]
+</span></span><span style="display:flex;"><span>    set node [IP::server_addr]
+</span></span><span style="display:flex;"><span>    set node_port [TCP::server_port]
+</span></span><span style="display:flex;"><span>    set http_status [HTTP::status]
+</span></span><span style="display:flex;"><span>    set req_elapsed_time [expr {[clock clicks -milliseconds] - $tcp_start_time}]
+</span></span><span style="display:flex;"><span>    if { [HTTP::header Content-Length] &gt; 0 } then {
+</span></span><span style="display:flex;"><span>        set res_length [HTTP::header &#34;Content-Length&#34;]
+</span></span><span style="display:flex;"><span>    } else {
+</span></span><span style="display:flex;"><span>        set res_length 0
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    #log local0.info &#34;SYSLOGOD CLIENT_IP=$client_address, VIP=$vip, VIP_NAME=\&#34;$virtual_server\&#34;, SERVER_NODE=$node, SERVER_NODE_PORT=$node_port, HTTP_URL=$http_url, HTTP_VERSION=$http_version, HTTP_STATUS=$http_status, HTTP_METHOD=$http_method, HTTP_CONTENT_TYPE=$http_content_type, HTTP_USER_AGENT=\&#34;$http_user_agent\&#34;, HTTP_REFERRER=\&#34;$http_referrer\&#34;, COOKIE=\&#34;$cookie\&#34;, REQUEST_START_TIME=$req_start_time, RESPONSE_START_TIME=$res_start_time, REQUEST_ELAPSED_TIME=$req_elapsed_time, BYTES_IN=$req_length, BYTES_OUT=$res_length\r\n&#34;
+</span></span><span style="display:flex;"><span>    set hsl [HSL::open -proto UDP -pool /Common/splunk_pool]
+</span></span><span style="display:flex;"><span>    HSL::send $hsl &#34;&lt;190&gt; HSL, CLIENT_IP=$client_address, VIP=$vip, VIP_NAME=\&#34;$virtual_server\&#34;, SERVER_NODE=$node, SERVER_NODE_PORT=$node_port, HTTP_URL=$http_url, HTTP_VERSION=$http_version, HTTP_STATUS=$http_status, HTTP_METHOD=$http_method, HTTP_CONTENT_TYPE=$http_content_type, HTTP_USER_AGENT=\&#34;$http_user_agent\&#34;, HTTP_REFERRER=\&#34;$http_referrer\&#34;, COOKIE=\&#34;$cookie\&#34;, REQUEST_START_TIME=$req_start_time,REQUEST_ELAPSED_TIME=$req_elapsed_time, BYTES_IN=$req_length, BYTES_OUT=$res_length\r\n&#34;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>when LB_FAILED {
+</span></span><span style="display:flex;"><span>    set hsl [HSL::open -proto UDP -pool /Common/splunk_pool]
+</span></span><span style="display:flex;"><span>    HSL::send $hsl &#34;&lt;190&gt; HSL, CLIENT_IP=$client_address, VIP=$vip, VIP_NAME=\&#34;$virtual_server\&#34;, SERVER_NODE=$node, SERVER_NODE_PORT=$node_port, HTTP_URL=$http_url, HTTP_VERSION=$http_version, HTTP_STATUS=$http_status, HTTP_METHOD=$http_method, HTTP_CONTENT_TYPE=$http_content_type, HTTP_USER_AGENT=\&#34;$http_user_agent\&#34;, HTTP_REFERRER=\&#34;$http_referrer\&#34;, COOKIE=\&#34;$cookie\&#34;, REQUEST_START_TIME=$req_start_time,REQUEST_ELAPSED_TIME=$req_elapsed_time, BYTES_IN=$req_length, BYTES_OUT=$res_length\r\n&#34;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol start="3">
+<li>Browse the VIP where you have applied the iRule and then go to Splunk and search for <code>HOST=f51* HSL</code>. If nothing shows up in Splunk, uncomment <code>#log local0.info</code> from the iRule to start writing logs in local SYSLOG (/var/logs/ltm). If logs are writing in local file but not showing up in Splunk, it means there is some network issue. If logs are not writing in local SYSLOG, try using a simpler iRule.</li>
+</ol>
+<hr>
+<h3 id="d-configure-hsl-to-use-management-port">
+  D. Configure HSL to use Management port
+  <a class="heading-link" href="#d-configure-hsl-to-use-management-port">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Verify that F5 is using management port to reach Splunk;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># ip route get 10.10.10.1
+</span></span><span style="display:flex;"><span>10.10.10.1 via 10.1.1.1 prd mgmt  src 10.1.1.2
+</span></span></code></pre></div><p>If not, configure F5 so that it uses management port to reach Splunk;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(tmos)# create /sys log-config destination management-port splunk ip-address 10.10.10.1 port 9514 protocol udp
+</span></span><span style="display:flex;"><span>(tmos)# list sys management-route
+</span></span><span style="display:flex;"><span>sys management-route splunk {
+</span></span><span style="display:flex;"><span>    gateway 10.1.1.1
+</span></span><span style="display:flex;"><span>    network 10.10.10.1/32
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>(tmos)# save sys config
+</span></span></code></pre></div><ol start="2">
+<li>Create a Log destination.<br>
+Go to <code>System &gt; Logs &gt; Configuration &gt; Log Destinations</code>. Create New and configure as following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Name = splunk_hsl_via_mgmt_port
+</span></span><span style="display:flex;"><span>Type = Management Port
+</span></span><span style="display:flex;"><span>Address = 10.10.10.1
+</span></span><span style="display:flex;"><span>Port = 9515
+</span></span><span style="display:flex;"><span>Protocol = TCP
+</span></span></code></pre></div><ol start="3">
+<li>Create a Log publisher.<br>
+Go to <code>System &gt; Logs &gt; Configuration&gt; Log Publisher</code>. Create New and configure as following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Name = splunk_hsl_publisher
+</span></span><span style="display:flex;"><span>Destination = splunk_hsl_via_mgmt_port
+</span></span></code></pre></div><ol start="4">
+<li>Create an iRule and add it to a VIP.
+Go to <code>Local Traffic &gt; iRules &gt; iRules List</code>. Click Create and here is a sample iRule which does Apache like HTTP Request/Response logging;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>when CLIENT_ACCEPTED {
+</span></span><span style="display:flex;"><span>    set client_address [IP::client_addr]
+</span></span><span style="display:flex;"><span>    set vip [IP::local_addr]
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>when HTTP_REQUEST {
+</span></span><span style="display:flex;"><span>    set http_host [HTTP::host]:[TCP::local_port]
+</span></span><span style="display:flex;"><span>    set http_uri [HTTP::uri]
+</span></span><span style="display:flex;"><span>    set http_url $http_host$http_uri
+</span></span><span style="display:flex;"><span>    set http_method [HTTP::method]
+</span></span><span style="display:flex;"><span>    set http_version [HTTP::version]
+</span></span><span style="display:flex;"><span>    set http_user_agent [HTTP::header &#34;User-Agent&#34;]
+</span></span><span style="display:flex;"><span>    set http_content_type [HTTP::header &#34;Content-Type&#34;]
+</span></span><span style="display:flex;"><span>    set http_referrer [HTTP::header &#34;Referer&#34;]
+</span></span><span style="display:flex;"><span>    set tcp_start_time [clock clicks -milliseconds]
+</span></span><span style="display:flex;"><span>    set req_start_time [clock format [clock seconds] -format &#34;%Y/%m/%d %H:%M:%S&#34;]
+</span></span><span style="display:flex;"><span>    set cookie [HTTP::cookie names]
+</span></span><span style="display:flex;"><span>    set user [HTTP::username]
+</span></span><span style="display:flex;"><span>    set virtual_server [LB::server]
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>    if { [HTTP::header Content-Length] &gt; 0 } then {
+</span></span><span style="display:flex;"><span>        set req_length [HTTP::header &#34;Content-Length&#34;]
+</span></span><span style="display:flex;"><span>    } else {
+</span></span><span style="display:flex;"><span>        set req_length 0
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>when HTTP_RESPONSE {
+</span></span><span style="display:flex;"><span>#    set res_start_time [clock format [clock seconds] -format &#34;%Y/%m/%d %H:%M:%S&#34;]
+</span></span><span style="display:flex;"><span>    set node [IP::server_addr]
+</span></span><span style="display:flex;"><span>    set node_port [TCP::server_port]
+</span></span><span style="display:flex;"><span>    set http_status [HTTP::status]
+</span></span><span style="display:flex;"><span>    set req_elapsed_time [expr {[clock clicks -milliseconds] - $tcp_start_time}]
+</span></span><span style="display:flex;"><span>    if { [HTTP::header Content-Length] &gt; 0 } then {
+</span></span><span style="display:flex;"><span>        set res_length [HTTP::header &#34;Content-Length&#34;]
+</span></span><span style="display:flex;"><span>    } else {
+</span></span><span style="display:flex;"><span>        set res_length 0
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    #log local0.info &#34;SYSLOGDD CLIENT_IP=$client_address, VIP=$vip, VIP_NAME=\&#34;$virtual_server\&#34;, SERVER_NODE=$node, SERVER_NODE_PORT=$node_port, HTTP_URL=$http_url, HTTP_VERSION=$http_version, HTTP_STATUS=$http_status, HTTP_METHOD=$http_method, HTTP_CONTENT_TYPE=$http_content_type, HTTP_USER_AGENT=\&#34;$http_user_agent\&#34;, HTTP_REFERRER=\&#34;$http_referrer\&#34;, COOKIE=\&#34;$cookie\&#34;, REQUEST_START_TIME=$req_start_time, RESPONSE_START_TIME=$res_start_time, REQUEST_ELAPSED_TIME=$req_elapsed_time, BYTES_IN=$req_length, BYTES_OUT=$res_length\r\n&#34;
+</span></span><span style="display:flex;"><span>    set hsl [HSL::open -publisher /Common/splunk_hsl_publisher]
+</span></span><span style="display:flex;"><span>    HSL::send $hsl &#34;&lt;190&gt; HSL, CLIENT_IP=$client_address, VIP=$vip, VIP_NAME=\&#34;$virtual_server\&#34;, SERVER_NODE=$node, SERVER_NODE_PORT=$node_port, HTTP_URL=$http_url, HTTP_VERSION=$http_version, HTTP_STATUS=$http_status, HTTP_METHOD=$http_method, HTTP_CONTENT_TYPE=$http_content_type, HTTP_USER_AGENT=\&#34;$http_user_agent\&#34;, HTTP_REFERRER=\&#34;$http_referrer\&#34;, COOKIE=\&#34;$cookie\&#34;, REQUEST_START_TIME=$req_start_time,REQUEST_ELAPSED_TIME=$req_elapsed_time, BYTES_IN=$req_length, BYTES_OUT=$res_length\r\n&#34;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>when LB_FAILED {
+</span></span><span style="display:flex;"><span>    set hsl [HSL::open -publisher /Common/splunk_hsl_publisher]
+</span></span><span style="display:flex;"><span>    HSL::send $hsl &#34;&lt;190&gt; HSL, CLIENT_IP=$client_address, VIP=$vip, VIP_NAME=\&#34;$virtual_server\&#34;, SERVER_NODE=$node, SERVER_NODE_PORT=$node_port, HTTP_URL=$http_url, HTTP_VERSION=$http_version, HTTP_STATUS=$http_status, HTTP_METHOD=$http_method, HTTP_CONTENT_TYPE=$http_content_type, HTTP_USER_AGENT=\&#34;$http_user_agent\&#34;, HTTP_REFERRER=\&#34;$http_referrer\&#34;, COOKIE=\&#34;$cookie\&#34;, REQUEST_START_TIME=$req_start_time,REQUEST_ELAPSED_TIME=$req_elapsed_time, BYTES_IN=$req_length, BYTES_OUT=$res_length\r\n&#34;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol start="5">
+<li>Browse the VIP where you have applied the iRule and then go to Splunk and search for <code>HOST=f511* HSL</code>.</li>
+</ol>
+<hr>
+<h3 id="e-configure-hsl-for-afmdosbotssl">
+  E. Configure HSL for AFM/DOS/BOT/SSL
+  <a class="heading-link" href="#e-configure-hsl-for-afmdosbotssl">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>In this section, we are going to create a log publisher for AFM.<br>
+First, create an unformatted HSL log destination.
+Go to <code>System &gt; Logs &gt; Configuration &gt; Log Destinations</code>. Click on Create and configure as following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Name = splunk_afm_unformatted
+</span></span><span style="display:flex;"><span>Type = Remote HSL
+</span></span><span style="display:flex;"><span>Pool = splunk_pool
+</span></span><span style="display:flex;"><span>Protocol = UDP
+</span></span></code></pre></div><ol start="2">
+<li>Create a formatted HSL log destination for Splunk. Go to <code>System &gt; Logs &gt; Configuration &gt; Log Destinations</code>. Click on Create and configure as following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Name = splunk_afm_formatted
+</span></span><span style="display:flex;"><span>Type = Remote Syslog
+</span></span><span style="display:flex;"><span>Syslog Format = Splunk
+</span></span><span style="display:flex;"><span>Forward to = splunk_afm_unformatted
+</span></span></code></pre></div><ol start="3">
+<li>Create a HSL log publisher. Go to <code>System &gt; Logs &gt; Configuration &gt; Log Publishers</code>. Click on Create and configure as following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Name = splunk_afm_publisher
+</span></span><span style="display:flex;"><span>Destination = splunk_afm_formatted
+</span></span></code></pre></div><ol start="4">
+<li>Create a firewall logging profile. Go to <code>Security &gt; Event Logs &gt; Logging Profiles</code>. Click on Create and configure as following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Name = splunk_afm_logging
+</span></span><span style="display:flex;"><span>Network Firewall = Tick
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>Publisher = splunk_afm_publisher
+</span></span><span style="display:flex;"><span>Aggregate Rate Limit = Indefinite
+</span></span><span style="display:flex;"><span>Log Rule Messages 
+</span></span><span style="display:flex;"><span>		  -&gt; Accept = Indefinite
+</span></span><span style="display:flex;"><span>		  -&gt; Drop = Indefinite
+</span></span><span style="display:flex;"><span>		  -&gt; Reject = Indefinite
+</span></span><span style="display:flex;"><span>Log IP Errors = Enabled
+</span></span><span style="display:flex;"><span>Log TCP Errors = Enabled
+</span></span><span style="display:flex;"><span>Log TCP Event = Enabled
+</span></span><span style="display:flex;"><span>Log Transation Fields = Enabled
+</span></span><span style="display:flex;"><span>Always Log Region = Enabled
+</span></span><span style="display:flex;"><span>Storage Format = User-Defined
+</span></span><span style="display:flex;"><span>ACTION=${action}, SOURCE_IP=${src_ip}:${src_port}, REMOTE_IP=${dest_ip}:${dest_port}, REMOTE_LOCATION=${dest_geo}, PROTOCOL=${protocol}, TRANS_SOURCE_IP=${translated_src_ip}:${translated_src_port}, TRANS_REMOTE_IP=${translated_dest_ip}:${translated_dest_port}, DROP_REASON=${drop_reason}, VLAN=${vlan}
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>IP Intelligence 
+</span></span><span style="display:flex;"><span>Publisher = splunk_afm_publisher
+</span></span><span style="display:flex;"><span>Log Translation Fields = Enabled
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>Traffic Statistics
+</span></span><span style="display:flex;"><span>Publisher = splunk afm_publisher
+</span></span><span style="display:flex;"><span>Aggregate Rate Limit = Indefinite
+</span></span><span style="display:flex;"><span>Log Timer Events = Active Flows
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>Port Misuse
+</span></span><span style="display:flex;"><span>Publisher = splunk_afm_publisher
+</span></span><span style="display:flex;"><span>Aggregate Rate Limit = Indefinite
+</span></span></code></pre></div><ol start="5">
+<li>Add the logging profile to a VIP with a APM policy. Go to <code>Local Traffic &gt; Virtual Servers</code>. Click on the Virtual Server where you want to apply logging and go to <code>Security &gt; Policies</code> tab. Now configure as following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Network Firewall 
+</span></span><span style="display:flex;"><span>		  -&gt; Enforcement = Enabled
+</span></span><span style="display:flex;"><span>		  -&gt; Staging = Disabled
+</span></span><span style="display:flex;"><span>Policy = {a_prefedined policy}
+</span></span><span style="display:flex;"><span>Log Profile = splunk_afm_logging
+</span></span></code></pre></div><ol start="6">
+<li>Go to Splunk and search for <code>host=f51* &quot;ACTION=Drop&quot;</code>.</li>
+</ol>
+<hr>
+<h3 id="f-configure-hsl-for-request-logging">
+  F. Configure HSL for Request Logging
+  <a class="heading-link" href="#f-configure-hsl-for-request-logging">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Go to <code>Local Traffic &gt; Profiles &gt; Other &gt; Request Logging</code>. Click Create and configure as following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Name = splunk_http_request_logging
+</span></span><span style="display:flex;"><span>Parent Profile = request-log
+</span></span><span style="display:flex;"><span>Request Logging = Enabled
+</span></span><span style="display:flex;"><span>Template = $DATE_NCSA REQUEST -&gt; CLIENT = $CLIENT_IP:$CLIENT_PORT, VIP = $VIRTUAL_IP:$VIRTUAL_PORT, HTTP_VERSION = $HTTP_VERSION, HTTP_METHOD = $HTTP_METHOD, HTTP_KEEPALIVE = $HTTP_KEEPALIVE, HTTP_PATH = $HTTP_PATH, HTTP_QUERY = $HTTP_QUERY, HTTP_REQUEST = $HTTP_REQUEST, HTTP_URI = $HTTP_URI
+</span></span><span style="display:flex;"><span>HSL Protocol = UDP
+</span></span><span style="display:flex;"><span>Pool Name = splunk_pool
+</span></span><span style="display:flex;"><span>Response Logging = Enabled
+</span></span><span style="display:flex;"><span>Template = $DATE_NCSA, RESPONSE -&gt; CLIENT = $CLIENT_IP:$CLIENT_PORT, VIP = $VIRTUAL_IP:$VIRTUAL_PORT, SERVER = $SERVER_IP:$SERVER_PORT, HTTP_VERSION = $HTTP_VERSION, HTTP_METHOD = $HTTP_METHOD, HTTP_KEEPALIVE = $HTTP_KEEPALIVE, HTTP_PATH = $HTTP_PATH, HTTP_QUERY = $HTTP_QUERY, HTTP_REQUEST = $HTTP_REQUEST, HTTP_STATUS = $HTTP_STATUS, HTTP_URI = $HTTP_URI, SNAT_IP = $SNAT_IP:$SNAT_PORT, F5_HOSTNAME = $BIGIP_HOSTNAME, RESPONSE_TIME = $RESPONSE_MSECS, RESPONSE_SIZE = $RESPONSE_SIZE
+</span></span><span style="display:flex;"><span>HSL Protocol = UDP
+</span></span><span style="display:flex;"><span>Pool Name = splunk_pool
+</span></span></code></pre></div><ol start="2">
+<li>
+<p>Go to <code>Local Traffic &gt; Virtual Servers</code>. Click on the VIP which you want to use Request Logging. Select Advanced of Configuration and then choose <code>Request Logging Profile</code> as <code>splunk_http_request_logging</code></p>
+</li>
+<li>
+<p>Browse the VIP where you have applied the iRule and then go to Splunk and search for <code>HOST=f51* REQUEST</code></p>
+</li>
+</ol>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2023
+     John De 
+    ·
+    
+    Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

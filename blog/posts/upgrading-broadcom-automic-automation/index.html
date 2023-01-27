@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+  Upgrading Broadcom Automic Automation · johndoeyo
+</title>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="John De">
+<meta name="description" content="A. Preparation before upgrade Link to heading Backup Automic Utility and extract new JAR; # rm -rf /opt/ae/utility/bin_new/* # rm -rf /opt/ae/utility/bin_old/* # cp -r /opt/ae/utility/bin/* /opt/ae/utility/bin_old/ # cp /opt/iso/Automic.Automation_12.3.0_HF1/Automation.Platform/Utility/unix/linux/x64/utillx6.tar.gz /opt/ae/utility/bin_new # tar -zxvf utillx6.tar.gz In here, we are only interested of bin folder and db folder should be empty.
+Backup Automic DB and extract new JAR; # rm -rf /opt/ae/utility/db_new/* # rm -rf /opt/ae/utility/db_old/* # cp -r /opt/ae/utility/db/* /opt/ae/utility/db_old/ # cp /opt/iso/Automic.">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Upgrading Broadcom Automic Automation"/>
+<meta name="twitter:description" content="A. Preparation before upgrade Link to heading Backup Automic Utility and extract new JAR; # rm -rf /opt/ae/utility/bin_new/* # rm -rf /opt/ae/utility/bin_old/* # cp -r /opt/ae/utility/bin/* /opt/ae/utility/bin_old/ # cp /opt/iso/Automic.Automation_12.3.0_HF1/Automation.Platform/Utility/unix/linux/x64/utillx6.tar.gz /opt/ae/utility/bin_new # tar -zxvf utillx6.tar.gz In here, we are only interested of bin folder and db folder should be empty.
+Backup Automic DB and extract new JAR; # rm -rf /opt/ae/utility/db_new/* # rm -rf /opt/ae/utility/db_old/* # cp -r /opt/ae/utility/db/* /opt/ae/utility/db_old/ # cp /opt/iso/Automic."/>
+
+<meta property="og:title" content="Upgrading Broadcom Automic Automation" />
+<meta property="og:description" content="A. Preparation before upgrade Link to heading Backup Automic Utility and extract new JAR; # rm -rf /opt/ae/utility/bin_new/* # rm -rf /opt/ae/utility/bin_old/* # cp -r /opt/ae/utility/bin/* /opt/ae/utility/bin_old/ # cp /opt/iso/Automic.Automation_12.3.0_HF1/Automation.Platform/Utility/unix/linux/x64/utillx6.tar.gz /opt/ae/utility/bin_new # tar -zxvf utillx6.tar.gz In here, we are only interested of bin folder and db folder should be empty.
+Backup Automic DB and extract new JAR; # rm -rf /opt/ae/utility/db_new/* # rm -rf /opt/ae/utility/db_old/* # cp -r /opt/ae/utility/db/* /opt/ae/utility/db_old/ # cp /opt/iso/Automic." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.example.com/posts/upgrading-broadcom-automic-automation/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-11-25T01:18:37-05:00" />
+<meta property="article:modified_time" content="2019-11-25T01:18:37-05:00" />
+
+
+
+
+<link rel="canonical" href="http://www.example.com/posts/upgrading-broadcom-automic-automation/">
+
+
+<link rel="preload" href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.36f76aaf39a14ecf5c3a3c6250dcaf06c238b3d8365d17d646f95cb1874e852b.css" integrity="sha256-NvdqrzmhTs9cOjxiUNyvBsI4s9g2XRfWRvlcsYdOhSs=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.593028e7f7ac55c003b79c230d1cd411bb4ca53b31556c3abb7f027170e646e9.css" integrity="sha256-WTAo5/esVcADt5wjDRzUEbtMpTsxVWw6u38CcXDmRuk=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<meta name="generator" content="Hugo 0.110.0">
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">
+      johndoeyo
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/posts/">Blog</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.example.com/posts/upgrading-broadcom-automic-automation/">
+              Upgrading Broadcom Automic Automation
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              <time datetime="2019-11-25T01:18:37-05:00">
+                Nov 25, 2019
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              10-minute read
+            </span>
+          </div>
+          
+          
+          
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <h3 id="a-preparation-before-upgrade">
+  A. Preparation before upgrade
+  <a class="heading-link" href="#a-preparation-before-upgrade">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Backup <code>Automic Utility</code> and extract new JAR;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># rm -rf /opt/ae/utility/bin_new/*
+</span></span><span style="display:flex;"><span># rm -rf /opt/ae/utility/bin_old/*
+</span></span><span style="display:flex;"><span># cp -r /opt/ae/utility/bin/* /opt/ae/utility/bin_old/
+</span></span><span style="display:flex;"><span># cp /opt/iso/Automic.Automation_12.3.0_HF1/Automation.Platform/Utility/unix/linux/x64/utillx6.tar.gz /opt/ae/utility/bin_new
+</span></span><span style="display:flex;"><span># tar -zxvf utillx6.tar.gz
+</span></span></code></pre></div><p>In here, we are only interested of <code>bin</code> folder and <code>db</code> folder should be empty.</p>
+<ol start="2">
+<li>Backup <code>Automic DB</code> and extract new JAR;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># rm -rf /opt/ae/utility/db_new/*
+</span></span><span style="display:flex;"><span># rm -rf /opt/ae/utility/db_old/*
+</span></span><span style="display:flex;"><span># cp -r /opt/ae/utility/db/* /opt/ae/utility/db_old/
+</span></span><span style="display:flex;"><span># cp /opt/iso/Automic.Automation_12.3.0_HF1/Automation.Platform/db/db.tar.gz /opt/ae/utility/db_new
+</span></span><span style="display:flex;"><span># tar -zxvf db.tar.gz
+</span></span></code></pre></div><ol start="3">
+<li>Backup <code>Automation Engine</code> and extract new JAR;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># rm -rf /opt/ae/automationengine/bin_new/*
+</span></span><span style="display:flex;"><span># rm -rf /opt/ae/automationengine/bin_old/*
+</span></span><span style="display:flex;"><span># cp -r /opt/ae/automationengine/bin/* /opt/ae/automationengine/bin_old/
+</span></span><span style="display:flex;"><span># cp /opt/iso/Automic.Automation_12.3.0_HF1/Automation.Platform/AutomationEngine/unix/linux/x64/ucslx6.tar.gz /opt/ae/automationengine/bin_new/
+</span></span><span style="display:flex;"><span># tar -zxvf ucslx6.tar.gz
+</span></span></code></pre></div><ol start="4">
+<li>Backup <code>Service Manager</code> and extract new JAR;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># rm -rf /opt/ae/servicemanager/bin_new/*
+</span></span><span style="display:flex;"><span># rm -rf /opt/ae/servicemanager/bin_old/*
+</span></span><span style="display:flex;"><span># cp -r /opt/ae/servicemanager/bin/* /opt/ae/servicemanager/bin_old/
+</span></span><span style="display:flex;"><span># cp /opt/iso/Automic.Automation_12.3.0_HF1/Automation.Platform/ServiceManager/unix/linux/x64/ucsmgrlx6.tar.gz /opt/ae/servicemanager/bin_new/
+</span></span><span style="display:flex;"><span># tar -zxvf ucsmgrlx6.tar.gz
+</span></span></code></pre></div><ol start="5">
+<li>Create folder for <code>CAPKI</code> and copy the installer;<br>
+Download CAPKI installer from <a href="https://downloads.automic.com/downloads">https://downloads.automic.com/downloads</a> and move it to the server.</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># mkdir /opt/ae/capki/
+</span></span><span style="display:flex;"><span># cp /opt/iso/CA.PKI/unix/linux/x64/setup /opt/ae/capki/
+</span></span></code></pre></div><ol start="6">
+<li>Shutdown AE;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># ps -ef | grep ucybsmgr
+</span></span><span style="display:flex;"><span># kill pid
+</span></span></code></pre></div><ol start="7">
+<li>
+<p>Check environment;</p>
+<p>a) Check Java version;</p>
+<p>Automation Engine supports <code>OpenJDK Java 11</code>, <code>Oracle Java 1.8</code> and <code>Oracle Java 11</code>. Check if you have proper version of Java;</p>
+<pre><code> # java -version
+ openjdk version &quot;11.0.4&quot; 2019-07-16 LTS
+ OpenJDK Runtime Environment 18.9 (build 11.0.4+11-LTS)
+ OpenJDK 64-Bit Server VM 18.9 (build 11.0.4+11-LTS, mixed mode, sharing)
+</code></pre>
+<p>b) Check environment variables;</p>
+<pre><code> # vi ~/.bashrc
+
+ # AUTOMIC System Settings
+ ORACLE_HOME=/opt/oracle/product/12.2.0.1/dbhome_1; export ORACLE_HOME
+ AUTOMIC=/opt/ae/utility; export AUTOMIC
+ PATH=.:$ORACLE_HOME/bin[:$PATH]; export PATH
+ LD_LIBRARY_PATH=.:${AUTOMIC}/bin:$ORACLE_HOME/lib:/usr/lib:/lib[:$LD_LIBRARY_PATH]; export LD_LIBRARY_PATH
+ TNS_ADMIN=/opt/oracle/product/12.2.0.1/dbhome_1/network/admin; export TNS_ADMIN
+ CLASSPATH=${ORACLE_HOME}/jdbc/lib/:${ORACLE_HOME}/jlib/; export CLASSPATH
+</code></pre>
+</li>
+</ol>
+<hr>
+<h3 id="b-upgrade-automation-engine">
+  B. Upgrade Automation Engine
+  <a class="heading-link" href="#b-upgrade-automation-engine">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>
+<p>Upgrade Automic Utility;</p>
+<p>a) Upgrade Automic Utility <code>bin</code> folder;</p>
+<pre><code> # cp -r /opt/ae/utility/bin_new/bin/* /opt/ae/utility/bin/
+</code></pre>
+<p>Check if all the files are owned by <code>autotask</code> user and <code>autotask</code> group.</p>
+<p>b) Check config files;<br>
+All config file will not be replaced when we upgraded Automic Utility bin folder. These <code>INI</code> files have OCI DB connection string defined and you should verify the following files;</p>
+<pre><code> AE.DB Archive: ucybdbar.ini
+ AE.DB Client Copy: ucybdbcc.ini
+ AE.DB Load: ucybdbld.ini
+ AE.DB Reorg: ucybdbre.ini
+ AE.DB Reporting Tool: ucybdbrt.ini
+ AE.DB Revision Report: ucybdbrr.ini
+ AE.DB Unload: ucybdbun.ini
+</code></pre>
+<p>The <code>UID</code> should be in all capital.</p>
+<p>c) Check <code>ucybdbar.sh</code> execute permission;</p>
+<pre><code> # ll ucybdbar.sh
+ -rwxr-xr-x 1 autotask autotask 27 Sep  5 12:55 ucybdbar.sh
+</code></pre>
+<p>If it does not have execute permission, set the permission;</p>
+<pre><code> # chmod +x ucybdbar.sh
+</code></pre>
+</li>
+<li>
+<p>Upgrade AE DB scheme;</p>
+<p>a) Upgrade <code>db</code> folder;</p>
+<pre><code> # cp -r /opt/ae/utility/db_new/* /opt/ae/utility/db/
+</code></pre>
+<p>Check if all the files are owned by <code>autotask</code> user and <code>autotask</code> group</p>
+<p>b) Start AE DB Load;</p>
+<pre><code> # cd /opt/ae/utility/bin
+ # ./ucybdbld -B -X/opt/ae/utility/db/general/12.3/UC_UPD.TXT
+
+ ========================================================
+ Starting C++ batch mode loader...
+ User account (user/domain) &lt;AUTOTASK/&gt;
+ Startup parameter &lt;-B -X/opt/ae/utility/db/general/12.3/UC_UPD.TXT &gt;
+ Application name &lt;./ucybdbld&gt;
+ Launch from &lt;/opt/ae/utility/bin/&gt;
+ LoadLibrary pointer = &lt;0x1b882d0&gt;
+ 20190905/134647.081 - U00033125 Operating System: &lt;UC4_ON_UNIX&gt;
+ 20190905/134647.081 - U00033125 Operating System: &lt;UC4_ON_UNIX_LINUX&gt;
+ 20190905/134647.081 - U00038002 DLL 'ucybdbld', version '12.3.0+build.1560517368775'. Start parameter: '-B -X/opt/ae/utility/db/general/12.3/UC_UPD.TXT ', (changelist '1560507727').
+ 20190905/134647.081 - U00038259 Build Date: '2019-06-14', '15:07:38'
+ 20190905/134647.092 - ----------------------------------------------------------------------------------------------------
+ 20190905/134647.092 - [GLOBAL]
+ 20190905/134647.092 - language  = (E,D)
+ 20190905/134647.092 - logging   = ../temp/ucybdbld_log_##.txt
+ 20190905/134647.092 - logcount  = 10
+ 20190905/134647.092 - helplib   = uc.msl
+ 20190905/134647.092 - helpcache = ALL
+ 20190905/134647.092 - docu_path = ../../Docu/uc4/webhelp
+ 20190905/134647.092 - input     = ../db/
+ …
+ …
+ 20190911/131253.733 - U00003532 UCUDB: Checking data source ...
+ 20190911/131257.706 - U00003533 UCUDB: Check of data source finished: No errors. Performance CPU/DB: '1842013'/'369 (1000/2.706869 s)'
+ 20190911/131257.706 - U00003544 UCUDB: Reference values tested with Windows 2003 on XEON 1500 MHz: CPU 813865, DB 470
+ 20190911/131257.706 - U00003525 UCUDB: ===&gt; ''
+ 20190911/131257.707 - U00038091 Change application directory to '../db/'.
+ 20190911/131257.707 - U00038042 DB-Version = 12.3/R
+ 20190911/131257.731 - U00038084 Processing completed. Caution: If you use two or more users, you have to renew the roles of the AE user (privileges) and the synonyms.
+ 20190911/131257.736 - U00003523 UCUDB: Maximum time required for a DB call: '4:047.702.000'.
+ 20190911/131257.736 - U00003522 UCUDB: Database closed. Total time for DB calls: '4:075.260.999' seconds.
+ 20190911/131257.736 - U00003549 UCUDB: '            2026' 'OTHERS    ' calls took '0:002.766.000' sec.
+ 20190911/131257.736 - U00003549 UCUDB: '               3' 'SELECT    ' calls took '0:008.211.000' sec.
+ 20190911/131257.736 - U00003549 UCUDB: '               5' 'EXECUTE   ' calls took '4:059.009.999' sec.
+ 20190911/131257.736 - U00003549 UCUDB: '               0' 'UPDATE    ' calls took '0:000.000.000' sec.
+ 20190911/131257.736 - U00003549 UCUDB: '               0' 'DELETE    ' calls took '0:000.000.000' sec.
+ 20190911/131257.736 - U00003549 UCUDB: '               0' 'INSERT    ' calls took '0:000.000.000' sec.
+ 20190911/131257.736 - U00003549 UCUDB: '               3' 'READ      ' calls took '0:000.047.999' sec.
+ 20190911/131257.736 - U00003549 UCUDB: '            3025' 'CLOSESTMT ' calls took '0:000.052.000' sec.
+ 20190911/131257.736 - U00003549 UCUDB: '            1014' 'TRANSACT  ' calls took '0:005.173.999' sec.
+ Application return code = 0
+</code></pre>
+<p>If <code>return code = 0</code>, then it means AE DB has been upgraded successfully.</p>
+<p>c) Load Rapid Automation to DB;</p>
+<pre><code> # java -jar ./ucybdbld.jar -B -X/opt/iso/Automic.Automation_12.3.0_HF1/Rapid.Automation/RA.FTP/FtpAgent_solution.jar
+
+ 20191106/120923.533 - U00038162 Loading file: '/opt/iso/Automic.Automation_12.3.0_HF1/Rapid.Automation/RA.FTP/FtpAgent_solution.jar'.
+ 20191106/120923.661 - U00038163 File '/opt/iso/Automic.Automation_12.3.0_HF1/Rapid.Automation/RA.FTP/FtpAgent_solution.jar' successfully loaded.
+ 20191106/120923.701 - U00038165 RA Solution loaded successfully.
+ 20191106/120923.701 - U00038272 Loading RA Plugins.
+ 20191106/120923.702 - U00038269 Version check result:
+ Version of the RA Plugins: '4.0.7'.
+ Version of database objects: '12.3.0+hf.1.build.1565956991091'.
+</code></pre>
+</li>
+<li>
+<p>Upgrade Automation Engine;</p>
+<p>a) Upgrade Automation Engine <code>bin</code> folder;</p>
+<pre><code> # cp -r /opt/ae/automationengine/bin_new/bin/* /opt/ae/automationengine/bin/
+</code></pre>
+<p>Check if all the files are owned by <code>autotask</code> user and <code>autotask</code> group.</p>
+<p>b) Check <code>CP</code> libraries;</p>
+<pre><code> # cd /opt/ae/automationengine/bin/
+ # ldd -r ucsrvcp &gt; wk.txt
+ # cat wk.txt
+ linux-vdso.so.1 =&gt;  (0x00007ffd88724000)
+ libzu00132.so =&gt; ./libzu00132.so (0x00007fe425490000)
+ libucmsgq.so =&gt; ./libucmsgq.so (0x00007fe425259000)
+ libucudb32.so =&gt; ./libucudb32.so (0x00007fe425008000)
+ libuccache.so =&gt; ./libuccache.so (0x00007fe424dfb000)
+ libsysapi.so =&gt; ./libsysapi.so (0x00007fe424bf6000)
+ libzusynchk.so =&gt; ./libzusynchk.so (0x00007fe4249e9000)
+ libuc001.so =&gt; ./libuc001.so (0x00007fe4247e4000)
+ libzugss.so =&gt; ./libzugss.so (0x00007fe4245cc000)
+ libzukms.so =&gt; ./libzukms.so (0x00007fe4243c6000)
+ libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x0000003167e00000)
+ libdl.so.2 =&gt; /lib64/libdl.so.2 (0x0000003167a00000)
+ libstdc++.so.6 =&gt; ./libstdc++.so.6 (0x00000031cfa00000)
+ libm.so.6 =&gt; /lib64/libm.so.6 (0x0000003168600000)
+ libgcc_s.so.1 =&gt; ./libgcc_s.so.1 (0x00000031cf600000)
+ libc.so.6 =&gt; /lib64/libc.so.6 (0x0000003167600000)
+ librt.so.1 =&gt; /lib64/librt.so.1 (0x0000003168200000)
+ /lib64/ld-linux-x86-64.so.2 (0x0000556b5c1be000)
+</code></pre>
+<p>c) Check <code>WP</code> libraries;</p>
+<pre><code> # cd /opt/ae/automationengine/bin/
+ # ldd -r ucsrvwp &gt; wk.txt
+ # cat wk.txt
+ linux-vdso.so.1 =&gt;  (0x00007ffccdf97000)
+ libucsj.so =&gt; ./libucsj.so (0x00007f4b61277000)
+ libucdsfun.so =&gt; ./libucdsfun.so (0x00007f4b60ec7000)
+ libucucc.so =&gt; ./libucucc.so (0x00007f4b60cb5000)
+ libucuhg.so =&gt; ./libucuhg.so (0x00007f4b60a8f000)
+ libucrtl.so =&gt; ./libucrtl.so (0x00007f4b60886000)
+ libzuxml.so =&gt; ./libzuxml.so (0x00007f4b60664000)
+ libucldap.so =&gt; ./libucldap.so (0x00007f4b60443000)
+ libucexith.so =&gt; ./libucexith.so (0x00007f4b6023f000)
+ libucuhsta.so =&gt; ./libucuhsta.so (0x00007f4b60032000)
+ libucsmtp.so =&gt; ./libucsmtp.so (0x00007f4b5fe28000)
+ libucumqa.so =&gt; ./libucumqa.so (0x00007f4b5fbb6000)
+ libucqert.so =&gt; ./libucqert.so (0x00007f4b5f99e000)
+ libucumulti.so =&gt; ./libucumulti.so (0x00007f4b5f798000)
+ libzu00132.so =&gt; ./libzu00132.so (0x00007f4b5f566000)
+ libucmsgq.so =&gt; ./libucmsgq.so (0x00007f4b5f330000)
+ libucudb32.so =&gt; ./libucudb32.so (0x00007f4b5f0df000)
+ libuccache.so =&gt; ./libuccache.so (0x00007f4b5eed1000)
+ libsysapi.so =&gt; ./libsysapi.so (0x00007f4b5eccd000)
+ libzusynchk.so =&gt; ./libzusynchk.so (0x00007f4b5eac0000)
+ libuc001.so =&gt; ./libuc001.so (0x00007f4b5e8ba000)
+ libzugss.so =&gt; ./libzugss.so (0x00007f4b5e6a3000)
+ libzukms.so =&gt; ./libzukms.so (0x00007f4b5e49d000)
+ libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x0000003167e00000)
+ libdl.so.2 =&gt; /lib64/libdl.so.2 (0x0000003167a00000)
+ libstdc++.so.6 =&gt; ./libstdc++.so.6 (0x00000031cfa00000)
+ libm.so.6 =&gt; /lib64/libm.so.6 (0x0000003168600000)
+ libgcc_s.so.1 =&gt; ./libgcc_s.so.1 (0x00000031cf600000)
+ libc.so.6 =&gt; /lib64/libc.so.6 (0x0000003167600000)
+ librt.so.1 =&gt; /lib64/librt.so.1 (0x0000003168200000)
+ /lib64/ld-linux-x86-64.so.2 (0x0000562aa7289000)
+</code></pre>
+<p>d) Check <code>DB</code> libraries;</p>
+<pre><code> # cd /opt/ae/automationengine/bin/
+ # ldd -r ucuoci.so &gt; wk.txt
+ # cat wk.txt
+ linux-vdso.so.1 =&gt;  (0x00007ffe7b5f1000)
+ libsysapi.so =&gt; ./libsysapi.so (0x00007f4c178e1000)
+ libzu00132.so =&gt; ./libzu00132.so (0x00007f4c176af000)
+ libuc001.so =&gt; ./libuc001.so (0x00007f4c174aa000)
+ libclntsh.so.12.1 =&gt; /opt/oracle/product/12.2.0.1/dbhome_1/lib/libclntsh.so.12.1 (0x00007f4c139f9000)
+ libdl.so.2 =&gt; /lib64/libdl.so.2 (0x00007f4c137e8000)
+ libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x00007f4c135cb000)
+ libstdc++.so.6 =&gt; ./libstdc++.so.6 (0x00007f4c133db000)
+ libm.so.6 =&gt; /lib64/libm.so.6 (0x00007f4c13156000)
+ libgcc_s.so.1 =&gt; ./libgcc_s.so.1 (0x00007f4c13049000)
+ libc.so.6 =&gt; /lib64/libc.so.6 (0x00007f4c12cb5000)
+ librt.so.1 =&gt; /lib64/librt.so.1 (0x00007f4c12aac000)
+ libmql1.so =&gt; /opt/oracle/product/12.2.0.1/dbhome_1/lib/libmql1.so (0x00007f4c12835000)
+ libipc1.so =&gt; /opt/oracle/product/12.2.0.1/dbhome_1/lib/libipc1.so (0x00007f4c123f9000)
+ libnnz12.so =&gt; /opt/oracle/product/12.2.0.1/dbhome_1/lib/libnnz12.so (0x00007f4c11cb0000)
+ libons.so =&gt; /opt/oracle/product/12.2.0.1/dbhome_1/lib/libons.so (0x00007f4c11a62000)
+ libnsl.so.1 =&gt; /lib64/libnsl.so.1 (0x00007f4c11848000)
+ libaio.so.1 =&gt; /lib64/libaio.so.1 (0x00007f4c11647000)
+ libresolv.so.2 =&gt; /lib64/libresolv.so.2 (0x00007f4c1142d000)
+ /lib64/ld-linux-x86-64.so.2 (0x000055b48bc43000)
+ libclntshcore.so.12.1 =&gt; /opt/oracle/product/12.2.0.1/dbhome_1/lib/libclntshcore.so.12.1 (0x00007f4c10e5e000)
+</code></pre>
+<p>e) Start a <code>CP</code>;</p>
+<pre><code> # cd /opt/ae/automationengine/bin/
+ # ./ucsrvcp &amp;
+
+ UC4 CP-Server Version 12.3.0+hf.1.build.1565007573762 (PID=57961)
+</code></pre>
+<p>Check if <code>CP</code> has started;</p>
+<pre><code> # ps -ef | grep ucsrvcp
+</code></pre>
+<p>Check log;</p>
+<pre><code> # cat /opt/ae/automationengine/temp/CPsrv_log_001_00.txt
+</code></pre>
+<p>f) Start a <code>WP</code>;</p>
+<pre><code> # cd /opt/ae/automationengine/bin/
+ # ./ucsrvwp &amp;
+
+ UC4 WP-Server Version 12.3.0+hf.1.build.1565007573762 (PID=58630)
+
+ # SERVER=AE#WP001
+ *** PRIMARY(AE#WP001) ***
+</code></pre>
+<p>Check if <code>WP</code> has started;</p>
+<pre><code> # ps -ef | grep ucsrvwp
+</code></pre>
+<p>Check log;</p>
+<pre><code> # cat /opt/ae/automationengine/temp/WPsrv_log_001_00.txt
+</code></pre>
+<p>g) Stop CP/WP processes;</p>
+<pre><code> # ps -ef | grep ucsrvcp
+ # kill pid
+
+ # ps -ef | grep ucsrvwp
+ # kill pid
+</code></pre>
+</li>
+<li>
+<p>Upgrade Service Manager;</p>
+<p>a) Upgrade Service Manager <code>bin</code> folder;</p>
+<pre><code> # cp -r /opt/ae/servicemanager/bin_new/bin/* /opt/ae/servicemanager/bin/
+</code></pre>
+<p>Check if all the files are owned by <code>autotask</code> user and <code>autotask</code> group.</p>
+<p>b) Start Service Manager;</p>
+<pre><code> # cd /opt/ae/servicemanager/bin/
+ # nohup ./ucybsmgr &amp;
+</code></pre>
+<p>Check if Service Manager has started;</p>
+<pre><code> # ps -ef | grep ucybsmgr
+</code></pre>
+<p>Check logs;</p>
+<pre><code> # cat /opt/ae/servicemanager/temp/SMgr_log_00.txt
+</code></pre>
+</li>
+<li>
+<p>Install JWP;</p>
+<p>a) Remove the following content so that AE <code>lib</code> and <code>plugins</code> folder are empty;</p>
+<pre><code> # rm /opt/ae/automationengine/bin/lib/*
+ # rm /opt/ae/automationengine/bin/plugins/*
+</code></pre>
+<p>b) Copy new content of <code>lib</code> and <code>plugins</code> to AE;</p>
+<pre><code> # cp /opt/ae/automationengine/bin_new/bin/lib/* /opt/ae/automationengine/bin/lib/
+</code></pre>
+<p>It will copy <code>org.eclipse.osgi.jar</code> file only.</p>
+<pre><code> # cp /opt/ae/automationengine/bin_new/bin/plugins/* /opt/ae/automationengine/bin/plugins/
+</code></pre>
+<p>c) Copy <code>xdb6.jar</code> and <code>xmlparserv2.jar</code> to the lib folder to ensure that XML variables can be processed correctly;</p>
+<pre><code> # cp /opt/oracle/product/12.2.0.1/dbhome_1/sqldeveloper/modules/oracle.xdk/xmlparserv2.jar /opt/ae/automationengine/bin/lib/
+ # cp /opt/oracle/product/12.2.0.1/dbhome_1/sqldeveloper/rdbms/jlib/xdb6.jar /opt/ae/automationengine/bin/lib/
+</code></pre>
+<p>d) Copy <code>ojdbc8.jar</code> from Oracle to AE <code>lib</code> folder;</p>
+<pre><code> # cp /opt/oracle/product/12.2.0.1/dbhome_1/jdbc/lib/ojdbc8.jar /opt/ae/automationengine/bin/lib/
+</code></pre>
+<p>e)	Install LDAP certificate if you want <code>OUD/LDAP</code> for authentication;</p>
+<p>By default, JWP uses Java keystore <code>cacerts</code>. To directly install LDAP certificate;</p>
+<pre><code> # telnet ldap.example.com 636
+ # cd $JAVA_HOME/jre/lib/security/
+ # cp cacerts cacerts.backup
+ # cd /opt/ae/automationengine/bin/
+ # java -jar ucsrvjp.jar -installcert ldap.example.com:636
+
+ Loading KeyStore /$JAVA_HOME/jre/lib/security/cacerts...
+ Opening connection to ldap.example.com:636...
+ Starting SSL handshake...
+
+ No errors, certificate installed.
+</code></pre>
+<p>Verifiy that the certificate has installed correctly;</p>
+<pre><code> # keytool -list -v -keystore $JAVA_HOME/jre/lib/security/cacerts -alias &quot;ldap&quot; | more
+</code></pre>
+<p>You may also need to install the intermediate certificate if it is missing in <code>cacerts</code>.</p>
+<p>If you prefer to create a new keystore and use it for JWP, do the following;</p>
+<pre><code> # cd /opt/ae/automationengine/bin/
+ # java -jar ucsrvjp.jar -installcert ldap.example.com:636 /opt/ae/automationengine/bin/ssl_certs/ldap.jks
+</code></pre>
+<p>f) Configure the Database;</p>
+<p>If you prefer to use <code>Oracle OCI</code>, configure AE as following;</p>
+<pre><code> # vi /opt/ae/automationengine/bin/ucsrv.ini
+
+ [OCI]
+ SQLDRIVERCONNECT=ODBCVAR=NNJNNORO,DSN=DB_NAME;UID=;PWD=;SP=NLS_LANGUAGE=AMERICAN,NLS_TERRITORY=AMERICA,CODESET=
+</code></pre>
+<p>If you prefer to use <code>JDBC</code>, configure AE as following;</p>
+<pre><code> [JDBC]
+ SQLDRIVERCONNECT=jdbc:oracle:thin:@AE_DB_SERVER_IP:1521/DB_NAME
+</code></pre>
+<p>g) Start JWP</p>
+<pre><code> # cd /opt/ae/automationengine/bin
+ # java -Xmx512M -jar ucsrvjp.jar
+
+ UC4 AE#WP-Server Version 12.3.0+hf.1.build.1565696063450 (PID=64826)
+
+ # ps -ef | grep -i ucsrvjp
+</code></pre>
+<p>JWP will use the last WP as worker process.</p>
+<p>Check logs;</p>
+<pre><code> # cat /opt/ae/automationengine/temp/WPsrv_log_002_00.txt
+</code></pre>
+<p>h) Add JWP to Service Manager;</p>
+<p>Add the following to <code>uc4.smd</code> of Service Manager;</p>
+<pre><code> # vi /opt/ae/servicemanager/bin/uc4.smd
+
+ ! JWP
+ DEFINE UC4 JWP1;java -jar -Xrs -Xmx512M /opt/ae/automationengine/bin/ucsrvjp.jar -i/opt/ae/automationengine/bin/ucsrv.ini -svc%port%;/opt/ae/automationengine/bin
+</code></pre>
+<p>Add the following to <code>uc4.smc</code> of Service Manager;</p>
+<pre><code> # vi /opt/ae/servicemanager/uc4.smc
+
+ WAIT 10
+ CREATE UC4 WP2
+</code></pre>
+<p>i) Restart Service Manager and check if JWP can be start/stop from Service Manager Dialogue.</p>
+</li>
+<li>
+<p>Install JCP;</p>
+<p>a) If you want to use HTTPS for JCP, create a keystore for <code>*.example.com</code> and rename the alias to <code>jetty</code>;</p>
+<pre><code> # cd $JAVA_HOME/jre/lib/security/
+ # openssl pkcs12 -inkey example.com.key -in example.com.crt -export -out jcp.pkcs12
+ # keytool -importkeystore -srckeystore jcp.pkcs12 -srcstoretype PKCS12 -destkeystore jcp.jks 
+ # keytool -changealias -alias 1 -destalias jetty -keystore jcp.jks
+ # cp jcp.jks /opt/ae/automationengine/bin/ssl_certs/
+</code></pre>
+<p>Now add the following to <code>ucsrv.ini</code>;</p>
+<pre><code> # vi /opt/ae/automationengine/bin/ucsrv.ini
+
+ [REST]
+ port=8443
+ sslEnabled=1
+ keystore=/opt/ae/automationengine/bin/ssl_certs/jcp.jks
+ keystorePassword=
+ keyPassword=
+ parallelDbConnections=5
+</code></pre>
+<p>But if you want to use HTTP for JCP, configure as following;</p>
+<pre><code> # vi /opt/ae/automationengine/bin/ucsrv.ini
+
+ [REST]
+ port=8088
+ sslEnabled=0
+ keystore=
+ keystorePassword=
+ keyPassword=
+ parallelDbConnections=5
+</code></pre>
+<p>b) Add JCP to Service Manager;</p>
+<p>Add the following to <code>uc4.smd</code> in Service Manager;</p>
+<pre><code> # vi /opt/ae/servicemanager/bin/uc4.smd
+
+ ! JCP
+ DEFINE UC4 JCP1;java -jar -Xrs -Xmx512M /opt/ae/automationengine/bin/ucsrvjp.jar -i/opt/ae/automationengine/bin/ucsrv.ini -svc%port% -rest;/opt/ae/automationengine/bin
+</code></pre>
+<p>Add the following to <code>uc4.smc</code> in Service Manager;</p>
+<pre><code> # vi /opt/ae/servicemanager/bin/uc4.smc
+
+ WAIT 10
+ CREATE UC4 JCP1
+</code></pre>
+<p>c) Restart Service Manager and check if JCP can be start/stop from Service Manager Dialogue.</p>
+<p>d) Check logs;</p>
+<pre><code> # cat /opt/ae/automationengine/temp/CPsrv_log_002_00.txt
+</code></pre>
+<p>JCP will use the last CP as communication process.</p>
+</li>
+<li>
+<p>Install CAPKI;</p>
+<p>a) Install CAPKI;</p>
+<p>Go to <a href="https://downloads.automic.com/downloads/component_downloads">https://downloads.automic.com/downloads/component_downloads</a> and search for <code>capki</code>. Download it and then run the <code>setup</code> script as <code>root</code>;</p>
+<pre><code> # cd /opt/ae/capki/
+ # ./setup install caller=AE123 veryverbose env=all instdir=/opt/ae/capki/
+</code></pre>
+<p>If <code>return code = 0</code>, it means CAPKI has installed successfully.</p>
+<p>b) Check the environmental variable;</p>
+<pre><code> # echo $CALIB
+ /opt/ae/capki/lib
+
+ # echo $CABIN
+ /opt/ae/capki/bin
+
+ # echo $CASHCOMP
+ /opt/ae/capki
+</code></pre>
+<p>If any of the variable returns <code>NULL</code>, logout from the current SSH session and log back in.</p>
+<p>c) Check certificate;</p>
+<p>When CAPKI is installed, it will create a self-signed certificate. The certificate and key will be stored in the following location;</p>
+<p>Cert: /opt/ae/automationengine/bin/ucsrv_certificate.pem<br>
+Key: /opt/ae/automationengine/bin/ucsrv_key.pem</p>
+<p>Check <code>ucsrv.ini</code> file to see if CAPKI is configured correctly;</p>
+<pre><code> # vi /opt/ae/automationengine/bin/ucsrv.ini
+
+ certificate=/opt/ae/automationengine/bin/ucsrv_certificate.pem
+ key=/opt/ae/automationengine/bin/ucsrv_key.pem
+</code></pre>
+<p>d) Restart Service Manager and then use Service Manager Dialogue to connect to the server. Now the connection between Service Manager Dialogue running in your machine and server&rsquo;s Service Manager will use TLS1.2 for communication.</p>
+<p>e) You also need to install CAPKI in your machine from where you are running the Service Manager Dialogue. To install CAPKI in your machine, run the following;</p>
+<pre><code> PS &gt; .\setup.exe install caller=AE123
+</code></pre>
+</li>
+</ol>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2023
+     John De 
+    ·
+    
+    Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

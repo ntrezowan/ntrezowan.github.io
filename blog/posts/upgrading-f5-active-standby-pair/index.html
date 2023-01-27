@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+  Upgrading F5 Active-Standby Pair · johndoeyo
+</title>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="John De">
+<meta name="description" content="Environment Link to heading F5 Active Server = f51.example.com
+F5 Standby Server = f52.example.com
+A. Preparation before upgrade (applied to both active/standby) Link to heading Check current software version of F5;
+Run the following; # tmsh show /sys software status -------------------------------------------------- Sys::Software Status Volume Product Version Build Active Status -------------------------------------------------- HD1.1 BIG-IP 12.1.3.4 0.0.2 no complete HD1.2 BIG-IP 13.1.0.7 0.0.1 no complete HD1.3 BIG-IP 13.1.1.3 0.0.1 yes complete From the output, look for the partition which is Active and then you will find the Version.">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Upgrading F5 Active-Standby Pair"/>
+<meta name="twitter:description" content="Environment Link to heading F5 Active Server = f51.example.com
+F5 Standby Server = f52.example.com
+A. Preparation before upgrade (applied to both active/standby) Link to heading Check current software version of F5;
+Run the following; # tmsh show /sys software status -------------------------------------------------- Sys::Software Status Volume Product Version Build Active Status -------------------------------------------------- HD1.1 BIG-IP 12.1.3.4 0.0.2 no complete HD1.2 BIG-IP 13.1.0.7 0.0.1 no complete HD1.3 BIG-IP 13.1.1.3 0.0.1 yes complete From the output, look for the partition which is Active and then you will find the Version."/>
+
+<meta property="og:title" content="Upgrading F5 Active-Standby Pair" />
+<meta property="og:description" content="Environment Link to heading F5 Active Server = f51.example.com
+F5 Standby Server = f52.example.com
+A. Preparation before upgrade (applied to both active/standby) Link to heading Check current software version of F5;
+Run the following; # tmsh show /sys software status -------------------------------------------------- Sys::Software Status Volume Product Version Build Active Status -------------------------------------------------- HD1.1 BIG-IP 12.1.3.4 0.0.2 no complete HD1.2 BIG-IP 13.1.0.7 0.0.1 no complete HD1.3 BIG-IP 13.1.1.3 0.0.1 yes complete From the output, look for the partition which is Active and then you will find the Version." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.example.com/posts/upgrading-f5-active-standby-pair/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-06-06T01:18:37-05:00" />
+<meta property="article:modified_time" content="2018-06-06T01:18:37-05:00" />
+
+
+
+
+<link rel="canonical" href="http://www.example.com/posts/upgrading-f5-active-standby-pair/">
+
+
+<link rel="preload" href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.36f76aaf39a14ecf5c3a3c6250dcaf06c238b3d8365d17d646f95cb1874e852b.css" integrity="sha256-NvdqrzmhTs9cOjxiUNyvBsI4s9g2XRfWRvlcsYdOhSs=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.593028e7f7ac55c003b79c230d1cd411bb4ca53b31556c3abb7f027170e646e9.css" integrity="sha256-WTAo5/esVcADt5wjDRzUEbtMpTsxVWw6u38CcXDmRuk=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<meta name="generator" content="Hugo 0.110.0">
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">
+      johndoeyo
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/posts/">Blog</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.example.com/posts/upgrading-f5-active-standby-pair/">
+              Upgrading F5 Active-Standby Pair
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              <time datetime="2018-06-06T01:18:37-05:00">
+                Jun 6, 2018
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              19-minute read
+            </span>
+          </div>
+          
+          
+          
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <h3 id="environment">
+  Environment
+  <a class="heading-link" href="#environment">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>F5 Active Server = f51.example.com<br>
+F5 Standby Server = f52.example.com</p>
+<hr>
+<h3 id="a-preparation-before-upgrade-applied-to-both-activestandby">
+  A. Preparation before upgrade (applied to both active/standby)
+  <a class="heading-link" href="#a-preparation-before-upgrade-applied-to-both-activestandby">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Check current software version of F5;<br>
+Run the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tmsh show /sys software status  
+</span></span><span style="display:flex;"><span>--------------------------------------------------
+</span></span><span style="display:flex;"><span>Sys::Software Status
+</span></span><span style="display:flex;"><span>Volume  Product   Version  Build  Active    Status
+</span></span><span style="display:flex;"><span>--------------------------------------------------
+</span></span><span style="display:flex;"><span>HD1.1    BIG-IP  12.1.3.4  0.0.2      no  complete
+</span></span><span style="display:flex;"><span>HD1.2    BIG-IP  13.1.0.7  0.0.1      no  complete
+</span></span><span style="display:flex;"><span>HD1.3    BIG-IP  13.1.1.3  0.0.1      yes complete
+</span></span></code></pre></div><p>From the output, look for the partition which is Active and then you will find the <code>Version</code>. Here the version is <code>13.1.1.3</code>.
+2. Verify license and renew if necessary;<br>
+BIG-IP license is stored at <code>/config/bigip.license</code> and it has two dates; <code>Licensed date</code> and <code>Service check date</code>.<!-- raw HTML omitted --><!-- raw HTML omitted -->
+<code>Licensed date</code> will show the date when you used your Registration Key for the first time to license your BIG-IP system. To find <code>Licensed date</code>, run the following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># grep &#34;Licensed date&#34; /config/bigip.license
+</span></span><span style="display:flex;"><span>Licensed date :                    20180601
+</span></span></code></pre></div><p><code>Service Check Date</code> is the date when you last reactivated your license and it gets updated every time you reactivate your license (assuming that there is an active service contract with F5 for this BIG-IP system). For example, if you have reactivate your license on June 30, 2018 then it will show as 20180630. To find <code>Service Check Date</code>, run the following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># grep &#34;Service check date&#34; /config/bigip.license
+</span></span><span style="display:flex;"><span>Service check date :               20171013
+</span></span></code></pre></div><p>There is another interesting date called <code>License Check Date</code> and this date is related with the software version of BIG-IP. For example, Version <code>12.1.0-12.1.3</code> has a <code>License Check Date</code> 2016-03-2018. The <code>License Check Date</code> enforcement is applied during system startup. The system compares the <code>License Check Date</code> with the <code>Service Check Date</code> exists in the license file. If the <code>Service Check Date</code> is earlier than the <code>License Check Date</code>, the system will initialize but will not load the configuration. To allow the configuration to load properly, you must update the <code>Service Check Date</code> in the <code>bigip.license</code> file by reactivating the system&rsquo;s license. To find the <code>License Check Date</code> for the version you planned to upgrade, visit <a href="https://support.f5.com/csp/article/K7727">https://support.f5.com/csp/article/K7727</a>. For example, if you plan to upgrade to version <code>13.1.0-13.1.1</code>, then <code>License Check Date</code> is 20170912.<!-- raw HTML omitted --><!-- raw HTML omitted -->
+Now by comparing <code>Service check date</code> with <code>License Check Date</code>, we see that 20171013 &gt; 20170912 which means you do not need to reactive the license before upgrade. But it is always a good practice to reactivate your license everytime you upgrade the F5 because it extends your <code>Service check date</code> in the license file.<!-- raw HTML omitted --><!-- raw HTML omitted -->
+If <code>Service Check Date</code> &lt; <code>License Check Date</code>, do the following to reactivate the license before upgrade;<br>
+a) Log in to the Configuration utility<br>
+b) Navigate to System &gt; License &gt; Reactivate<br>
+c) Select either Automatic (if F5 can reach internet) or Manual (if F5 cannot reach internet)<br>
+d) Click Next and it will be reactivated</p>
+<ol start="3">
+<li>
+<p>Check device certificate and renew if necessary;<br>
+To check the device certificate, do the following;<br>
+a) Log in to the Configuration utility<br>
+b) Navigate to System &gt; Certificate Management &gt; Device Certificate Management &gt; Device Certificate<!-- raw HTML omitted --><!-- raw HTML omitted -->
+If you need to renew device certificate, do the following;<br>
+a) Log in to the Configuration utility<br>
+b) Navigate to System &gt; Certificate Management &gt; Device Certificate Management &gt; Device Certificate<br>
+c) Click Import and choose Certificate and Key as Import Type<br>
+d) Choose both certificate and key<br>
+e) Click Import</p>
+</li>
+<li>
+<p>Do a ConfigSync to sync configuration on both units;<br>
+It is always a better to do a config sync before the upgrade and this way both units will have the latest configuration.<!-- raw HTML omitted --><!-- raw HTML omitted -->
+To do a config sync, do the following;<br>
+a) Log in to the Configuration utility<br>
+b) Navigate to Device Management &gt; Overview<br>
+c) For Device Groups, click the name of the device group (device-group-a-failover) you want to synchronize<br>
+d) For Devices, click the name of the device from which you want to perform the synchronization action<br>
+e) For Sync, click the appropriate synchronization action<br>
+f) Click Sync</p>
+</li>
+<li>
+<p>Generate a qkview and check for Upgrade Advisor in iHealth;<br>
+iHealth reports can be used to find if there is any issue if we upgrade F5 units from one version to another. To generate a qkview, do the following;<br>
+a) Log in to the Configuration utility<br>
+b) Navigate to System &gt; Support<br>
+c) Click New Support Snapshot<br>
+d) For Health Utility, click Generate QKView<br>
+e) Click Start<br>
+f) To download the output file, click Download<!-- raw HTML omitted --><!-- raw HTML omitted -->
+After download the file from F5, upload it to <a href="https://ihealth.f5.com/">https://ihealth.f5.com/</a> and then go to <code>Upgrade Advisor</code> and select the version to which you want to upgrade your units. Then check the recommended feedback.<!-- raw HTML omitted --><!-- raw HTML omitted -->
+For example, here is one advise that iHealth provided when we are upgrading from <code>12.1.3.4</code> to <code>13.1.1.3</code>;<br>
+TMOS vulnerability: Password changes for local users may not be preserved unless the configuration is explicitly saved (K37250780).</p>
+</li>
+<li>
+<p>Create a backup of the config file;<br>
+It is always good to have a backup of the config file before upgrade. This way, we can quickly restore F5 to previous stable state if there is any issues during upgrade.<!-- raw HTML omitted --><!-- raw HTML omitted -->
+To create UCS file, do the following;
+a) Log in to the Configuration utility<br>
+b) Navigate to System &gt; Archives<br>
+c) To initiate the process of creating a new UCS archive, click Create<br>
+d) In the File Name box, type a name for the file<br>
+e) To create the UCS archive file, click Finished<br>
+f) When the system completes the backup process, examine the status page for any reported errors before proceeding to the next step<br>
+g) To return to the Archive List page, click OK<br>
+h) Copy the .ucs file to a secure file system (i.e. to a shared NFS)</p>
+</li>
+<li>
+<p>Verify volume formatting scheme;<br>
+Run the following to check if Big-IP system is using volume formatting system or partition formatting system;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># lvscan
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/dat.maint.1&#39; [300.00 MiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/dat.share.1&#39; [20.00 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/dat.log.1&#39; [500.00 MiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/dat.swapvol.1&#39; [1000.00 MiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.1.root&#39; [440.00 MiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.1._usr&#39; [3.29 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.1._config&#39; [3.17 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.1._var&#39; [3.00 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.2.root&#39; [440.00 MiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.2._usr&#39; [4.01 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.2._config&#39; [3.17 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.2._var&#39; [3.00 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/app.ASWADB.set.2.mysqldb&#39; [12.00 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/app.avr.dat.avrdata&#39; [3.81 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/app.afm.dat.afmdata&#39; [3.81 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/app.asm.dat.asmdata1&#39; [4.05 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.3.root&#39; [440.00 MiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.3._usr&#39; [4.01 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.3._config&#39; [3.17 GiB] inherit
+</span></span><span style="display:flex;"><span>  ACTIVE            &#39;/dev/vg-db-sda/set.3._var&#39; [3.00 GiB] inherit
+</span></span></code></pre></div><p>If it returns no volume scheme, then it means Big-IP is using partition formatting scheme.</p>
+<ol start="8">
+<li>Import the software/hotfix image;<br>
+To import a software/hotfix image, do the following;<br>
+a) Log in to the Configuration utility with administrative privileges<br>
+b) To upload the necessary ISO files, navigate to System &gt; Software Management<br>
+c) Click Import<br>
+d) Click Browse to select the SIG file (BIGIP-xx.xxx.iso.xxx.sig). This is a SHA384 signed digest<br>
+e) Click Import again<br>
+f) Click Browse to select the ISO file (BIGIP-xx.x.x.x.x.xxxx.iso)<br>
+g) Click Import<br>
+h) Click Import again<br>
+i) Click Browse to select the pem file (archive.pubkey.xxxxxxxxx.pem). Download 3072 bit one since the SIG is using 3072 bit RSA public key<br>
+j) Click Import<br>
+k) After uploading the image, it will be listed under software image list<br>
+l) Verify that all the files are under /shared/images;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>ls -ltr /shared/images
+</span></span><span style="display:flex;"><span>total 7048744
+</span></span><span style="display:flex;"><span>-rw-r--r--. 1 tomcat tomcat 1938057216 2018-06-15 10:30 BIGIP-13.1.0.7-0.0.1.iso
+</span></span><span style="display:flex;"><span>-rw-r--r--. 1 tomcat tomcat 2009556992 2018-06-15 13:01 BIGIP-12.1.3.4-0.0.2.iso
+</span></span><span style="display:flex;"><span>-rw-r--r--. 1 tomcat tomcat 2057873408 2019-01-15 11:18 BIGIP-13.1.1.3-0.0.1.iso
+</span></span><span style="display:flex;"><span>-rw-r--r--. 1 tomcat tomcat        384 2019-01-15 11:23 BIGIP-13.1.1.3-0.0.1.iso.384.sig
+</span></span><span style="display:flex;"><span>-rw-r--r--. 1 tomcat tomcat        625 2019-01-15 11:28 archive.pubkey.20160210.pem
+</span></span></code></pre></div><pre><code>m) Verify the SIG;  
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># openssl dgst -sha384 -verify /shared/images/archive.pubkey.20160210.pem -signature /shared/images/BIGIP-13.1.1.3-0.0.1.iso.384.sig /shared/images/BIGIP-13.1.1.3-0.0.1.iso
+</span></span><span style="display:flex;"><span>Verified OK
+</span></span></code></pre></div><ol start="9">
+<li>Verify root login to shell is possible;<br>
+In situation during the upgrade, F5 might not be able to access ADFS/LDAP and so your user/pass might not work. Check if you have a root account and if you can SSH to it by running the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>ssh root@f51.example.com
+</span></span><span style="display:flex;"><span>ssh root@f52.example.com
+</span></span></code></pre></div><ol start="10">
+<li>Verify admin login to GUI is possible;<br>
+In situation during the upgrade, F5 might not be able to access ADFS/LDAP and so your user/pass might not work. Check if you have a admin account and if you can login to GUI using the admin account;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>https://f51.example.com
+</span></span><span style="display:flex;"><span>https://f52.example.com
+</span></span></code></pre></div><hr>
+<h3 id="b-check-running-configuration-applied-to-both-activestandby-and-disable-auto-failback">
+  B. Check running configuration (applied to both active/standby) and disable Auto-Failback
+  <a class="heading-link" href="#b-check-running-configuration-applied-to-both-activestandby-and-disable-auto-failback">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Check running configuration integrity;<br>
+If there is an issue in the running configuration, then it will give error when F5 reboots first time after the upgrade. Check if there is any error in the configuration file by running the following command;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tmsh load /sys config verify
+</span></span><span style="display:flex;"><span>Validating system configuration...
+</span></span><span style="display:flex;"><span>  /defaults/asm_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/config_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/ipfix_ie_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/ipfix_ie_f5base.conf
+</span></span><span style="display:flex;"><span>  /defaults/low_profile_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/low_security_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/policy_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/wam_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/analytics_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/apm_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/apm_saml_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/app_template_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/classification_base.conf
+</span></span><span style="display:flex;"><span>  /var/libdata/dpi/conf/classification_update.conf
+</span></span><span style="display:flex;"><span>  /defaults/urlcat_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/daemon.conf
+</span></span><span style="display:flex;"><span>  /defaults/pem_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/profile_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/sandbox_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/security_base.conf
+</span></span><span style="display:flex;"><span>  /defaults/urldb_base.conf
+</span></span><span style="display:flex;"><span>  /usr/share/monitors/base_monitors.conf
+</span></span><span style="display:flex;"><span>Validating configuration...
+</span></span><span style="display:flex;"><span>  /config/bigip_base.conf
+</span></span><span style="display:flex;"><span>  /config/bigip_user.conf
+</span></span><span style="display:flex;"><span>  /config/bigip.conf
+</span></span><span style="display:flex;"><span>  /config/bigip_script.conf
+</span></span><span style="display:flex;"><span>  /config/partitions/Sandbox/bigip.conf
+</span></span><span style="display:flex;"><span>There were warnings:
+</span></span><span style="display:flex;"><span>SSLv2 is no longer supported and has been removed. The &#39;sslv2&#39; keyword in the cipher string of the ssl profile (/Common/clientssl-test) has been ignored.
+</span></span><span style="display:flex;"><span>SSLv2 is no longer supported and has been removed. The &#39;sslv2&#39; keyword in the cipher string of the ssl profile (/Common/serverssl-test) has been ignored.
+</span></span></code></pre></div><p>Fix the issues before you go forward with upgrading F5. <code>WARNING</code> can be ignored but not suggested.</p>
+<ol start="2">
+<li>Turn off Auto-Failback;<br>
+To turn off Auto-Failback on both F5 before upgrade to prevent active-active condition, do the following in v13 or above;<br>
+a) On the Main menu, Click Device Management &gt; Traffic Group &gt; traffic-group-1<br>
+b) Uncheck &ldquo;Always Failback to First Device if it is Available&rdquo;<br>
+c) Click Save<br>
+d) Do a config sync<!-- raw HTML omitted --><!-- raw HTML omitted -->
+Do the following to turn off Auto-Failback in v12 or below;<br>
+a) On the Main menu, Click Device Management &gt; Traffic Groups<br>
+b) Select traffic-group-1<br>
+c) Select Advanced from Configuration<br>
+d) Uncheck Auto Failover<br>
+e) Click Update</li>
+</ol>
+<hr>
+<h3 id="c-open-a-proactive-service-request-with-f5-technical-support">
+  C. Open a proactive service request with F5 Technical Support
+  <a class="heading-link" href="#c-open-a-proactive-service-request-with-f5-technical-support">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Proactive service requests provide F5 Technical Support advance notice of your maintenance window to save time in case a problem arises that requires F5 Technical Support assistance. Here is more on this;
+<a href="https://support.f5.com/csp/article/K16022">https://support.f5.com/csp/article/K16022</a></p>
+<hr>
+<p>&mdash;DO-NOT-CONFIG-SYNC-UNTIL-SECTION-D-IS-COMPLETED&mdash;</p>
+<h3 id="d-upgrading-the-units">
+  D. Upgrading the units
+  <a class="heading-link" href="#d-upgrading-the-units">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<h4 id="upgrade-f52examplecom-standby-unit-first">
+  Upgrade F52.example.com (standby unit first)
+  <a class="heading-link" href="#upgrade-f52examplecom-standby-unit-first">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<ol>
+<li>
+<p>Force <code>F52</code> to offline state;<br>
+a) On the Main menu, click Device Management &gt; Devices<br>
+b) Click the name of <code>F52</code><br>
+c) Click Force Offline<br>
+d) <code>F52</code> changes to offline state<!-- raw HTML omitted --><!-- raw HTML omitted -->
+Once <code>F52</code> changes to offline state, ensure that traffic passes normally for all active traffic groups on the other devices.</p>
+</li>
+<li>
+<p>Restart mcpd and then reboot. This will force F5 to recompile the configuration and load it into memory;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># touch /service/mcpd/forceload
+</span></span><span style="display:flex;"><span># reboot
+</span></span></code></pre></div><p>Check logs to see if there is any <code>ERROR</code> or <code>WARNING</code>;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tail -f/var/log/liveinstall.log
+</span></span><span style="display:flex;"><span># tail -f /var/log/ltm | egrep “err|warn”
+</span></span><span style="display:flex;"><span># egrep &#39;err|warn&#39; /var/log/ltm
+</span></span></code></pre></div><ol start="3">
+<li>
+<p>Install the new version software;<br>
+a) Log in to the Configuration utility with administrative privileges<br>
+b) Navigate to System &gt; Software Management &gt; Image List<br>
+c) Select the Software Image and click Install. A new window will pop up called Install Software Image<br>
+d) Select an available disk from the Select Disk menu. Here HD1 is an LVM disk<br>
+e) Select an empty volume set from the Volume Set Name menu, or type a new volume set name. Volumes are named as HD1.1, HD1.2, HD1.3 etc, so to create a new volume, type “3” and it will create HD1.3 and install the image there<br>
+f) Click Install<br>
+g) To see the installation progress, view the Install Status column of the Installed Images section of the page</p>
+</li>
+<li>
+<p>Reboot to the newly upgraded software volume;<br>
+a) Log in to the Configuration utility with administrative privileges<br>
+b) Navigate to System &gt; Software Management &gt; Boot Locations<br>
+c) If you select Install Configuration to Yes, it will ask from where you want to copy the configuration from. Choose the latest one. If there have been no changes since you performed the upgrade and /or make any changes in the configuration and syncs, you do not need to set the Install Configuration option to Yes when activating the new volume. But if you make any changes, it’s better to select Yes when activating the new volume<br>
+d) Click the boot location containing the newly upgraded software volume<br>
+e) To restart the system to the specified boot location, click Activate<br>
+f) To close the confirmation message, click OK. At this point, BIG-IP will reboots automatically</p>
+</li>
+<li>
+<p>Check which boot location is loaded after reboot;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># watch tmsh show sys software
+</span></span></code></pre></div><ol start="6">
+<li>Check if installation fails;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tail -f/var/log/liveinstall.log
+</span></span></code></pre></div><ol start="7">
+<li>Check LTM logs;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tail -f /var/log/ltm
+</span></span></code></pre></div><ol start="8">
+<li>
+<p>Check <code>F52</code> version after reboot;<br>
+a) Go to System &gt; Configuration &gt; Device &gt; General<br>
+b) Check the version</p>
+</li>
+<li>
+<p>Bring <code>F52</code> to Standby state;<br>
+a) Release Device <code>F52</code> from offline state<br>
+b) On the Main menu, click Device Management &gt; Devices<br>
+c) Click the name of Device <code>F52</code><br>
+d) Click Release Offline<br>
+e) <code>F52</code> changes to standby state<!-- raw HTML omitted --><!-- raw HTML omitted -->
+The new version of BIG-IP software is installed on <code>F52</code>, with all traffic groups in standby state.</p>
+</li>
+</ol>
+<h4 id="make-f52examplecom-the-active-load-balancer">
+  Make F52.example.com the active load balancer
+  <a class="heading-link" href="#make-f52examplecom-the-active-load-balancer">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<ol>
+<li>
+<p>Force <code>F51</code> to standby state;<br>
+a) Login to <code>F51</code><br>
+b) On the Main menu, click Device Management &gt; Devices<br>
+c) Click the name of <code>F51</code><br>
+d) Click Force to Standby<br>
+e) <code>F51</code> changes to standby state<!-- raw HTML omitted --><!-- raw HTML omitted -->
+Once <code>F51</code> changes to offline state, ensure that traffic passes normally for all active traffic groups on <code>F52</code>.</p>
+</li>
+<li>
+<p>Verify that <code>F52</code> is the active load balancer</p>
+</li>
+<li>
+<p>Verify expected objects appear in the shared and non-shared portions of the configuration;<br>
+a) To verify that the expected objects appear in the shared and non-shared portions of the configuration, navigate to Local Traffic &gt; Pools<br>
+Confirm that the expected objects are present and compare with <code>F51</code><br>
+b) Navigate to Network &gt; VLANs<br>
+Confirm that the expected objects are present and compare with <code>F51</code><br>
+c) Go to iApps, open a VIP and go to Reconfigure to see if everything is loading properly</p>
+</li>
+<li>
+<p>Check the most recent logs (/var/log/ltm for example) for obvious signs of issues like repeating messages. Comparing logs to the active unit or to the logs prior to the upgrade can be helpful</p>
+</li>
+<li>
+<p>Check SSL with SSLLabs</p>
+</li>
+<li>
+<p>Generate a qkview and review it in the iHealth Diagnostics section for currently known issues</p>
+</li>
+<li>
+<p>Contact teams to begin application testing. If testing successes, processed with upgrading <code>F51</code>. Otherwise check “Backing out software upgrade” section</p>
+</li>
+</ol>
+<h4 id="upgrade-f51examplecom">
+  Upgrade F51.example.com
+  <a class="heading-link" href="#upgrade-f51examplecom">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<ol>
+<li>
+<p>Force <code>F51</code> to offline state;<br>
+a) On the Main menu, click Device Management &gt; Devices<br>
+b) Click the name of <code>F51</code><br>
+c) Click Force Offline<br>
+d) <code>F51</code> changes to offline state<!-- raw HTML omitted --><!-- raw HTML omitted -->
+Once <code>F51</code> changes to offline state, ensure that traffic passes normally for all active traffic groups on the other devices.</p>
+</li>
+<li>
+<p>Restart mcpd and then reboot. This will force F5 to recompile the configuration and load it into memory;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># touch /service/mcpd/forceload
+</span></span><span style="display:flex;"><span># reboot
+</span></span></code></pre></div><p>Check logs to see if there is any <code>ERROR</code> or <code>WARNING</code>;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tail -f/var/log/liveinstall.log
+</span></span><span style="display:flex;"><span># tail -f /var/log/ltm | egrep “err|warn”
+</span></span><span style="display:flex;"><span># egrep &#39;err|warn&#39; /var/log/ltm
+</span></span></code></pre></div><ol start="3">
+<li>
+<p>Install the new version software;<br>
+a) Log in to the Configuration utility with administrative privileges<br>
+b) Navigate to System &gt; Software Management &gt; Image List<br>
+c) Select the Software Image and click Install. A new window will pop up called Install Software Image<br>
+d) Select an available disk from the Select Disk menu. Here HD1 is an LVM disk<br>
+e) Select an empty volume set from the Volume Set Name menu, or type a new volume set name. Volumes are named as HD1.1, HD1.2, HD1.3 etc, so to create a new volume, type “3” and it will create HD1.3 and install the image there<br>
+f) Click Install<br>
+g) To see the installation progress, view the Install Status column of the Installed Images section of the page</p>
+</li>
+<li>
+<p>Reboot to the newly upgraded software volume;<br>
+a) Log in to the Configuration utility with administrative privileges<br>
+b) Navigate to System &gt; Software Management &gt; Boot Locations<br>
+c) If you select Install Configuration to Yes, it will ask from where you want to copy the configuration from. Choose the latest one. If there have been no changes since you performed the upgrade and /or make any changes in the configuration and syncs, you do not need to set the Install Configuration option to Yes when activating the new volume. But if you make any changes, it’s better to select Yes when activating the new volume<br>
+d) Click the boot location containing the newly upgraded software volume<br>
+e) To restart the system to the specified boot location, click Activate<br>
+f) To close the confirmation message, click OK. At this point, BIG-IP will reboots automatically</p>
+</li>
+<li>
+<p>Check which boot location is loaded after reboot;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># watch tmsh show sys software
+</span></span></code></pre></div><ol start="6">
+<li>Check if installation fails;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tail -f/var/log/liveinstall.log
+</span></span></code></pre></div><ol start="7">
+<li>Check LTM logs;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tail -f /var/log/ltm
+</span></span></code></pre></div><ol start="8">
+<li>
+<p>Check <code>F51</code> version after reboot;<br>
+a) Go to System &gt; Configuration &gt; Device &gt; General<br>
+b) Check the version</p>
+</li>
+<li>
+<p>Bring <code>F51</code> to Standby state;<br>
+a) Release Device <code>F51</code> from offline state<br>
+b) On the Main menu, click Device Management &gt; Devices<br>
+c) Click the name of Device <code>F51</code><br>
+d) Click Release Offline<br>
+e) <code>F51</code> changes to standby state<!-- raw HTML omitted --><!-- raw HTML omitted -->
+The new version of BIG-IP software is installed on <code>F51</code>, with all traffic groups in standby state.</p>
+</li>
+</ol>
+<h4 id="make-f51examplecom-the-active-load-balancer">
+  Make F51.example.com the active load balancer
+  <a class="heading-link" href="#make-f51examplecom-the-active-load-balancer">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<ol>
+<li>
+<p>Force <code>F52</code> to standby state;<br>
+a) Login to <code>F52</code><br>
+b) On the Main menu, click Device Management &gt; Devices<br>
+c) Click the name of <code>F52</code><br>
+d) Click Force to Standby<br>
+e) <code>F52</code> changes to standby state<!-- raw HTML omitted --><!-- raw HTML omitted -->
+Once <code>F52</code> changes to offline state, ensure that traffic passes normally for all active traffic groups on <code>F51</code>.</p>
+</li>
+<li>
+<p>Verify that <code>F51</code> is the active load balancer</p>
+</li>
+<li>
+<p>Verify expected objects appear in the shared and non-shared portions of the configuration;<br>
+a) To verify that the expected objects appear in the shared and non-shared portions of the configuration, navigate to Local Traffic &gt; Pools<br>
+Confirm that the expected objects are present and compare with <code>F52</code><br>
+b) Navigate to Network &gt; VLANs<br>
+Confirm that the expected objects are present and compare with <code>F52</code><br>
+c) Go to iApps, open a VIP and go to Reconfigure to see if everything is loading properly</p>
+</li>
+<li>
+<p>Check the most recent logs (/var/log/ltm for example) for obvious signs of issues like repeating messages. Comparing logs to the active unit or to the logs prior to the upgrade can be helpful</p>
+</li>
+<li>
+<p>Check SSL with SSLLabs</p>
+</li>
+<li>
+<p>Generate a qkview and review it in the iHealth Diagnostics section for currently known issues</p>
+</li>
+<li>
+<p>Contact teams to begin application testing</p>
+</li>
+</ol>
+<hr>
+<p>&mdash;CONFIG-SYNC-IS-ALLOWED&mdash;</p>
+<h3 id="e-sync-config-and-enable-auto-failback">
+  E. Sync config and enable Auto-Failback
+  <a class="heading-link" href="#e-sync-config-and-enable-auto-failback">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>
+<p>Do a config sync;<br>
+Sync the configuration from <code>F51</code> to <code>F52</code>;
+a) Log in to the Configuration utility<br>
+b) Navigate to Device Management &gt; Overview<br>
+c) For Device Groups, click the name of the device group (device-group-a-failover or datasync-global-dg) you want to synchronize<br>
+d) For Devices, click the name of the device from which you want to perform the synchronization action<br>
+e) For Sync, click the appropriate synchronization action<br>
+f) Click Sync</p>
+</li>
+<li>
+<p>Enable Auto-failback;<br>
+Do the following to disable Network failover;<br>
+a) On the Main menu, Click Device Management &gt; Device Groups<br>
+b) Select device-group-a-failover<br>
+c) Select Advanced from Configuration<br>
+d) Uncheck Network Failover<br>
+e) Click Update</p>
+</li>
+</ol>
+<hr>
+<h3 id="backing-out-software-upgrade">
+  Backing out software upgrade
+  <a class="heading-link" href="#backing-out-software-upgrade">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>
+<p>Gathering troubleshooting information;</p>
+<p>a) To determine what may be causing the configuration load error, run the following;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># load /sys config verify
+</span></span></code></pre></div><pre><code>b) Create a qkview file
+</code></pre>
+<ol start="2">
+<li>
+<p>If you can access Configuration Utility, boot to previous software version;<br>
+a) Log in to the Configuration utility with administrative privileges<br>
+b) Navigate to System &gt; Software Management &gt; Boot Locations<br>
+c) Click the Boot Location for the previous software version<br>
+d) Click Activate<br>
+e) To close the confirmation message, click OK. At this point, BIG-IP will reboots automatically</p>
+</li>
+<li>
+<p>If you cannot access Configuration Utility, run the following from command line to boot to previous software version;</p>
+<p>a) Log in to the command line<br>
+b) Find the volume name by running the following;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tmsh show /sys software status  
+</span></span><span style="display:flex;"><span>--------------------------------------------------
+</span></span><span style="display:flex;"><span>Sys::Software Status
+</span></span><span style="display:flex;"><span>Volume  Product   Version  Build  Active    Status
+</span></span><span style="display:flex;"><span>--------------------------------------------------
+</span></span><span style="display:flex;"><span>HD1.1    BIG-IP  12.1.3.4  0.0.2      no  complete
+</span></span><span style="display:flex;"><span>HD1.2    BIG-IP  13.1.0.7  0.0.1      no  complete
+</span></span><span style="display:flex;"><span>HD1.3    BIG-IP  13.1.1.3  0.0.1      yes complete
+</span></span></code></pre></div><pre><code>c) To reboot to a different HDD, run the following;
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>tmsh reboot volume HD1.3
+</span></span></code></pre></div><h3 id="copying-configuration-from-one-boot-location-to-another">
+  Copying configuration from one boot location to another
+  <a class="heading-link" href="#copying-configuration-from-one-boot-location-to-another">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Log in to the BIG-IP command line</li>
+<li>Display the available boot locations by running the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># tmsh show /sys software status  
+</span></span><span style="display:flex;"><span>--------------------------------------------------
+</span></span><span style="display:flex;"><span>Sys::Software Status
+</span></span><span style="display:flex;"><span>Volume  Product   Version  Build  Active    Status
+</span></span><span style="display:flex;"><span>--------------------------------------------------
+</span></span><span style="display:flex;"><span>HD1.1    BIG-IP  12.1.3.4  0.0.2      no  complete
+</span></span><span style="display:flex;"><span>HD1.2    BIG-IP  13.1.0.7  0.0.1      no  complete
+</span></span><span style="display:flex;"><span>HD1.3    BIG-IP  13.1.1.3  0.0.1      yes complete
+</span></span></code></pre></div><ol start="3">
+<li>Copy the configuration from the source boot location to the target boot location using the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># cpcfg --source=HD1.2 HD1.3
+</span></span></code></pre></div><p>This command will copy the configuration from boot location <code>HD1.2</code> to boot location <code>HD1.3</code></p>
+<ol start="4">
+<li>To copy a configuration from one boot location to another and rebooting to the specific target boot location, run the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># cpcfg --source=HD1.2 --reboot HD1.3
+</span></span></code></pre></div><p>This command will copy the configuration from boot location <code>HD1.2</code> to <code>HD1.3</code> and immediately reboot the system to the <code>HD1.3</code> boot location.</p>
+<h3 id="upgrade-consideration">
+  Upgrade Consideration
+  <a class="heading-link" href="#upgrade-consideration">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>
+<p>Software images can be installed to any software volume except the running volume. This behavior ensures the running software volume is available should a need arise to revert to the prior Big-IP version and configuration.</p>
+</li>
+<li>
+<p>It is recommended to install the Big-IP update to an empty software volume to avoid potential confusion should the configuration fail to push to the new software volume.</p>
+</li>
+<li>
+<p>By default, the current running configuration is pushed to the new software volume automatically.</p>
+</li>
+<li>
+<p>The &lsquo;Install Configuration&rsquo; option in the Configuration Utility can be used to update the target software volume prior to booting/activating the volume if time has elapsed since the software was installed and some of the Big-IP configuration has changed in the interim. This is generally unnecessary if you install the software and immediately boot into it.<br>
+<a href="https://support.f5.com/csp/article/K14704">https://support.f5.com/csp/article/K14704</a></p>
+</li>
+<li>
+<p>For a Big-IP instance, multiple Big-IP software installations can exist on disk. Use the <code>tmsh show sys software</code>command to view all software volumes. You can install directly over an existing software volume and the target volume will be overwritten. In order to delete a software volume, you can use the Configuration Utility or tmsh. Software installation can be performed via the Configuration Utility or tmsh.<br>
+<a href="https://support.f5.com/csp/article/K34745165">https://support.f5.com/csp/article/K34745165</a></p>
+</li>
+<li>
+<p>When a Hotfix ISO file is installed, two installations will happen in the background; the first will install the Final (larger) ISO and the second will install the Hotfix ISO. In the GUI, you will see two progress bars progress from 0-100%.</p>
+</li>
+<li>
+<p>The first boot of the new Big-IP software volume will take extra time, compared to a regular reboot, in order to decompress packages and to import the running configuration for the first time. Installation progress can be monitored via the serial console port or via the vconsole command in the case of vCMP Guest upgrades.<br>
+<a href="https://support.f5.com/csp/article/K15372">https://support.f5.com/csp/article/K15372</a></p>
+</li>
+<li>
+<p>High Availability (HA) communication via network failover will function between major software branches but is only supported for the duration of the upgrade process. For example, a pair of Big-IPs running 11.5.3 and 12.1.1 can negotiate Active/Standby status via network failover.<br>
+<a href="https://support.f5.com/csp/article/K8665">https://support.f5.com/csp/article/K8665</a></p>
+</li>
+<li>
+<p>Configsync will not operate between different major software branches. For example, you cannot synchronize configurations from a unit running 11.5.3 unit to a unit running 11.5.4; you must wait for both units to be upgraded until configsync will operate.<br>
+<a href="https://support.f5.com/csp/article/K13946">https://support.f5.com/csp/article/K13946</a></p>
+</li>
+<li>
+<p>It is possible to upgrade an unit with a blank configuration.<br>
+<a href="https://support.f5.com/csp/article/K13438">https://support.f5.com/csp/article/K13438</a></p>
+</li>
+<li>
+<p>As an alternative method to install the desired software version, prepared USB media can be used to reinitialize the disk and Big-IP software to factory defaults. Once complete, a previously saved UCS archive can be loaded to restore configuration. This method will wipe all data on the system.<br>
+<a href="https://support.f5.com/csp/article/K13132">https://support.f5.com/csp/article/K13132</a><br>
+<a href="https://support.f5.com/csp/article/K13117">https://support.f5.com/csp/article/K13117</a></p>
+</li>
+<li>
+<p>Big-IP 10.x can be upgraded to any version of 11.x given your hardware supports the new version. Big-IP 11.x can be upgraded to any version of 12.x given your hardware supports the new version. You cannot upgrade directly from 10.x to 12.x.<br>
+<a href="https://support.f5.com/csp/article/K13845">https://support.f5.com/csp/article/K13845</a> <br>
+<a href="https://support.f5.com/csp/article/K9476">https://support.f5.com/csp/article/K9476</a></p>
+</li>
+<li>
+<p>The Latest Maintenance Release of each Long-Term Stability Release are the best choices for security and sustainability. The lowest-numbered version in the Latest Maintenance Release column is generally considered the most stable while the highest number contains the newest features and security fixes.<br>
+<a href="https://support.f5.com/csp/article/K5903">https://support.f5.com/csp/article/K5903</a></p>
+</li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2023
+     John De 
+    ·
+    
+    Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

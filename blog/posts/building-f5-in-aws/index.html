@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+  Building F5 in AWS · johndoeyo
+</title>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="John De">
+<meta name="description" content="A. Build F5 EC2 Instance Link to heading Go to https://aws.amazon.com/marketplace and search for f5. Something like F5 BIG-IP VE - ALL (BYOL, 2 Boot Locations) will show up in the result. License Type: Choose BYOL (Bring Your Own License) if you already purchased a license from F5. Choose PAYG (Pay As You Go) if you want to be charged based on usage
+Number of Boot Location: Choose 2 Boot Locations if you have plan to upgrade F5 to a new version.">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Building F5 in AWS"/>
+<meta name="twitter:description" content="A. Build F5 EC2 Instance Link to heading Go to https://aws.amazon.com/marketplace and search for f5. Something like F5 BIG-IP VE - ALL (BYOL, 2 Boot Locations) will show up in the result. License Type: Choose BYOL (Bring Your Own License) if you already purchased a license from F5. Choose PAYG (Pay As You Go) if you want to be charged based on usage
+Number of Boot Location: Choose 2 Boot Locations if you have plan to upgrade F5 to a new version."/>
+
+<meta property="og:title" content="Building F5 in AWS" />
+<meta property="og:description" content="A. Build F5 EC2 Instance Link to heading Go to https://aws.amazon.com/marketplace and search for f5. Something like F5 BIG-IP VE - ALL (BYOL, 2 Boot Locations) will show up in the result. License Type: Choose BYOL (Bring Your Own License) if you already purchased a license from F5. Choose PAYG (Pay As You Go) if you want to be charged based on usage
+Number of Boot Location: Choose 2 Boot Locations if you have plan to upgrade F5 to a new version." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.example.com/posts/building-f5-in-aws/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-01-14T01:18:37-05:00" />
+<meta property="article:modified_time" content="2020-01-14T01:18:37-05:00" />
+
+
+
+
+<link rel="canonical" href="http://www.example.com/posts/building-f5-in-aws/">
+
+
+<link rel="preload" href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.36f76aaf39a14ecf5c3a3c6250dcaf06c238b3d8365d17d646f95cb1874e852b.css" integrity="sha256-NvdqrzmhTs9cOjxiUNyvBsI4s9g2XRfWRvlcsYdOhSs=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.593028e7f7ac55c003b79c230d1cd411bb4ca53b31556c3abb7f027170e646e9.css" integrity="sha256-WTAo5/esVcADt5wjDRzUEbtMpTsxVWw6u38CcXDmRuk=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<meta name="generator" content="Hugo 0.110.0">
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">
+      johndoeyo
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/posts/">Blog</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.example.com/posts/building-f5-in-aws/">
+              Building F5 in AWS
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              <time datetime="2020-01-14T01:18:37-05:00">
+                Jan 14, 2020
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              5-minute read
+            </span>
+          </div>
+          
+          
+          
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <h3 id="a-build-f5-ec2-instance">
+  A. Build F5 EC2 Instance
+  <a class="heading-link" href="#a-build-f5-ec2-instance">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Go to <a href="https://aws.amazon.com/marketplace">https://aws.amazon.com/marketplace</a> and search for <code>f5</code>. Something like <code>F5 BIG-IP VE - ALL (BYOL, 2 Boot Locations)</code> will show up in the result.</li>
+</ol>
+<blockquote>
+<p>License Type: Choose <code>BYOL</code> (Bring Your Own License) if you already purchased a license from F5. Choose <code>PAYG</code> (Pay As You Go) if you want to be charged based on usage</p>
+</blockquote>
+<blockquote>
+<p>Number of Boot Location: Choose <code>2 Boot Locations</code> if you have plan to upgrade F5 to a new version. Choose <code>1 Boot Location</code> if you do not have any plan on upgrading in future</p>
+</blockquote>
+<blockquote>
+<p>ALL: This will allow you to provision all of the resources (LTM, ASM, AFM, APM etc.). You can also choose LTM/DNS only if you do not need to provision other modules</p>
+</blockquote>
+<ol start="2">
+<li>
+<p>After you have decided on which version to install, click on it and then click on <code>Continue to Subscribe</code>.</p>
+</li>
+<li>
+<p>In the next page, Click on <code>Continue to Configuration</code>.</p>
+</li>
+<li>
+<p>The following page will allow you to choose the <code>Software Version</code> and <code>Region</code>. Select the appropriate version/region and click on <code>Continue to Launch</code>.</p>
+</li>
+<li>
+<p>In the <code>Launch this software</code> page, choose <code>Action</code> as <code>Launch through EC2</code> and click on <code>Launch</code>.</p>
+</li>
+<li>
+<p>In <code>Choose an Instance Type</code> page on the EC2 configuration, choose the instance type based on your network requirement (preferred m-type instance) and then click on <code>Configure Instance Details</code> and configure it as following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Number of instances = 1 (if you are setting up a HA, choose more than 1 instance)
+</span></span><span style="display:flex;"><span>Network = vpc-04835675974ectt (this is the VPC where F5 will reside)
+</span></span><span style="display:flex;"><span>Subnet = subnet-00430005c1a2a133 (this is the subnet where F5 will reside)
+</span></span><span style="display:flex;"><span>Auto-assign Public IP = Disable (if you prefer all of your interfaces to be publicly     accessible, then choose Enable)
+</span></span><span style="display:flex;"><span>Network Interface = (Add all the network interface that you need, you can also add them later when the instance is created. Here, we will have 4 interfaces with 1 management interface and 3 tmm interface and the IP will be automatically assigned by the VPC since     it is configured to support DHCP. You can also put specific IP as Primary IP)
+</span></span><span style="display:flex;"><span>Device=eth01 | subnet=subnet-00430005c1a2a134 | Primary IP=auto-assigned
+</span></span><span style="display:flex;"><span>Device=eth02 | subnet=subnet-00430005c1a2a135 | Primary IP=auto-assigned
+</span></span><span style="display:flex;"><span>Device=eth03 | subnet=subnet-00430005c1a2a136 | Primary IP=auto-assigned
+</span></span><span style="display:flex;"><span>Device=eth04 | subnet=subnet-00430005c1a2a137 | Primary IP=auto-assigned
+</span></span></code></pre></div><p>Click on <code>Add Storage</code></p>
+</li>
+<li>
+<p>Go to <a href="https://support.f5.com/csp/article/K14946">https://support.f5.com/csp/article/K14946</a> and check how much disk space you need for the version you want to install. Click on <code>Encryption</code> and choose an existing KMS or create a new one. Click on <code>Add Tags</code>.</p>
+</li>
+<li>
+<p>Use appropriate <code>Tags</code> and click on <code>Configure Security Group</code>. Either create a new group or use an existing security group which serves your purpose and click on <code>Review and Launch</code>.</p>
+</li>
+<li>
+<p>Choose an existing Key Pair for SSH or create a new one (for example, f5-aws.pem) and click on <code>Launch Instance</code>.</p>
+</li>
+<li>
+<p>Click on <code>View Instances</code> and the EC2 will be deployed after 5-10 minutes. The instance will be ready to use when <code>Status Checks</code> shows as <code>2/2checks passed</code>.</p>
+</li>
+</ol>
+<hr>
+<h3 id="b-configure-f5">
+  B. Configure F5
+  <a class="heading-link" href="#b-configure-f5">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>
+<p>SSH to the EC2 instance as following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>$ ssh -i f5-aws.pem admin@MANAGEMENT_IP
+</span></span></code></pre></div><p>It will not ask for password since this is a new installation and no password is set for the <code>admin</code> account yet</p>
+</li>
+<li>
+<p>Run the following to set <code>admin</code> password;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(tmos)# modify auth password admin
+</span></span><span style="display:flex;"><span>changing password for admin
+</span></span><span style="display:flex;"><span>new password:
+</span></span><span style="display:flex;"><span>confirm password
+</span></span></code></pre></div></li>
+<li>
+<p>Save the configuration;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(tmos)# save sys config
+</span></span></code></pre></div></li>
+<li>
+<p>Browse to the management IP (<a href="https://MANAGEMENT_IP">https://MANAGEMENT_IP</a>) and install the license. You cannot install the license using CLI because admin account does not have permission to Advanced Shell yet.</p>
+<p>a. Click <code>Next</code> on the <code>Welcome Page</code> after you logged in using the newly configured <code>admin</code> account.</p>
+<p>b. Click on <code>Activate</code>. In the next page, fill the <code>Base Registration Key</code> and choose <code>Activation Method</code> as <code>Manual</code>.</p>
+<p>c. Copy the <code>Dossier</code>, go to F5 licensing server (<a href="https://activate.f5.com/license/dossier.jsp">https://activate.f5.com/license/dossier.jsp</a>), paste the Dossier you just copied in <code>Enter Your Dossier</code> field and click <code>Next</code>.</p>
+<p>d. Copy the license generated by F5 licensing server, paste it in <code>License</code> section of F5 and click on <code>Next</code>.</p>
+</li>
+<li>
+<p>After licensing is completed, in the <code>Platform</code> section, configure as following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Management Port Configuration: Automatic (DHCP) (If you specified the IP when you created     the EC2 instance, then choose Manual and type the IP here)
+</span></span><span style="display:flex;"><span>Host Name: f5aws.example.com
+</span></span><span style="display:flex;"><span>Host IP Address: Use Management IP Address
+</span></span><span style="display:flex;"><span>Time Zone: US/Eastern
+</span></span></code></pre></div></li>
+<li>
+<p>Create VLANs;</p>
+<p>When we created the EC2, we added three tmm interfaces, so we need to create three VLANs.
+To create the VLANs, go to <code>Network &gt; VLANs</code> and click on <code>Create</code>. Configure tmm as following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Name: vlanA
+</span></span><span style="display:flex;"><span>Tag: 4090
+</span></span><span style="display:flex;"><span>Interface: 1.1 
+</span></span><span style="display:flex;"><span>Tagging: Untagged (Click Add so that it shows under Interfaces)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Name: vlanB
+</span></span><span style="display:flex;"><span>Tag: 4091
+</span></span><span style="display:flex;"><span>Interface: 1.2 
+</span></span><span style="display:flex;"><span>Tagging: Untagged (Click Add so that it shows under Interfaces)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Name: vlanC
+</span></span><span style="display:flex;"><span>Tag: 4092
+</span></span><span style="display:flex;"><span>Interface: 1.3 
+</span></span><span style="display:flex;"><span>Tagging: Untagged (Click Add so that it shows under Interfaces)
+</span></span></code></pre></div></li>
+<li>
+<p>Create Self IP;</p>
+<p>Go to <code>Network &gt; Self IPs</code> and click on <code>Create</code>. Configure them as following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Name: vlanA_selfIP
+</span></span><span style="display:flex;"><span>IP Address: 10.1.1.4
+</span></span><span style="display:flex;"><span>Netmask: 255.255.255.0
+</span></span><span style="display:flex;"><span>VLAN: vlanA
+</span></span><span style="display:flex;"><span>Port Lockdown: Allow None
+</span></span><span style="display:flex;"><span>Traffic Group: None
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Name: vlanB_selfIP
+</span></span><span style="display:flex;"><span>IP Address: 10.1.2.4
+</span></span><span style="display:flex;"><span>Netmask: 255.255.255.0
+</span></span><span style="display:flex;"><span>VLAN: vlanB
+</span></span><span style="display:flex;"><span>Port Lockdown: Allow None
+</span></span><span style="display:flex;"><span>Traffic Group: None
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Name: vlanC_selfIP
+</span></span><span style="display:flex;"><span>IP Address: 10.1.3.4
+</span></span><span style="display:flex;"><span>Netmask: 255.255.255.0
+</span></span><span style="display:flex;"><span>VLAN: vlanC
+</span></span><span style="display:flex;"><span>Port Lockdown: Allow None
+</span></span><span style="display:flex;"><span>Traffic Group: None
+</span></span></code></pre></div></li>
+<li>
+<p>All the necessary configuration has been completed at this point. Reboot F5 and start creating virtual servers.</p>
+</li>
+</ol>
+<hr>
+<p><strong>Note</strong>: Do not use <code>EC2 &gt; Instance &gt; Actions &gt; Instance State &gt; Stop</code> to shutdown the F5 instance. If you do that, then F5 configuration will be corrupted. The proper way is the shutdown F5 first by running the following from <code>Advanced Shell</code> and then stop the instance;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>$ shutdown -H now
+</span></span></code></pre></div><p>If you accidently stopped the instance without shutting down F5 first, run the following so that <code>mcpd</code> can reload the configuration correctly;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>$ bigstart restart mcpd
+</span></span></code></pre></div>
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2023
+     John De 
+    ·
+    
+    Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

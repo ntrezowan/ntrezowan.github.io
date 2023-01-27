@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+  F5 Clean Installation Using ISO · johndoeyo
+</title>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="John De">
+<meta name="description" content="Install using USB media Link to heading A. Create a bootable USB drive using your computer
+Download the image from https://downloads.f5.com/ into you computer
+Mount the image;
+# mkdir /mnt/cd # mount -o loop /shared/images/BIGIP-13.1.1.5-0.0.4.iso /mnt/cd mount: /shared/images/BIGIP-13.1.1.5-0.0.4.iso is write-protected, mounting read-only Insert a USB disk and run mkdisk script;
+# cd /mnt/cd # ./mkdisk In the next step, F5 will ask you the following questions. Answer as appropriate to your environment;">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="F5 Clean Installation Using ISO"/>
+<meta name="twitter:description" content="Install using USB media Link to heading A. Create a bootable USB drive using your computer
+Download the image from https://downloads.f5.com/ into you computer
+Mount the image;
+# mkdir /mnt/cd # mount -o loop /shared/images/BIGIP-13.1.1.5-0.0.4.iso /mnt/cd mount: /shared/images/BIGIP-13.1.1.5-0.0.4.iso is write-protected, mounting read-only Insert a USB disk and run mkdisk script;
+# cd /mnt/cd # ./mkdisk In the next step, F5 will ask you the following questions. Answer as appropriate to your environment;"/>
+
+<meta property="og:title" content="F5 Clean Installation Using ISO" />
+<meta property="og:description" content="Install using USB media Link to heading A. Create a bootable USB drive using your computer
+Download the image from https://downloads.f5.com/ into you computer
+Mount the image;
+# mkdir /mnt/cd # mount -o loop /shared/images/BIGIP-13.1.1.5-0.0.4.iso /mnt/cd mount: /shared/images/BIGIP-13.1.1.5-0.0.4.iso is write-protected, mounting read-only Insert a USB disk and run mkdisk script;
+# cd /mnt/cd # ./mkdisk In the next step, F5 will ask you the following questions. Answer as appropriate to your environment;" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.example.com/posts/f5-clean-installation-using-iso/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-02-04T01:18:37-05:00" />
+<meta property="article:modified_time" content="2019-02-04T01:18:37-05:00" />
+
+
+
+
+<link rel="canonical" href="http://www.example.com/posts/f5-clean-installation-using-iso/">
+
+
+<link rel="preload" href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.36f76aaf39a14ecf5c3a3c6250dcaf06c238b3d8365d17d646f95cb1874e852b.css" integrity="sha256-NvdqrzmhTs9cOjxiUNyvBsI4s9g2XRfWRvlcsYdOhSs=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.593028e7f7ac55c003b79c230d1cd411bb4ca53b31556c3abb7f027170e646e9.css" integrity="sha256-WTAo5/esVcADt5wjDRzUEbtMpTsxVWw6u38CcXDmRuk=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<meta name="generator" content="Hugo 0.110.0">
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">
+      johndoeyo
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/posts/">Blog</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.example.com/posts/f5-clean-installation-using-iso/">
+              F5 Clean Installation Using ISO
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              <time datetime="2019-02-04T01:18:37-05:00">
+                Feb 4, 2019
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              3-minute read
+            </span>
+          </div>
+          
+          
+          
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <h3 id="install-using-usb-media">
+  Install using USB media
+  <a class="heading-link" href="#install-using-usb-media">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>A. Create a bootable USB drive using your computer</p>
+<ol>
+<li>
+<p>Download the image from <a href="https://downloads.f5.com/">https://downloads.f5.com/</a> into you computer</p>
+</li>
+<li>
+<p>Mount the image;</p>
+<pre><code> # mkdir /mnt/cd
+ # mount -o loop /shared/images/BIGIP-13.1.1.5-0.0.4.iso /mnt/cd
+ mount: /shared/images/BIGIP-13.1.1.5-0.0.4.iso is write-protected, mounting read-only
+</code></pre>
+</li>
+<li>
+<p>Insert a USB disk and run <code>mkdisk</code> script;</p>
+<pre><code> # cd /mnt/cd
+ # ./mkdisk
+</code></pre>
+<p>In the next step, F5 will ask you the following questions. Answer as appropriate to your environment;</p>
+<pre><code> 7047 blocks
+ On which F5 platform will the installation media be used?
+ Index Platform
+ 1 BIG-IP 1500
+ 2 BIG-IP 1600
+ 3 BIG-IP 3400
+ 4 BIG-IP 3410
+ 5 BIG-IP 3600
+ 6 BIG-IP 3900
+ 7 BIG-IP 4100
+ 8 BIG-IP 6400
+ 9 BIG-IP 6800
+ 10 BIG-IP 6900
+ 11 BIG-IP 8400
+ 12 BIG-IP 8800
+ 13 BIG-IP 8900
+ 14 BIG-IP 8950
+ 15 BIG-IP 11050
+ 16 BIG-IP Viprion
+ 17 BIG-IP_SAM 4300
+ 18 Enterprise Manager EM500
+ 19 Enterprise Manager EM3000
+ 20 FirePass 1200
+ 21 FirePass 4100
+ 22 FirePass 4300
+
+ Please select a device by index (1 – 26) —&gt;7
+
+ Index Device Product Size Notes
+
+ 1 /dev/sdb SanDisk Cruzer Blade 3817 MB May hold 2 products
+ Please select a device by index (1 – 1) —&gt;1
+
+ Chosen device /dev/sdb is SanDisk Cruzer Blade
+
+ WARNING: The next step will destroy all data on this device!
+ Are you sure you want to continue? (y|n) [n] –&gt; y
+
+ info: FAT Formatting device /dev/sdb
+ info: Installing bootloader on /dev/sdb
+ info: Mounting device /dev/sdb on /mnt/ozimLXTaYx
+ copying ./isolinux/vmlinuz =&gt; /mnt/ozimLXTaYx
+ copying ./isolinux/initrd.img =&gt; /mnt/ozimLXTaYx
+ The following products are available for transfer:
+ BIG-IP version 13.1.1.5
+
+ Would you like to transfer BIG-IP version 13.1.1.5? (y|n) [y] –&gt; y
+ Queueing BIG-IP version 13.1.1.5
+ Ready to copy one product (this will take a while…).
+ Creating repository ISO in /mnt/tm_install/16082.mJRdtt (this will take a while)…
+ Using TS_MN000.RPM;1 for ././BIGIP13115/i686/TS-mng-fbagent-13.1.1.5-1707.0.i686.rpm (TS-mng-fbloader-13.1.1.5-1707.0.i686.rpm)
+ Using TMM_V000.RPM;1 for ././BIGIP13115/i686/tmm-vadc-debug-13.1.1.5-1707.0.i686.rpm (tmm-vadc-13.1.1.5-1707.0.i686.rpm)
+
+ 1.25% done, estimate finish Sun Dec 01 09:58:00 2019
+ 98.76% done, estimate finish Sun Dec 01 09:58:27 2019
+ Total translation table size: 0
+ Total rockridge attributes bytes: 72463
+ Total directory bytes: 135168
+ Path table size(bytes): 304
+ Max brk space used a3000
+ 399956 extents written (781 MB)
+ Inserting md5sum into iso image…
+ md5 = cce0625d016f8571974647453cc6fd78
+ Inserting fragment md5sums into iso image…
+ fragmd5 = e3e88cee8adb0fcb92fe92e3a465ceb2b49ee5c4d1e47e46e153d687dcce
+ frags = 20
+ Setting supported flag to 0
+ done
+ Moving repository ISO to thumb drive (this will take a while) …done
+ Product setup complete.
+ Flushing disk buffer (this may take a while)… done
+</code></pre>
+</li>
+<li>
+<p>When the script completes, unmount the USB media;</p>
+<pre><code> # umount /mnt/cd
+</code></pre>
+<p>If you are having trouble unmounting the disk, run the following to see which user is using it and then kill the process;</p>
+<pre><code> # fuser /mnt/cd
+ # fuser -k /mnt/cd
+ # umount /mnt/cd
+</code></pre>
+</li>
+</ol>
+<p>B. Boot F5 using the USB media</p>
+<ol>
+<li>
+<p>Boot F5 so that it can boot into Maintenance Operating System (MOS) from the USB</p>
+</li>
+<li>
+<p>Select the default terminal emulation (vt100)</p>
+</li>
+<li>
+<p>The following command will delete all data present in the F5 system;</p>
+<pre><code> # diskinit --style volumes
+</code></pre>
+</li>
+<li>
+<p>The following command will install the software;</p>
+<pre><code> # image2disk --format=volumes --nosaveconfig --nosavelicense
+</code></pre>
+</li>
+<li>
+<p>After the installation, remove the USB and reboot</p>
+</li>
+</ol>
+<hr>
+<h3 id="install-using-existing-iso-stored-in-f5">
+  Install using existing ISO stored in F5
+  <a class="heading-link" href="#install-using-existing-iso-stored-in-f5">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>If the system can still boot and if you can upload the ISO in <code>/shared/images</code>, then do the following to do a clean install;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># image2disk --format=volumes --nosaveconfig /shared/images/BIGIP-13.1.1.5-0.0.3.iso
+</span></span></code></pre></div>
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2023
+     John De 
+    ·
+    
+    Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

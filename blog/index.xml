@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>johndoeyo</title>
+    <link>http://www.example.com/</link>
+    <description>Recent content on johndoeyo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 13 Nov 2020 01:18:37 -0500</lastBuildDate><atom:link href="http://www.example.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Installing Ansible Tower in RHEL</title>
+      <link>http://www.example.com/posts/installing-ansible-tower-in-rhel/</link>
+      <pubDate>Fri, 13 Nov 2020 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/installing-ansible-tower-in-rhel/</guid>
+      <description>Install EPEL Repository;
+$ dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm Install Ansible;
+$ yum install ansible Download Ansible Tower;
+$ mkdir /tmp/ansible-tower-setup $ cd /tmp/ansible-tower-setup $ curl -k -O https://releases.ansible.com/ansible-tower/setup/ansible-tower-setup-latest. tar.gz $ tar xvf ansible-tower-setup-latest.tar.gz $ cd /ansible-tower-setup-x.x.x-x Modify inventory file and add the following;
+$ vi inventory [tower] server1.example.com server2.example.com [all:vars] admin_password=&amp;#39;&amp;#39; [database] pg_database=&amp;#39;awx&amp;#39; pg_username=&amp;#39;awx&amp;#39; pg_password=&amp;#39;&amp;#39; Install Ansible Tower (this will run install.yml playbook)
+$ ./setup.sh Copy your certificate/key to the following location;</description>
+    </item>
+    
+    <item>
+      <title>Upgrading F5 using Ansible</title>
+      <link>http://www.example.com/posts/upgrading-f5-using-ansible/</link>
+      <pubDate>Sun, 07 Jun 2020 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/upgrading-f5-using-ansible/</guid>
+      <description>A. Install required packages Link to heading Install Pip
+# curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py # python get-pip.py --user Install Ansible
+# python -m pip install ansible Install F5 Modules (v1) for Ansible and F5 SDK for Python
+# ansible-galaxy collection install f5networks.f5_modules # pip install f5-sdk B. Create the playbook Link to heading The following playbook will check if the unit is in standby state and if so, then it will do the following;</description>
+    </item>
+    
+    <item>
+      <title>Building F5 in AWS using CloudFormation</title>
+      <link>http://www.example.com/posts/building-f5-in-aws-using-cloudformation/</link>
+      <pubDate>Thu, 05 Mar 2020 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/building-f5-in-aws-using-cloudformation/</guid>
+      <description>A. Get the latest AMI list of F5 images Link to heading Go to https://github.com/F5Networks/f5-aws-cloudformation
+Browse to AMI Maps folder, choose the version you want to use and download the JSON file of either BYOL (Bring Your Own License) or PAYG (Pay As You Go). This is the AMI list that will be added in the CloudFormation template
+If you want to use an older version, use the AWS Matrix (https://github.</description>
+    </item>
+    
+    <item>
+      <title>Building F5 in AWS</title>
+      <link>http://www.example.com/posts/building-f5-in-aws/</link>
+      <pubDate>Tue, 14 Jan 2020 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/building-f5-in-aws/</guid>
+      <description>A. Build F5 EC2 Instance Link to heading Go to https://aws.amazon.com/marketplace and search for f5. Something like F5 BIG-IP VE - ALL (BYOL, 2 Boot Locations) will show up in the result. License Type: Choose BYOL (Bring Your Own License) if you already purchased a license from F5. Choose PAYG (Pay As You Go) if you want to be charged based on usage
+Number of Boot Location: Choose 2 Boot Locations if you have plan to upgrade F5 to a new version.</description>
+    </item>
+    
+    <item>
+      <title>Upgrading Broadcom Automic Automation</title>
+      <link>http://www.example.com/posts/upgrading-broadcom-automic-automation/</link>
+      <pubDate>Mon, 25 Nov 2019 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/upgrading-broadcom-automic-automation/</guid>
+      <description>A. Preparation before upgrade Link to heading Backup Automic Utility and extract new JAR; # rm -rf /opt/ae/utility/bin_new/* # rm -rf /opt/ae/utility/bin_old/* # cp -r /opt/ae/utility/bin/* /opt/ae/utility/bin_old/ # cp /opt/iso/Automic.Automation_12.3.0_HF1/Automation.Platform/Utility/unix/linux/x64/utillx6.tar.gz /opt/ae/utility/bin_new # tar -zxvf utillx6.tar.gz In here, we are only interested of bin folder and db folder should be empty.
+Backup Automic DB and extract new JAR; # rm -rf /opt/ae/utility/db_new/* # rm -rf /opt/ae/utility/db_old/* # cp -r /opt/ae/utility/db/* /opt/ae/utility/db_old/ # cp /opt/iso/Automic.</description>
+    </item>
+    
+    <item>
+      <title>Encrypt EC2 EBS Root Volume in AWS</title>
+      <link>http://www.example.com/posts/encrypt-ec2-ebs-root-volume-in-aws/</link>
+      <pubDate>Tue, 27 Aug 2019 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/encrypt-ec2-ebs-root-volume-in-aws/</guid>
+      <description>How EBS encrypts/decrypts a volume Link to heading An encrypted EBS volume requests for Data Encryption Key to KMS upon creation
+KMS sends a Data Encryption Key encrypted by the Customer Managed Key which is stored in the EBS volume metadata
+When an EC2 instance is launched, the instance (not the EBS volume) sends a request to KMS to decrypt the Data Encryption Key
+KMS decrypts the Data Encryption Key using the Customer Managed Key and sends it as plaintext to EC2 instance</description>
+    </item>
+    
+    <item>
+      <title>Testing SSL Vulnerabilities and Implementing PFS</title>
+      <link>http://www.example.com/posts/testing-ssl-vulnerabilities-and-implementing-perfect-forward-secrecy/</link>
+      <pubDate>Tue, 21 May 2019 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/testing-ssl-vulnerabilities-and-implementing-perfect-forward-secrecy/</guid>
+      <description>A. Testing SSL vulnerabilities Link to heading View a web server certificate # openssl s_client -connect example.com:443 CONNECTED(00000003) depth=2 /C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA verify error:num=19:self signed certificate in certificate chain verify return:0 --- Certificate chain 0 s:/C=US/ST=California/L=Los Angeles/O=Internet Corporation for Assigned Names and Numbers/OU=Technology/CN=www.example.org i:/C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA 1 s:/C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA i:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA 2 s:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA i:/C=US/O=DigiCert Inc/OU=www.</description>
+    </item>
+    
+    <item>
+      <title>Renew SSL Certificate on F5</title>
+      <link>http://www.example.com/posts/renew-ssl-certificate-on-f5/</link>
+      <pubDate>Sun, 17 Mar 2019 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/renew-ssl-certificate-on-f5/</guid>
+      <description>Renew SSL certificate using CSR Link to heading A. Create a CSR on F5 Link to heading If you want to create a Certificate Signing Request (CSR) on F5, do the following;
+The following will create a CSR (example.csr) for a site, example.com and will also generate a private key (example.key); # tmsh # create sys crypto key example.key key-size 2048 gen-csr country US city &amp;#39;Los Angeles&amp;#39; state CA organization &amp;#39;Internet Assigned Numbers Authority&amp;#39; ou &amp;#39;Information Technology&amp;#39; common-name example.</description>
+    </item>
+    
+    <item>
+      <title>F5 Clean Installation Using ISO</title>
+      <link>http://www.example.com/posts/f5-clean-installation-using-iso/</link>
+      <pubDate>Mon, 04 Feb 2019 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/f5-clean-installation-using-iso/</guid>
+      <description>Install using USB media Link to heading A. Create a bootable USB drive using your computer
+Download the image from https://downloads.f5.com/ into you computer
+Mount the image;
+# mkdir /mnt/cd # mount -o loop /shared/images/BIGIP-13.1.1.5-0.0.4.iso /mnt/cd mount: /shared/images/BIGIP-13.1.1.5-0.0.4.iso is write-protected, mounting read-only Insert a USB disk and run mkdisk script;
+# cd /mnt/cd # ./mkdisk In the next step, F5 will ask you the following questions. Answer as appropriate to your environment;</description>
+    </item>
+    
+    <item>
+      <title>Installing Shibboleth Service Provider in RHEL</title>
+      <link>http://www.example.com/posts/installing-shibboleth-service-provider-in-rhel/</link>
+      <pubDate>Fri, 07 Dec 2018 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/installing-shibboleth-service-provider-in-rhel/</guid>
+      <description>Operating System: RHEL 7.5
+Web Server: Apache 2.4
+Shibboleth: 3.0.2
+How Shib SP works? Link to heading Shibboleth and Apache/Nginx works together where Shibboleth uses a module to talk with Apache. When a web request comes for a protected resource, Apache (httpd) directs them to mod_shib module and then Shibboleth (shibd) checks shibboleth2.xml to see what to do and uses attribute-map.xml to know what attributes to get from the IdP.</description>
+    </item>
+    
+    <item>
+      <title>Configure F5 with High Speed Logging for Splunk</title>
+      <link>http://www.example.com/posts/configure-f5-with-high-speed-logging-for-splunk/</link>
+      <pubDate>Thu, 02 Aug 2018 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/configure-f5-with-high-speed-logging-for-splunk/</guid>
+      <description>Environment Link to heading F51 self IP for VLAN1 = 11.11.11.2
+F52 self IP for VLAN1 = 11.11.11.3
+F5SERV Floating IP for VLAN1 = 11.11.11.1
+F51 self IP for management VLAN = 10.1.1.2
+F52 self IP for management VLAN = 10.1.1.3
+F5SERV Floating IP for management VLAN = 10.1.1.1
+Splunk IP = 10.10.10.1
+Splunk TCP Port = 9515 (for ASM)
+Splunk UDP Port = 9514 (for SYSLOG, HSL and APM)</description>
+    </item>
+    
+    <item>
+      <title>Installing Jenkins on Tomcat</title>
+      <link>http://www.example.com/posts/installing-jenkins-on-tomcat/</link>
+      <pubDate>Thu, 12 Jul 2018 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/installing-jenkins-on-tomcat/</guid>
+      <description>Operating System: RHEL 6.5
+Web Server: Tomcat 8.5
+A. Install Java Link to heading Install OpenJDK; # yum install java-x.x.x-openjdk.x86_64 Check Java version; # java -version openjdk version &amp;#34;x.x.x_xxx&amp;#34; OpenJDK Runtime Environment (build x.x.x_xxx-xxx) OpenJDK 64-Bit Server VM (build xx.xxx-xxx, mixed mode) Setup JAVA_HOME and JRE_HOME path for all user; # sudo cp /etc/profile /etc/profile_backup # echo &amp;#39;export JAVA_HOME=/usr/lib/jvm/jre-x.x.x-openjdk&amp;#39; | sudo tee -a /etc/profile # echo &amp;#39;export JRE_HOME=/usr/lib/jvm/jre&amp;#39; | sudo tee -a /etc/profile source /etc/profile Verify the paths; # echo $JAVA_HOME /usr/lib/jvm/jre-x.</description>
+    </item>
+    
+    <item>
+      <title>Upgrading F5 Active-Standby Pair</title>
+      <link>http://www.example.com/posts/upgrading-f5-active-standby-pair/</link>
+      <pubDate>Wed, 06 Jun 2018 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/upgrading-f5-active-standby-pair/</guid>
+      <description>Environment Link to heading F5 Active Server = f51.example.com
+F5 Standby Server = f52.example.com
+A. Preparation before upgrade (applied to both active/standby) Link to heading Check current software version of F5;
+Run the following; # tmsh show /sys software status -------------------------------------------------- Sys::Software Status Volume Product Version Build Active Status -------------------------------------------------- HD1.1 BIG-IP 12.1.3.4 0.0.2 no complete HD1.2 BIG-IP 13.1.0.7 0.0.1 no complete HD1.3 BIG-IP 13.1.1.3 0.0.1 yes complete From the output, look for the partition which is Active and then you will find the Version.</description>
+    </item>
+    
+    <item>
+      <title>F5 maintenance page with iRule</title>
+      <link>http://www.example.com/posts/f5-maintenance-page-with-irule/</link>
+      <pubDate>Thu, 29 Mar 2018 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/f5-maintenance-page-with-irule/</guid>
+      <description>Create maintenance page using HTML iFile Link to heading Make sure in which partition you want to upload the html file. It will be easier if VIP, iRule and iFile are in the same partition.
+Go to System &amp;gt; File Management &amp;gt; iFile List. Click on Import and upload your html file (maintenance.html) and give it a Name (maintenance.html).
+Go to Local Traffic &amp;gt; iRules &amp;gt; iFile List. Click on Create, select the iFile you have just uploaded from File Name and give it a Name (maintenance.</description>
+    </item>
+    
+    <item>
+      <title>Configuring GPG Symmetric/Asymmetric Key for File Transfer</title>
+      <link>http://www.example.com/posts/configuring-gpg-symmetric-asymmetric-key-for-file-transfer/</link>
+      <pubDate>Tue, 12 Dec 2017 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/configuring-gpg-symmetric-asymmetric-key-for-file-transfer/</guid>
+      <description>Symmetric key encryption Link to heading Create a sample text file which will be encrypted;
+# echo Plain Text &amp;gt; input.txt # cat input.txt Plain Text Encrypt input.txt file;
+# gpg -c input.txt gpg: directory `/home/user1/.gnupg&#39; created gpg: new configuration file `/home/user1/.gnupg/gpg.conf&#39; created gpg: WARNING: options in `/home/user1/.gnupg/gpg.conf&#39; are not yet active during this run If you are using GPG for the first time on this server, it will ask to set a passphrase.</description>
+    </item>
+    
+    <item>
+      <title>Patching/Updating SharePoint 2016</title>
+      <link>http://www.example.com/posts/patching-updating-sharepoint-2016/</link>
+      <pubDate>Mon, 31 Jul 2017 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/patching-updating-sharepoint-2016/</guid>
+      <description>Download SharePoint 2016 update releases from Microsoft website;
+https://technet.microsoft.com/en-us/library/mt715807(v=office.16).aspx.
+Check Todd Klindt’s website to find what type of updates each version has including the build number;
+http://www.toddklindt.com/blog/Builds/SharePoint-2016-Builds.aspx
+Open SharePoint 2016 Management Shell and run the following command to take a full backup of the current farm;
+PS &amp;gt; Backup-SPFarm -Directory &amp;lt;BackupFolder&amp;gt; -BackupMethod Full -Verbose Stop Search Service Application on the Search servers since we do not want Search to crawl while patching.</description>
+    </item>
+    
+    <item>
+      <title>Configuring SMTP on SharePoint 2016</title>
+      <link>http://www.example.com/posts/configuring-smtp-on-sharepoint-2016/</link>
+      <pubDate>Thu, 20 Jul 2017 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/configuring-smtp-on-sharepoint-2016/</guid>
+      <description>Go to CA &amp;gt; System Settings &amp;gt; Configure outgoing e-mail settings and configure as following; Outbound SMTP server: smtp@example.com From address: sharepoint@example.com Reply-to-address: sharepoint@example.com Use TLS connection encryption: Yes (if you want to encrypt emails) SMTP server port: 25 [Default] Character set: 65000 (Unicode UTF-8) [Default] Go to CA &amp;gt; Application Management &amp;gt; Manage Web Application to view all the web applications. Select a web application and click on General Settings &amp;gt; Outgoing E-Mail settings from the ribbon to verify web application specific SMTP setting; Outbound SMTP server: smtp@test.</description>
+    </item>
+    
+    <item>
+      <title>Creating/Modifying Search Topology on SharePoint 2016</title>
+      <link>http://www.example.com/posts/creating-modifying-search-topology-on-sharepoint-2016/</link>
+      <pubDate>Mon, 12 Jun 2017 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/creating-modifying-search-topology-on-sharepoint-2016/</guid>
+      <description>Hostname Role Components App1 Application Admin, Crawl, Content Processing, Indexing, Query Processing, Analytics App2 Application Admin, Crawl, Content Processing, Indexing, Query Processing, Analytics Web1 Web Front Indexing, Query Processing Web2 Web Front Indexing, Query Processing A. Configuring a new Search Topology Link to heading Create a new Search application Search Service Application with database name SharePoint_Search; $ssa = New-SPEnterpriseSearchServiceApplication -Name &amp;#34;Search Service Application&amp;#34; -DatabaseName &amp;#34;SharePoint_Search&amp;#34; -ApplicationPool &amp;#34;Search Service AppPool&amp;#34; -AdminApplicationPool &amp;#34;Search Service AdminAppPool&amp;#34; Create a new proxy for Search application Search Service Application Proxy; New-SPEnterpriseSearchServiceApplicationProxy -Name &amp;#34;Search Service Application Proxy&amp;#34; -SearchApplication $ssa Save the Search Service Application into a variable; $ssa = Get-SPEnterpriseSearchServiceApplication Define variables (hostA, hostB&amp;hellip;) for each servers that will be included in the Search topology; $hostA = Get-SPEnterpriseSearchServiceInstance | ?</description>
+    </item>
+    
+    <item>
+      <title>Installing SSL on Tomcat Server</title>
+      <link>http://www.example.com/posts/installing-ssl-on-tomcat-server/</link>
+      <pubDate>Wed, 28 Dec 2016 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/installing-ssl-on-tomcat-server/</guid>
+      <description>A. Red Hat Enterprise Linux Link to heading Java Keytool location: /usr/bin/java
+Tomcat config location: /opt/tomcat/conf
+Tomcat keystore location: /opt/tomcat/conf/certs
+1. Create new keystore to install a new certificate Link to heading Login to the server and create new keystore (SHA-2) in the Tomcat keystore folder; # /usr/bin/java/keytool -genkey -alias example.com -keyalg RSA -keystore /opt/tomcat/conf/certs/example.com.jks -keysize 2048 Enter keystore password: Re-enter new password: What is your first and last name?</description>
+    </item>
+    
+    <item>
+      <title>Installing OwnCloud on CentOS</title>
+      <link>http://www.example.com/posts/installing-owncloud-on-centos/</link>
+      <pubDate>Wed, 25 Nov 2015 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/installing-owncloud-on-centos/</guid>
+      <description>Operating System: CentOS 7
+Web Server: Nginx 1.8.0
+Database: MariaDB 5.5.44
+Import Nginx repository; # yum -y install epel-release # rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-x-x.elx.ngx.noarch.rpm Install web server, database and other dependencies; # yum -y install nginx mariadb mariadb-server php-fpm php-cli php-gd php-mcrypt php-mysql php-pear php-xml bzip2 SELINUX is enabled by default, so create iptables and SELINUX rule to allow HTTP/HTTPS traffic; # iptables -I INPUT -p tcp --dport 80 -j ACCEPT # iptables -I INPUT -p tcp --dport 8080 -j ACCEPT # firewall-cmd --permanent --add-service=http # firewall-cmd --permanent --add-service=https # firewall-cmd –reload Start MariaDB, remove default configuration and set the root password; # systemctl start mariadb # mysql_secure_installation [Removed all the default database and user configuration] # mysql -u root –p Configure php-fpm; # nano /etc/php-fpm.</description>
+    </item>
+    
+    <item>
+      <title>GlusterFS and CephFS Performance in Xen Hypervisor</title>
+      <link>http://www.example.com/posts/glusterfs-and-cephfs-performance-in-xen-hypervisor/</link>
+      <pubDate>Tue, 22 Jul 2014 01:18:37 -0500</pubDate>
+      
+      <guid>http://www.example.com/posts/glusterfs-and-cephfs-performance-in-xen-hypervisor/</guid>
+      <description>A. Host/Virtual Machines Configuration Link to heading 1. Virtual Machines Link to heading 1.1 GlusterFS VMs Link to heading Hostname gfs1 gfs2 gfs3 Operating System CentOS 6.5 CentOS 6.5 CentOS 6.5 RAM 2 GB 2 GB 2 GB Disk 100 GB 100 GB 100 GB Network Bridged Bridged Bridged IP Address 192.168.26.234 192.168.26.235 192.168.26.236 1.2 CephFS VMs Link to heading Hostname ceph1 ceph2 ceph3 Operating System CentOS 6.5 CentOS 6.</description>
+    </item>
+    
+  </channel>
+</rss>

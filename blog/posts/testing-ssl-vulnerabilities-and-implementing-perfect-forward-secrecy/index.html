@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+  Testing SSL Vulnerabilities and Implementing PFS · johndoeyo
+</title>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="John De">
+<meta name="description" content="A. Testing SSL vulnerabilities Link to heading View a web server certificate # openssl s_client -connect example.com:443 CONNECTED(00000003) depth=2 /C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA verify error:num=19:self signed certificate in certificate chain verify return:0 --- Certificate chain 0 s:/C=US/ST=California/L=Los Angeles/O=Internet Corporation for Assigned Names and Numbers/OU=Technology/CN=www.example.org i:/C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA 1 s:/C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA i:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA 2 s:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA i:/C=US/O=DigiCert Inc/OU=www.">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Testing SSL Vulnerabilities and Implementing PFS"/>
+<meta name="twitter:description" content="A. Testing SSL vulnerabilities Link to heading View a web server certificate # openssl s_client -connect example.com:443 CONNECTED(00000003) depth=2 /C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA verify error:num=19:self signed certificate in certificate chain verify return:0 --- Certificate chain 0 s:/C=US/ST=California/L=Los Angeles/O=Internet Corporation for Assigned Names and Numbers/OU=Technology/CN=www.example.org i:/C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA 1 s:/C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA i:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA 2 s:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA i:/C=US/O=DigiCert Inc/OU=www."/>
+
+<meta property="og:title" content="Testing SSL Vulnerabilities and Implementing PFS" />
+<meta property="og:description" content="A. Testing SSL vulnerabilities Link to heading View a web server certificate # openssl s_client -connect example.com:443 CONNECTED(00000003) depth=2 /C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA verify error:num=19:self signed certificate in certificate chain verify return:0 --- Certificate chain 0 s:/C=US/ST=California/L=Los Angeles/O=Internet Corporation for Assigned Names and Numbers/OU=Technology/CN=www.example.org i:/C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA 1 s:/C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA i:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA 2 s:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA i:/C=US/O=DigiCert Inc/OU=www." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.example.com/posts/testing-ssl-vulnerabilities-and-implementing-perfect-forward-secrecy/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-05-21T01:18:37-05:00" />
+<meta property="article:modified_time" content="2019-05-21T01:18:37-05:00" />
+
+
+
+
+<link rel="canonical" href="http://www.example.com/posts/testing-ssl-vulnerabilities-and-implementing-perfect-forward-secrecy/">
+
+
+<link rel="preload" href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.36f76aaf39a14ecf5c3a3c6250dcaf06c238b3d8365d17d646f95cb1874e852b.css" integrity="sha256-NvdqrzmhTs9cOjxiUNyvBsI4s9g2XRfWRvlcsYdOhSs=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.593028e7f7ac55c003b79c230d1cd411bb4ca53b31556c3abb7f027170e646e9.css" integrity="sha256-WTAo5/esVcADt5wjDRzUEbtMpTsxVWw6u38CcXDmRuk=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<meta name="generator" content="Hugo 0.110.0">
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">
+      johndoeyo
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/posts/">Blog</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.example.com/posts/testing-ssl-vulnerabilities-and-implementing-perfect-forward-secrecy/">
+              Testing SSL Vulnerabilities and Implementing PFS
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              <time datetime="2019-05-21T01:18:37-05:00">
+                May 21, 2019
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              7-minute read
+            </span>
+          </div>
+          
+          
+          
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <h3 id="a-testing-ssl-vulnerabilities">
+  A. Testing SSL vulnerabilities
+  <a class="heading-link" href="#a-testing-ssl-vulnerabilities">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>View a web server certificate</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # openssl s_client -connect example.com:443
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    CONNECTED(00000003)
+</span></span><span style="display:flex;"><span>    depth=2 /C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA
+</span></span><span style="display:flex;"><span>    verify error:num=19:self signed certificate in certificate chain
+</span></span><span style="display:flex;"><span>    verify return:0
+</span></span><span style="display:flex;"><span>    ---
+</span></span><span style="display:flex;"><span>    Certificate chain
+</span></span><span style="display:flex;"><span>     0 s:/C=US/ST=California/L=Los Angeles/O=Internet Corporation for Assigned Names and Numbers/OU=Technology/CN=www.example.org
+</span></span><span style="display:flex;"><span>       i:/C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA
+</span></span><span style="display:flex;"><span>     1 s:/C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA
+</span></span><span style="display:flex;"><span>       i:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA
+</span></span><span style="display:flex;"><span>     2 s:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA
+</span></span><span style="display:flex;"><span>       i:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA
+</span></span><span style="display:flex;"><span>    ---
+</span></span><span style="display:flex;"><span>    Server certificate
+</span></span><span style="display:flex;"><span>    -----BEGIN CERTIFICATE-----
+</span></span><span style="display:flex;"><span>    MIIHQDCCBiigAwIBAgIQD9B43Ujxor1NDyupa2A4/jANBgkqhkiG9w0BAQsFADBN
+</span></span><span style="display:flex;"><span>    MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMScwJQYDVQQDEx5E
+</span></span><span style="display:flex;"><span>    aWdpQ2VydCBTSEEyIFNlY3VyZSBTZXJ2ZXIgQ0EwHhcNMTgxMTI4MDAwMDAwWhcN
+</span></span><span style="display:flex;"><span>    MjAxMjAyMTIwMDAwWjCBpTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3Ju
+</span></span><span style="display:flex;"><span>    aWExFDASBgNVBAcTC0xvcyBBbmdlbGVzMTwwOgYDVQQKEzNJbnRlcm5ldCBDb3Jw
+</span></span><span style="display:flex;"><span>    b3JhdGlvbiBmb3IgQXNzaWduZWQgTmFtZXMgYW5kIE51bWJlcnMxEzARBgNVBAsT
+</span></span><span style="display:flex;"><span>    ClRlY2hub2xvZ3kxGDAWBgNVBAMTD3d3dy5leGFtcGxlLm9yZzCCASIwDQYJKoZI
+</span></span></code></pre></div><ol start="2">
+<li>Check which SSL/TLS protocols are enabled on a web server <!-- raw HTML omitted --><!-- raw HTML omitted -->
+To see if the web server supports a particular protocol (e.g. TLSv1), run the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # openssl s_client –tls1 -connect example.com:443
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    CONNECTED(00000003)
+</span></span><span style="display:flex;"><span>    2666:error:14094410:SSL routines:SSL3_READ_BYTES:sslv3 alert handshake failure:/BuildRoot/Library/Caches/com.apple.xbs/Sources/OpenSSL098/OpenSSL098-64.50.7/src/ssl/s3_pkt.c:1145:SSL alert number 40
+</span></span><span style="display:flex;"><span>    2666:error:1409E0E5:SSL routines:SSL3_WRITE_BYTES:ssl handshake failure:/BuildRoot/Library/Caches/com.apple.xbs/Sources/OpenSSL098/OpenSSL098-64.50.7/src/ssl/s3_pkt.c:566:
+</span></span></code></pre></div><p>If it returns the above, it means the web server does not support TLSv1 protocol.<br>
+But if it returns the following, then it means the web server supports TLSv1 protocol;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # openssl s_client –tls1 -connect example.com:443
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    CONNECTED(00000003)
+</span></span><span style="display:flex;"><span>    depth=2 /C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA
+</span></span><span style="display:flex;"><span>    verify error:num=19:self signed certificate in certificate chain
+</span></span><span style="display:flex;"><span>    verify return:0
+</span></span><span style="display:flex;"><span>    ---
+</span></span><span style="display:flex;"><span>    Certificate chain
+</span></span></code></pre></div><ol start="3">
+<li>List all cipher suites supported by a web server <!-- raw HTML omitted --><!-- raw HTML omitted -->
+There are two tools which can show which cipher suites are supported by a web server; sslscan and nmap.<!-- raw HTML omitted --><!-- raw HTML omitted -->
+<em><strong>sslscan</strong></em> (<a href="https://github.com/rbsec/sslscan)">https://github.com/rbsec/sslscan)</a>:<br>
+To see all the Preferred/Accepted cipher suites by a web server;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # sslscan example.com | egrep &#34;Preferred|Accepted&#34;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    Preferred TLSv1.2  128 bits  ECDHE-RSA-AES128-GCM-SHA256   Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  ECDHE-RSA-AES256-GCM-SHA384   Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  ECDHE-RSA-AES128-SHA256       Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  ECDHE-RSA-AES128-SHA          Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  ECDHE-RSA-AES256-SHA384       Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  ECDHE-RSA-AES256-SHA          Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  AES128-GCM-SHA256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  AES256-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  CAMELLIA256-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  AES128-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  CAMELLIA128-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  SEED-SHA
+</span></span><span style="display:flex;"><span>    Preferred TLSv1.1  128 bits  ECDHE-RSA-AES128-SHA          Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.1  256 bits  ECDHE-RSA-AES256-SHA          Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.1  256 bits  AES256-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.1  256 bits  CAMELLIA256-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.1  128 bits  AES128-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.1  128 bits  CAMELLIA128-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.1  128 bits  SEED-SHA
+</span></span><span style="display:flex;"><span>    Preferred TLSv1.0  128 bits  ECDHE-RSA-AES128-SHA          Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.0  256 bits  ECDHE-RSA-AES256-SHA          Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.0  256 bits  AES256-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.0  256 bits  CAMELLIA256-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.0  128 bits  AES128-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.0  128 bits  CAMELLIA128-SHA
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.0  128 bits  SEED-SHA
+</span></span></code></pre></div><p><em><strong>nmap</strong></em> (<a href="https://nmap.org/)">https://nmap.org/)</a>:<br>
+To see all the TLS cipher suites that are supported by a web server;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # nmap -sV --script ssl-enum-ciphers -p 443 example.com | grep -i TLS*
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    |   TLSv1.0:
+</span></span><span style="display:flex;"><span>    |       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A
+</span></span><span style="display:flex;"><span>    |       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_CAMELLIA_256_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_CAMELLIA_128_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_SEED_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |   TLSv1.1:
+</span></span><span style="display:flex;"><span>    |       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A
+</span></span><span style="display:flex;"><span>    |       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_CAMELLIA_256_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_CAMELLIA_128_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_SEED_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |   TLSv1.2:
+</span></span><span style="display:flex;"><span>    |       TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (secp256r1) - A
+</span></span><span style="display:flex;"><span>    |       TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (secp256r1) - A
+</span></span><span style="display:flex;"><span>    |       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 (secp256r1) - A
+</span></span><span style="display:flex;"><span>    |       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A
+</span></span><span style="display:flex;"><span>    |       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384 (secp256r1) - A
+</span></span><span style="display:flex;"><span>    |       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_AES_128_GCM_SHA256 (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_CAMELLIA_256_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_CAMELLIA_128_CBC_SHA (rsa 2048) - A
+</span></span><span style="display:flex;"><span>    |       TLS_RSA_WITH_SEED_CBC_SHA (rsa 2048) – A
+</span></span></code></pre></div><p>In here, <code>A</code> is a grade which indicates the strength of the cipher.</p>
+<ol start="4">
+<li>Check if a web server certificate chain has any issues
+Run the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # openssl s_client -connect example.com:443
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    SSL-Session:
+</span></span><span style="display:flex;"><span>        Protocol  : TLSv1
+</span></span><span style="display:flex;"><span>        Cipher    : AES256-SHA
+</span></span><span style="display:flex;"><span>        Session-ID: 5CB34B1CE1D0390047899FD91558E13FE6BBCA836839CA1705F2177B97624BC1
+</span></span><span style="display:flex;"><span>        Session-ID-ctx:
+</span></span><span style="display:flex;"><span>        Master-Key: ED54539CF33A477D8298B13D7F61D92CF63F19E9FEE15DEE38F4D215AFD0B99D35459C456FB9D4CA82813DB70286707A
+</span></span><span style="display:flex;"><span>        Key-Arg   : None
+</span></span><span style="display:flex;"><span>        Start Time: 1565368406
+</span></span><span style="display:flex;"><span>        Timeout   : 300 (sec)
+</span></span><span style="display:flex;"><span>        Verify return code: 0 (ok)
+</span></span></code></pre></div><p>If it returns <code>Verify return code: 0 (ok)</code> at the end of the output, then it indicates that there is no certificate chain issue with this web server.</p>
+<ol start="5">
+<li>Check if renegotiation is enabled <!-- raw HTML omitted --><!-- raw HTML omitted -->
+SSL protocol that allows server/client to renegotiate new encryption key during an existing session will create a vulnerability by exploiting the flaw in the renegotiation process. <!-- raw HTML omitted --><!-- raw HTML omitted -->
+a.	Check if server renegotiation is allowed;<br>
+Run the following to check if renegotiation is enabled in a web server;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # openssl s_client -connect example.com:443
+</span></span></code></pre></div><p>If it returns <code>Secure Renegotiation IS supported</code> like the following, then it means the server allows key renegotiation;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    New, TLSv1/SSLv3, Cipher is AES256-SHA
+</span></span><span style="display:flex;"><span>    Server public key is 2048 bit
+</span></span><span style="display:flex;"><span>    Secure Renegotiation IS supported
+</span></span><span style="display:flex;"><span>    Compression: NONE
+</span></span><span style="display:flex;"><span>    Expansion: NONE
+</span></span></code></pre></div><p>If it does not support key renegotiation, then you will get the following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    New, TLSv1/SSLv3, Cipher is ECDHE-RSA-AES128-GCM-SHA256
+</span></span><span style="display:flex;"><span>    Server public key is 2048 bit
+</span></span><span style="display:flex;"><span>    Secure Renegotiation IS NOT supported
+</span></span><span style="display:flex;"><span>    Compression: NONE
+</span></span><span style="display:flex;"><span>    Expansion: NONE
+</span></span></code></pre></div><p>b.	Check client renegotiation is allowed;<br>
+To test if you site supports client-initiated renegotiation, run the following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # openssl s_client -connect example.com:443
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    New, TLSv1/SSLv3, Cipher is AES256-SHA
+</span></span><span style="display:flex;"><span>    Server public key is 2048 bit
+</span></span><span style="display:flex;"><span>    Secure Renegotiation IS supported
+</span></span><span style="display:flex;"><span>    Compression: NONE
+</span></span><span style="display:flex;"><span>    Expansion: NONE
+</span></span><span style="display:flex;"><span>    SSL-Session:
+</span></span><span style="display:flex;"><span>        Protocol  : TLSv1
+</span></span><span style="display:flex;"><span>        Cipher    : AES256-SHA
+</span></span><span style="display:flex;"><span>        Session-ID: 5CB34B1CE1D0390047899FD91558E13FE6BBCA836839CA1705F2177B97624BC1
+</span></span><span style="display:flex;"><span>        Session-ID-ctx:
+</span></span><span style="display:flex;"><span>        Master-Key: ED54539CF33A477D8298B13D7F61D92CF63F19E9FEE15DEE38F4D215AFD0B99D35459C456FB9D4CA82813DB70286707A
+</span></span><span style="display:flex;"><span>        Key-Arg   : None
+</span></span><span style="display:flex;"><span>        Start Time: 1565368406
+</span></span><span style="display:flex;"><span>        Timeout   : 300 (sec)
+</span></span><span style="display:flex;"><span>        Verify return code: 0 (ok)
+</span></span><span style="display:flex;"><span>    ---
+</span></span></code></pre></div><p>At this point, type the following two line and press <code>Enter</code>;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    HEAD / HTTP/1.0
+</span></span><span style="display:flex;"><span>    R
+</span></span></code></pre></div><p>If your site supports client-initiated renegotiation, then you will see the following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    RENEGOTIATING
+</span></span><span style="display:flex;"><span>    depth=3 C = SE, O = AddTrust AB, OU = AddTrust External TTP Network, CN = AddTrust External CA Root
+</span></span><span style="display:flex;"><span>    verify return:1
+</span></span><span style="display:flex;"><span>    depth=2 C = GB, ST = Greater Manchester, L = Salford, O = COMODO CA Limited, CN = COMODO RSA Certification Authority
+</span></span><span style="display:flex;"><span>    verify return:1
+</span></span></code></pre></div><p>If your site does not support client-initiated renegotiation, then you will see the following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    HEAD / HTTP/1.0
+</span></span><span style="display:flex;"><span>    R
+</span></span><span style="display:flex;"><span>    RENEGOTIATING
+</span></span><span style="display:flex;"><span>    write:errno=104
+</span></span></code></pre></div><ol start="6">
+<li>Check if TLS compression is enabled <!-- raw HTML omitted --><!-- raw HTML omitted -->
+Run the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # openssl s_client -connect example.com:443
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    New, TLSv1/SSLv3, Cipher is AES256-SHA
+</span></span><span style="display:flex;"><span>    Server public key is 2048 bit
+</span></span><span style="display:flex;"><span>    Secure Renegotiation IS supported
+</span></span><span style="display:flex;"><span>    Compression: zlib compression
+</span></span><span style="display:flex;"><span>    Expansion: NONE
+</span></span><span style="display:flex;"><span>    SSL-Session:
+</span></span><span style="display:flex;"><span>        Protocol  : TLSv1
+</span></span><span style="display:flex;"><span>        Cipher    : AES256-SHA
+</span></span><span style="display:flex;"><span>        Session-ID: 101A5E9F6A5DF484B5D7E0D7D9FD288A3E852C53E148CC8489F72993D8643C72
+</span></span><span style="display:flex;"><span>        Session-ID-ctx:
+</span></span><span style="display:flex;"><span>        Master-Key: 20F51322F08487907DFF0AB3842095E346F5FAC27863F3ECD0F76D023FF1FE67BE9CA72E03B120EC39DA79B598EB87C1
+</span></span><span style="display:flex;"><span>        Key-Arg   : None
+</span></span><span style="display:flex;"><span>        Start Time: 1565373289
+</span></span><span style="display:flex;"><span>        Timeout   : 300 (sec)
+</span></span><span style="display:flex;"><span>        Verify return code: 0 (ok)
+</span></span><span style="display:flex;"><span>    ---
+</span></span></code></pre></div><p>If you see the above, then it means compression is enabled and it is using zlib data compression.<br>
+But if you see the following, then it means compression is disabled;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # openssl s_client -connect example.com:443
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    New, TLSv1/SSLv3, Cipher is AES256-SHA
+</span></span><span style="display:flex;"><span>    Server public key is 2048 bit
+</span></span><span style="display:flex;"><span>    Secure Renegotiation IS supported
+</span></span><span style="display:flex;"><span>    Compression: NONE
+</span></span><span style="display:flex;"><span>    Expansion: NONE
+</span></span><span style="display:flex;"><span>    SSL-Session:
+</span></span><span style="display:flex;"><span>        Protocol  : TLSv1
+</span></span><span style="display:flex;"><span>        Cipher    : AES256-SHA
+</span></span><span style="display:flex;"><span>        Session-ID: 101A5E9F6A5DF484B5D7E0D7D9FD288A3E852C53E148CC8489F72993D8643C72
+</span></span><span style="display:flex;"><span>        Session-ID-ctx:
+</span></span><span style="display:flex;"><span>        Master-Key: 20F51322F08487907DFF0AB3842095E346F5FAC27863F3ECD0F76D023FF1FE67BE9CA72E03B120EC39DA79B598EB87C1
+</span></span><span style="display:flex;"><span>        Key-Arg   : None
+</span></span><span style="display:flex;"><span>        Start Time: 1565373289
+</span></span><span style="display:flex;"><span>        Timeout   : 300 (sec)
+</span></span><span style="display:flex;"><span>        Verify return code: 0 (ok)
+</span></span><span style="display:flex;"><span>    ---
+</span></span></code></pre></div><hr>
+<h3 id="b-implementing-perfect-forward-secrecy">
+  B. Implementing Perfect Forward Secrecy
+  <a class="heading-link" href="#b-implementing-perfect-forward-secrecy">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<h4 id="configure-apache-with-pfs">
+  Configure Apache with PFS
+  <a class="heading-link" href="#configure-apache-with-pfs">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<ol>
+<li>Find all vhosts where SSL is configured;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># egrep -r &#34;SSLEngine&#34; /etc/httpd/
+</span></span></code></pre></div><ol start="2">
+<li>Modify each vhost to the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # Only allow TLSv1.2 and TLSv1.3
+</span></span><span style="display:flex;"><span>    SSLProtocol &#34;-all +TLSv1.2 +TLSv1.3&#34;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    # Choose cipher suites which allows Perfect Forward Secrecy
+</span></span><span style="display:flex;"><span>    SSLCipherSuite &#34;EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH+aRSA+RC4 EECDH EDH+aRSA RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS !RC4 !SHA !DHE&#34;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    # Instead of client preference of the cipher suite during handshake, server’s preference will be used 
+</span></span><span style="display:flex;"><span>    SSLHonorCipherOrder on
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    # Disable Session Tickets
+</span></span><span style="display:flex;"><span>    SSLSessionTickets off
+</span></span></code></pre></div><ol start="3">
+<li>Restart httpd;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # /sbin/services httpd restart
+</span></span></code></pre></div><ol start="4">
+<li>Check supported cipher suites on the web server;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # sslscan serv1.example.com:443
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Preferred TLSv1.2  128 bits  ECDHE-RSA-AES128-GCM-SHA256   Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  ECDHE-RSA-AES256-GCM-SHA384   Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  ECDHE-RSA-AES128-SHA256       Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  ECDHE-RSA-AES256-SHA384       Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  AES128-GCM-SHA256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  AES128-SHA256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  AES256-GCM-SHA384
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  AES256-SHA256
+</span></span></code></pre></div><h4 id="configure-f5-virtual-servers-with-pfs">
+  Configure F5 Virtual Servers with PFS
+  <a class="heading-link" href="#configure-f5-virtual-servers-with-pfs">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<ol>
+<li>Go to <code>Local Traffic &gt; Profiles &gt; SSL &gt; Clients</code> and open the client SSL profile where you want to implement PFS. Select <code>Configuration</code> as <code>Advanced</code>, select <code>Ciphers</code> as <code>Custom</code> and then use the following string;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    ECDHE+AES-GCM:NATIVE:!MD5:!EXPORT:!DES:!DHE:!EDH:!RC4:!ADH:!SSLv3:!TLSv1:!SHA
+</span></span></code></pre></div><ol start="2">
+<li>Check supported cipher suites on the VIP;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    # sslscan example.com:443
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Preferred TLSv1.2  128 bits  ECDHE-RSA-AES128-GCM-SHA256   Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  ECDHE-RSA-AES256-GCM-SHA384   Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  ECDHE-RSA-AES128-SHA256       Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  ECDHE-RSA-AES256-SHA384       Curve P-256 DHE 256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  AES128-GCM-SHA256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  128 bits  AES128-SHA256
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  AES256-GCM-SHA384
+</span></span><span style="display:flex;"><span>    Accepted  TLSv1.2  256 bits  AES256-SHA256
+</span></span></code></pre></div>
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2023
+     John De 
+    ·
+    
+    Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

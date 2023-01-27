@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+  Installing Jenkins on Tomcat · johndoeyo
+</title>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="John De">
+<meta name="description" content="Operating System: RHEL 6.5
+Web Server: Tomcat 8.5
+A. Install Java Link to heading Install OpenJDK; # yum install java-x.x.x-openjdk.x86_64 Check Java version; # java -version openjdk version &#34;x.x.x_xxx&#34; OpenJDK Runtime Environment (build x.x.x_xxx-xxx) OpenJDK 64-Bit Server VM (build xx.xxx-xxx, mixed mode) Setup JAVA_HOME and JRE_HOME path for all user; # sudo cp /etc/profile /etc/profile_backup # echo &#39;export JAVA_HOME=/usr/lib/jvm/jre-x.x.x-openjdk&#39; | sudo tee -a /etc/profile # echo &#39;export JRE_HOME=/usr/lib/jvm/jre&#39; | sudo tee -a /etc/profile source /etc/profile Verify the paths; # echo $JAVA_HOME /usr/lib/jvm/jre-x.">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Installing Jenkins on Tomcat"/>
+<meta name="twitter:description" content="Operating System: RHEL 6.5
+Web Server: Tomcat 8.5
+A. Install Java Link to heading Install OpenJDK; # yum install java-x.x.x-openjdk.x86_64 Check Java version; # java -version openjdk version &#34;x.x.x_xxx&#34; OpenJDK Runtime Environment (build x.x.x_xxx-xxx) OpenJDK 64-Bit Server VM (build xx.xxx-xxx, mixed mode) Setup JAVA_HOME and JRE_HOME path for all user; # sudo cp /etc/profile /etc/profile_backup # echo &#39;export JAVA_HOME=/usr/lib/jvm/jre-x.x.x-openjdk&#39; | sudo tee -a /etc/profile # echo &#39;export JRE_HOME=/usr/lib/jvm/jre&#39; | sudo tee -a /etc/profile source /etc/profile Verify the paths; # echo $JAVA_HOME /usr/lib/jvm/jre-x."/>
+
+<meta property="og:title" content="Installing Jenkins on Tomcat" />
+<meta property="og:description" content="Operating System: RHEL 6.5
+Web Server: Tomcat 8.5
+A. Install Java Link to heading Install OpenJDK; # yum install java-x.x.x-openjdk.x86_64 Check Java version; # java -version openjdk version &#34;x.x.x_xxx&#34; OpenJDK Runtime Environment (build x.x.x_xxx-xxx) OpenJDK 64-Bit Server VM (build xx.xxx-xxx, mixed mode) Setup JAVA_HOME and JRE_HOME path for all user; # sudo cp /etc/profile /etc/profile_backup # echo &#39;export JAVA_HOME=/usr/lib/jvm/jre-x.x.x-openjdk&#39; | sudo tee -a /etc/profile # echo &#39;export JRE_HOME=/usr/lib/jvm/jre&#39; | sudo tee -a /etc/profile source /etc/profile Verify the paths; # echo $JAVA_HOME /usr/lib/jvm/jre-x." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.example.com/posts/installing-jenkins-on-tomcat/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-07-12T01:18:37-05:00" />
+<meta property="article:modified_time" content="2018-07-12T01:18:37-05:00" />
+
+
+
+
+<link rel="canonical" href="http://www.example.com/posts/installing-jenkins-on-tomcat/">
+
+
+<link rel="preload" href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.36f76aaf39a14ecf5c3a3c6250dcaf06c238b3d8365d17d646f95cb1874e852b.css" integrity="sha256-NvdqrzmhTs9cOjxiUNyvBsI4s9g2XRfWRvlcsYdOhSs=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.593028e7f7ac55c003b79c230d1cd411bb4ca53b31556c3abb7f027170e646e9.css" integrity="sha256-WTAo5/esVcADt5wjDRzUEbtMpTsxVWw6u38CcXDmRuk=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<meta name="generator" content="Hugo 0.110.0">
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">
+      johndoeyo
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/posts/">Blog</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.example.com/posts/installing-jenkins-on-tomcat/">
+              Installing Jenkins on Tomcat
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              <time datetime="2018-07-12T01:18:37-05:00">
+                Jul 12, 2018
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              4-minute read
+            </span>
+          </div>
+          
+          
+          
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <blockquote>
+<p>Operating System: <em>RHEL 6.5</em><br>
+Web Server: <em>Tomcat 8.5</em></p>
+</blockquote>
+<hr>
+<h3 id="a-install-java">
+  A. Install Java
+  <a class="heading-link" href="#a-install-java">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Install OpenJDK;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># yum install java-x.x.x-openjdk.x86_64
+</span></span></code></pre></div><ol start="2">
+<li>Check Java version;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># java -version
+</span></span><span style="display:flex;"><span>openjdk version &#34;x.x.x_xxx&#34;
+</span></span><span style="display:flex;"><span>OpenJDK Runtime Environment (build x.x.x_xxx-xxx)
+</span></span><span style="display:flex;"><span>OpenJDK 64-Bit Server VM (build xx.xxx-xxx, mixed mode)
+</span></span></code></pre></div><ol start="3">
+<li>Setup <code>JAVA_HOME</code> and <code>JRE_HOME</code> path for all user;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># sudo cp /etc/profile /etc/profile_backup
+</span></span><span style="display:flex;"><span># echo &#39;export JAVA_HOME=/usr/lib/jvm/jre-x.x.x-openjdk&#39; | sudo tee -a /etc/profile
+</span></span><span style="display:flex;"><span># echo &#39;export JRE_HOME=/usr/lib/jvm/jre&#39; | sudo tee -a /etc/profile
+</span></span><span style="display:flex;"><span>source /etc/profile
+</span></span></code></pre></div><ol start="4">
+<li>Verify the paths;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># echo $JAVA_HOME
+</span></span><span style="display:flex;"><span>/usr/lib/jvm/jre-x.x.x-openjdk
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># echo $JRE_HOME
+</span></span><span style="display:flex;"><span>/usr/lib/jvm/jre
+</span></span></code></pre></div><hr>
+<h3 id="b-install-tomcat">
+  B. Install Tomcat
+  <a class="heading-link" href="#b-install-tomcat">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Download Tomcat from <code>http://tomcat.apache.org/</code> and extract;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># cd /opt
+</span></span><span style="display:flex;"><span># wget http://us.mirrors.quenda.co/apache/tomcat/tomcat-x/vx.x.xx/bin/apache-tomcat-x.x.xx.tar.gz
+</span></span><span style="display:flex;"><span># tar xzf apache-tomcat-x.x.xx
+</span></span><span style="display:flex;"><span># mv apache-tomcat-x.x.xx tomcat
+</span></span></code></pre></div><ol start="2">
+<li>Configure a Tomcat user for Tomcat Web Application Manager;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># vi /opt/tomcat/conf/tomcat-users.xml
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    &lt;?xml version=&#39;1.0&#39; encoding=&#39;utf-8&#39;?&gt;
+</span></span><span style="display:flex;"><span>    &lt;tomcat-users&gt;
+</span></span><span style="display:flex;"><span>        &lt;role rolename=&#34;manager-gui&#34;/&gt;
+</span></span><span style="display:flex;"><span>        &lt;role rolename=&#34;manager-script&#34;/&gt;
+</span></span><span style="display:flex;"><span>        &lt;role rolename=&#34;manager-jmx&#34;/&gt;
+</span></span><span style="display:flex;"><span>        &lt;role rolename=&#34;manager-status&#34;/&gt;
+</span></span><span style="display:flex;"><span>        &lt;role rolename=&#34;admin-gui&#34;/&gt;
+</span></span><span style="display:flex;"><span>        &lt;role rolename=&#34;admin-script&#34;/&gt;
+</span></span><span style="display:flex;"><span>        &lt;user username=&#34;tomcat&#34; password=&#34;tomcat&#34; roles=&#34;manager-gui,manager-script,manager-jmx,manager-status,admin-gui,admin-script&#34;/&gt;
+</span></span><span style="display:flex;"><span>    &lt;/tomcat-users&gt;
+</span></span></code></pre></div><ol start="3">
+<li>Open port <code>8080</code> from firewalld and reload the configuration;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># firewall-cmd --zone=public --permanent --add-port=8080/tcp
+</span></span><span style="display:flex;"><span># firewall-cmd –reload
+</span></span></code></pre></div><ol start="4">
+<li>Start tomcat;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># cd /opt/tomcat/bin
+</span></span><span style="display:flex;"><span># ./startup.sh
+</span></span></code></pre></div><ol start="5">
+<li>Check if the server is listening on port 8080;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># netstat -an | grep 8080
+</span></span><span style="display:flex;"><span>tcp6       0      0 :::8080       :::*          LISTEN
+</span></span></code></pre></div><ol start="6">
+<li>Browse to <code>http://localhost:8080</code> and Tomcat index page should load.</li>
+</ol>
+<hr>
+<h3 id="c-install-jenkins">
+  C. Install Jenkins
+  <a class="heading-link" href="#c-install-jenkins">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Download the WAR from <code>http://mirrors.jenkins.io/war-stable/latest/jenkins.war</code>;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># cd /opt
+</span></span><span style="display:flex;"><span># wget http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+</span></span></code></pre></div><ol start="2">
+<li>Jenkins saves configuration/jobs file under <code>/home/USER/.jenkins</code> directory by default. To choose a different location, define <code>JENKINS_HOME</code> in path;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># mkdir /opt/jenkins
+</span></span><span style="display:flex;"><span># echo &#39;export JENKINS_HOME=/opt/jenkins/&#39; | sudo tee -a /etc/profile
+</span></span><span style="display:flex;"><span>source /etc/profile
+</span></span></code></pre></div><ol start="3">
+<li>
+<p>Login to Tomcat Web Application Manager, <code>http://localhost:8080/manager/html</code> with <code>tomcat</code> user that we have configured in <code>tomcat-users.xml</code> file.</p>
+</li>
+<li>
+<p>Go to the Deploy section and complete as following;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Context Path: /jenkins
+</span></span><span style="display:flex;"><span>WAR or Directory URL: /opt/jenkins.war
+</span></span></code></pre></div><p>Click on Deploy.</p>
+<ol start="5">
+<li>
+<p>Check if Jenkins has started running by looking at the <code>Running</code> column of the Application lists.</p>
+</li>
+<li>
+<p>Go to <code>http://localhost:8080/jenkins</code> and it will ask to <code>Unlock Jenkins</code>. Copy the content and run it in terminal;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># cat /USER/.jenkins/secrets/initialAdminPassword
+</span></span><span style="display:flex;"><span>  98073dfbfabe4cc8961b1225a171f8db
+</span></span></code></pre></div><p>Paste the <code>secret</code> to the browser and press Continue.</p>
+<ol start="7">
+<li>The next page will ask you to <code>Install plugins</code>. You can either choose <code>Install Suggested Plugins</code> or you can choose <code>Select plugins to Install</code>. You can remove/add new plugins later from GUI by visiting <code>Manage Jenkins &gt; Manage Plugins</code>.</li>
+<li>After plugin installation is complete, it will ask you to create a new admin account. Create the account and click Continue.</li>
+<li>In the <code>Instance Configuration</code> page, it will ask for the Jenkins URL. If you prefer to have FQDN name (e.g. <code>https://example.com/jenkins</code>), set it here.</li>
+</ol>
+<hr>
+<p><strong>Configuring Publish Over SSH plugin</strong></p>
+<p>This plugin can be used to push code before build starts or after build finishes to a remote application server using SSH protocol. For example, if you have your code hosted in a Jenkins server and you want to push build artifacts upon completion of build process to an application servers, then this plugin can do it for you.<!-- raw HTML omitted --><!-- raw HTML omitted -->
+Here is an example environment which we will use to configure this plugin;<br>
+Jenkins server: <em>jenkins1</em><br>
+Application server: <em>app1</em><br>
+Jenkins user (exists on both jenkins1 and app1): <em>juser</em></p>
+<p>To install the plugin and configure the plugin for remote application server, do the following;</p>
+<ol>
+<li>
+<p>Go to <code>Manage Jenkins &gt; Manage Plugins</code> and search for <code>publish over ssh</code> and then install the plugin.</p>
+</li>
+<li>
+<p>Create an user, <code>juser</code> on both <code>jenkins1</code> and <code>app1</code>.</p>
+</li>
+<li>
+<p>Create ssh key in the <code>jenkins1</code> for <code>juser</code>;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># ssh-keygen
+</span></span></code></pre></div><ol start="3">
+<li>Copy the public key of <code>juser</code> in <code>jenkins1</code> to <code>app1</code>;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># ssh-copy-id -i id_rsa.pub juser@app1 
+</span></span></code></pre></div><ol start="4">
+<li>Login to <code>app1</code> as <code>juser</code> and check if it has the <code>authorized_keys</code> file;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># ls -la /usr/juser/.ssh/
+</span></span><span style="display:flex;"><span>total 4
+</span></span><span style="display:flex;"><span>-rw------- 1 juser juser 397 Oct  1 15:53 authorized_keys
+</span></span></code></pre></div><ol start="5">
+<li>Login to <code>jenkins1</code> server as <code>juser</code> and check if <code>app1</code> server info is listed in <code>known_hosts</code> file;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># cat /usr/juser/.ssh/known_hosts | grep system
+</span></span></code></pre></div><ol start="6">
+<li>Login to <code>jenkins1</code> GUI, and go to <code>Manage Jenkins &gt; Configure System</code>. In the <code>Publish over SSH</code> section, add the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Path to key=/usr/juser/.ssh/id_rsa
+</span></span><span style="display:flex;"><span>SSH Servers
+</span></span><span style="display:flex;"><span>Name=Application
+</span></span><span style="display:flex;"><span>Hostname=app1.example.com
+</span></span><span style="display:flex;"><span>Username=juser
+</span></span></code></pre></div><p>Click on <code>Test Configuration</code> and it should yield <code>Success</code>. If not, verify that <code>juser</code> can ssh to <code>app1</code> from <code>jenkins1</code> without password.</p>
+<hr>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2023
+     John De 
+    ·
+    
+    Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

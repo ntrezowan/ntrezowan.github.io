@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+  Installing SSL on Tomcat Server · johndoeyo
+</title>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="John De">
+<meta name="description" content="A. Red Hat Enterprise Linux Link to heading Java Keytool location: /usr/bin/java
+Tomcat config location: /opt/tomcat/conf
+Tomcat keystore location: /opt/tomcat/conf/certs
+1. Create new keystore to install a new certificate Link to heading Login to the server and create new keystore (SHA-2) in the Tomcat keystore folder; # /usr/bin/java/keytool -genkey -alias example.com -keyalg RSA -keystore /opt/tomcat/conf/certs/example.com.jks -keysize 2048 Enter keystore password: Re-enter new password: What is your first and last name?">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Installing SSL on Tomcat Server"/>
+<meta name="twitter:description" content="A. Red Hat Enterprise Linux Link to heading Java Keytool location: /usr/bin/java
+Tomcat config location: /opt/tomcat/conf
+Tomcat keystore location: /opt/tomcat/conf/certs
+1. Create new keystore to install a new certificate Link to heading Login to the server and create new keystore (SHA-2) in the Tomcat keystore folder; # /usr/bin/java/keytool -genkey -alias example.com -keyalg RSA -keystore /opt/tomcat/conf/certs/example.com.jks -keysize 2048 Enter keystore password: Re-enter new password: What is your first and last name?"/>
+
+<meta property="og:title" content="Installing SSL on Tomcat Server" />
+<meta property="og:description" content="A. Red Hat Enterprise Linux Link to heading Java Keytool location: /usr/bin/java
+Tomcat config location: /opt/tomcat/conf
+Tomcat keystore location: /opt/tomcat/conf/certs
+1. Create new keystore to install a new certificate Link to heading Login to the server and create new keystore (SHA-2) in the Tomcat keystore folder; # /usr/bin/java/keytool -genkey -alias example.com -keyalg RSA -keystore /opt/tomcat/conf/certs/example.com.jks -keysize 2048 Enter keystore password: Re-enter new password: What is your first and last name?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.example.com/posts/installing-ssl-on-tomcat-server/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2016-12-28T01:18:37-05:00" />
+<meta property="article:modified_time" content="2016-12-28T01:18:37-05:00" />
+
+
+
+
+<link rel="canonical" href="http://www.example.com/posts/installing-ssl-on-tomcat-server/">
+
+
+<link rel="preload" href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.36f76aaf39a14ecf5c3a3c6250dcaf06c238b3d8365d17d646f95cb1874e852b.css" integrity="sha256-NvdqrzmhTs9cOjxiUNyvBsI4s9g2XRfWRvlcsYdOhSs=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.593028e7f7ac55c003b79c230d1cd411bb4ca53b31556c3abb7f027170e646e9.css" integrity="sha256-WTAo5/esVcADt5wjDRzUEbtMpTsxVWw6u38CcXDmRuk=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<meta name="generator" content="Hugo 0.110.0">
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">
+      johndoeyo
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/posts/">Blog</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.example.com/posts/installing-ssl-on-tomcat-server/">
+              Installing SSL on Tomcat Server
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              <time datetime="2016-12-28T01:18:37-05:00">
+                Dec 28, 2016
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              6-minute read
+            </span>
+          </div>
+          
+          
+          
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <h2 id="a-red-hat-enterprise-linux">
+  A. Red Hat Enterprise Linux
+  <a class="heading-link" href="#a-red-hat-enterprise-linux">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Java Keytool location: <code>/usr/bin/java</code><br>
+Tomcat config location: <code>/opt/tomcat/conf</code><br>
+Tomcat keystore location: <code>/opt/tomcat/conf/certs</code></p>
+<h3 id="1-create-new-keystore-to-install-a-new-certificate">
+  1. Create new keystore to install a new certificate
+  <a class="heading-link" href="#1-create-new-keystore-to-install-a-new-certificate">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Login to the server and create new keystore (SHA-2) in the Tomcat keystore folder;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># /usr/bin/java/keytool -genkey -alias example.com -keyalg RSA -keystore /opt/tomcat/conf/certs/example.com.jks -keysize 2048
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span><span style="display:flex;"><span>Re-enter new password:
+</span></span><span style="display:flex;"><span>What is your first and last name?
+</span></span><span style="display:flex;"><span>  [Unknown]:  example.com
+</span></span><span style="display:flex;"><span>What is the name of your organizational unit?
+</span></span><span style="display:flex;"><span>  [Unknown]:  Information Technology
+</span></span><span style="display:flex;"><span>What is the name of your organization?
+</span></span><span style="display:flex;"><span>  [Unknown]:  Internet Assigned Numbers Authority
+</span></span><span style="display:flex;"><span>What is the name of your City or Locality?
+</span></span><span style="display:flex;"><span>  [Unknown]:  Los Angeles
+</span></span><span style="display:flex;"><span>What is the name of your State or Province?
+</span></span><span style="display:flex;"><span>  [Unknown]:  California
+</span></span><span style="display:flex;"><span>What is the two-letter country code for this unit?
+</span></span><span style="display:flex;"><span>  [Unknown]:  US
+</span></span><span style="display:flex;"><span>Is CN=example.com, OU=Information Technology, O=Internet Assigned Numbers Authority, L=Los Angeles, ST=California, C=US correct?
+</span></span><span style="display:flex;"><span>  [no]:  yes
+</span></span><span style="display:flex;"><span>Enter key password for &lt;example.com&gt;
+</span></span><span style="display:flex;"><span>	(RETURN if same as keystore password):
+</span></span><span style="display:flex;"><span>Re-enter new password:
+</span></span></code></pre></div><p>The password that is used here will require every time we open/modify this newly created keystore file.</p>
+<ol start="2">
+<li>Generate a new CSR for <code>example.com</code> domain;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># /usr/bin/java/keytool -certreq -alias example.com -keystore /opt/tomcat/conf/certs/example.com.jks -file /opt/tomcat/conf/certs/example.com.csr
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span></code></pre></div><ol start="3">
+<li>
+<p>Use <code>example.com.csr</code> to get a new certificate From a CA. Save intermediate certificate as <code>intermediate.crt</code> and site certificate as <code>example.com.crt</code>. Transfer both certs at <code>/opt/tomcat/conf/certs/</code>.</p>
+</li>
+<li>
+<p>Import intermediate certificate to the Tomcat keystore;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># /usr/bin/java/keytool -import -trustcacerts -alias intermediate -file /opt/tomcat/conf/certs/intermediate.crt -keystore /opt/tomcat/conf/certs/example.com.jks
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span><span style="display:flex;"><span>Certificate was added to keystore
+</span></span></code></pre></div><ol start="5">
+<li>Verify that intermediate certificate is imported correctly;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># /usr/bin/java/keytool -list -v -alias intermediate -keystore /opt/tomcat/conf/certs/example.com.jks | more
+</span></span></code></pre></div><ol start="6">
+<li>Import site certificate (example.com) to the Tomcat keystore;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># /usr/bin/java/keytool -import -alias example.com -trustcacerts -file /opt/tomcat/conf/certs/example.com.crt -keystore /opt/tomcat/conf/certs/example.com.jks
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span><span style="display:flex;"><span>Certificate reply was installed in keystore
+</span></span></code></pre></div><ol start="7">
+<li>Verify that site certificate is imported correctly;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># /usr/bin/java/keytool -list -v -alias example.com -keystore /opt/tomcat/conf/certs/example.com.jks | more
+</span></span></code></pre></div><ol start="8">
+<li>Open <code>server.xml</code> file located at <code>/opt/tomcat/conf/</code> and look for <code>keystoreFile</code> string. Modify it to the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>keystoreFile=&#34;conf/certs/example.com.jks&#34;
+</span></span></code></pre></div><ol start="9">
+<li>
+<p>Restart Apache Tomcat service.</p>
+</li>
+<li>
+<p>Verify the changes by visiting hosted site&rsquo;s certificate;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># openssl s_client -connect www.example.com:443 | openssl x509 -noout -issuer -subject -dates
+</span></span><span style="display:flex;"><span>depth=2 /C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA
+</span></span><span style="display:flex;"><span>verify error:num=19:self signed certificate in certificate chain
+</span></span><span style="display:flex;"><span>verify return:0
+</span></span><span style="display:flex;"><span>issuer= /C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA
+</span></span><span style="display:flex;"><span>subject= /C=US/ST=California/L=Los Angeles/O=Internet Corporation for Assigned Names and Numbers/OU=Technology/CN=www.example.org
+</span></span></code></pre></div><h3 id="2-renew-certificate-for-an-existing-keystore">
+  2. Renew certificate for an existing keystore
+  <a class="heading-link" href="#2-renew-certificate-for-an-existing-keystore">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>
+<p>Generate the CSR from from your machine and obtain the certificate from CA. Transfer both <code>example.com.crt</code> and <code>example.com.key</code> file to <code>/opt/tomcat/conf/certs/</code>.</p>
+</li>
+<li>
+<p>Create pcks12 using the crt and key;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># openssl pkcs12 -export -out /opt/tomcat/conf/certs/example.com.pfx -inkey /opt/tomcat/conf/certs/example.com.key -in /opt/tomcat/conf/certs/example.com.crt
+</span></span></code></pre></div><ol start="3">
+<li>Create jks using the pcks12 with an alias <code>example.com</code>;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># /usr/bin/java/keytool -importkeystore -srckeystore /opt/tomcat/conf/certs/example.pfx -srcstoretype pkcs12 -destkeystore /opt/tomcat/conf/certs/example.com.jks -deststoretype jks -destalias example.com
+</span></span></code></pre></div><ol start="4">
+<li>Check the certificate;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>#  /usr/bin/java/keytool -list -v -keystore /opt/tomcat/conf/certs/example.com.jks -alias example.com
+</span></span></code></pre></div><ol start="5">
+<li>Open <code>server.xml</code> file located at <code>/opt/tomcat/conf/</code> and look for <code>keystoreFile</code> string. Modify it to the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>keystoreFile=&#34;conf/certs/example.com.jks&#34;
+</span></span></code></pre></div><ol start="4">
+<li>
+<p>Restart Apache Tomcat service.</p>
+</li>
+<li>
+<p>Verify the changes by visiting hosted site&rsquo;s certificate.</p>
+</li>
+</ol>
+<h3 id="3-install-rootintermediate-to-java-keystore">
+  3. Install root/intermediate to Java keystore
+  <a class="heading-link" href="#3-install-rootintermediate-to-java-keystore">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>
+<p>The root/intermediate certs are stored in <code>cacerts</code> keystore file located in <code>/usr/bin/java/jre/lib/security/</code>.</p>
+</li>
+<li>
+<p>To install a root CA certificate, copy the root certificate to <code>/tmp</code> folder and save as <code>root.cer</code>. Run the following command to import the certificate;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># /usr/bin/java/keytool -import -alias rootca -file /tmp/root.cer -keystore /usr/bin/java/jre/lib/security/cacerts
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span></code></pre></div><p>Here the <code>cacerts</code> keystore password is <code>changeit</code> (Default).</p>
+<ol start="3">
+<li>To view all the root certificate, run the following command;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># /usr/bin/java/keytool -list -v -keystore /usr/bin/java/jre/lib/security/cacerts | grep Alias | sort
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span></code></pre></div><ol start="4">
+<li>If you want to add an intermediate to <code>cacerts</code>, run the following to add the intermediate (assuming <code>intermediate.cer</code> is in <code>/tmp</code>);</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># /usr/bin/java/keytool -import -alias intermediateca -file /tmp/intermediate.cer -keystore /usr/bin/java/jre/lib/security/cacerts
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span></code></pre></div><hr>
+<h2 id="b-windows-server">
+  B. Windows Server
+  <a class="heading-link" href="#b-windows-server">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Java Keytool location: <code>C:\Program Files\Java\jre\bin\</code><br>
+Tomcat config location: <code>C:\Program Files\Apache Tomcat\conf\</code><br>
+Tomcat keystore location: <code>C:\Program Files\Apache Tomcat\conf\SSL\</code></p>
+<h3 id="1-create-new-keystore-to-install-a-new-certificate-1">
+  1. Create new keystore to install a new certificate
+  <a class="heading-link" href="#1-create-new-keystore-to-install-a-new-certificate-1">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Open Command Prompt as Administrator and create new keystore (SHA-2) in the Tomcat keystore folder;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Apache Tomcat\conf\SSL\&gt;C:\Program Files\Java\jre\bin\keytool -genkey -alias example.com -keyalg RSA -keystore keystore-example.com.jks -keysize 2048  
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span><span style="display:flex;"><span>Re-enter new password:
+</span></span><span style="display:flex;"><span>What is your first and last name?
+</span></span><span style="display:flex;"><span>[Unknown]:  example.com
+</span></span><span style="display:flex;"><span>What is the name of your organizational unit?
+</span></span><span style="display:flex;"><span>[Unknown]:  Information Technology
+</span></span><span style="display:flex;"><span>What is the name of your organization?
+</span></span><span style="display:flex;"><span>[Unknown]:  Internet Assigned Numbers Authority
+</span></span><span style="display:flex;"><span>What is the name of your City or Locality?
+</span></span><span style="display:flex;"><span>[Unknown]:  Los Angeles
+</span></span><span style="display:flex;"><span>What is the name of your State or Province?
+</span></span><span style="display:flex;"><span>[Unknown]:  California
+</span></span><span style="display:flex;"><span>What is the two-letter country code for this unit?
+</span></span><span style="display:flex;"><span>[Unknown]:  US
+</span></span><span style="display:flex;"><span>Is CN=example.com, OU=Information Technology, O=Internet Assigned Numbers Authority, L=Los Angeles, ST=California, C=US correct?
+</span></span><span style="display:flex;"><span>  [no]:  yes
+</span></span><span style="display:flex;"><span>Enter key password for &lt;example.com&gt;
+</span></span><span style="display:flex;"><span>        (RETURN if same as keystore password):
+</span></span><span style="display:flex;"><span>Re-enter new password:
+</span></span></code></pre></div><p>The password that is used here will require every time we open/modify this newly created keystore file.</p>
+<ol start="2">
+<li>Generate a new CSR for <code>example.com</code> domain;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Apache Tomcat\conf\SSL\&gt;C:\Program Files\Java\jre\bin\keytool -certreq -alias example.com -keystore keystore-example.com.jks -file C:\Users\Administrator\Desktop\example.com.csr
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span></code></pre></div><ol start="3">
+<li>
+<p>Use <code>example.com.csr</code> to get a new certificate From a CA. Save intermediate certificate as <code>intermediate.cer</code> and site certificate as <code>example.com.p7b</code>. Copy both to <code>C:\Users\Administrator\Desktop\</code> folder on the server.</p>
+</li>
+<li>
+<p>Import intermediate certificate to the tomcat keystore;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Apache Tomcat\conf\SSL\&gt;C:\Program Files\Java\jre\bin\keytool -import -trustcacerts -alias intermediate -file C:\Users\Administrator\Desktop\intermediate.cer -keystore keystore-example.com.jks
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span><span style="display:flex;"><span>Certificate was added to keystore
+</span></span></code></pre></div><ol start="5">
+<li>Verify that intermediate certificate is imported correctly;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Apache Tomcat\conf\SSL\&gt;C:\Program Files\Java\jre\bin\keytool -list -v -alias intermediate -keystore keystore-example.com.jks
+</span></span></code></pre></div><ol start="6">
+<li>Import site certificate (example.com) to the tomcat keystore;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Apache Tomcat\conf\SSL\&gt;C:\Program Files\Java\jre\bin\keytool -import -alias example.com -trustcacerts -file C:\Users\Administrator\Desktop\example.com.p7b -keystore keystore-example.com.jks
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span><span style="display:flex;"><span>Certificate reply was installed in keystore
+</span></span></code></pre></div><ol start="7">
+<li>Verify that site certificate is imported correctly;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Apache Tomcat\conf\SSL\&gt;C:\Program Files\Java\jre\bin\keytool -list -v -alias example.com -keystore keystore-example.com.jks
+</span></span></code></pre></div><ol start="8">
+<li>Open <code>server.xml</code> file located in <code>C:\Program Files\Apache Tomcat\conf\</code> using Notepad and look for <code>keystoreFile</code> string. Modify it to the following;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>keystoreFile=&#34;conf/SSL/keystore-example.com.jks&#34;
+</span></span></code></pre></div><ol start="9">
+<li>
+<p>Restart Apache Tomcat service from Windows Services.</p>
+</li>
+<li>
+<p>Verify the changes by visiting hosted site&rsquo;s certificate;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># openssl s_client -connect www.example.com:443 | openssl x509 -noout -issuer -subject -dates
+</span></span><span style="display:flex;"><span>depth=2 /C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Global Root CA
+</span></span><span style="display:flex;"><span>verify error:num=19:self signed certificate in certificate chain
+</span></span><span style="display:flex;"><span>verify return:0
+</span></span><span style="display:flex;"><span>issuer= /C=US/O=DigiCert Inc/CN=DigiCert SHA2 Secure Server CA
+</span></span><span style="display:flex;"><span>subject= /C=US/ST=California/L=Los Angeles/O=Internet Corporation for Assigned Names and Numbers/OU=Technology/CN=www.example.org
+</span></span></code></pre></div><h3 id="2-renew-certificate-for-an-existing-keystore-1">
+  2. Renew certificate for an existing keystore
+  <a class="heading-link" href="#2-renew-certificate-for-an-existing-keystore-1">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>Take a backup of the current site certificate;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Apache Tomcat\conf\SSL\&gt;C:\Program Files\Java\jre\bin\keytool -export -alias example.com -file C:\Users\Administrator\Desktop\example.com-old.crt -keystore keystore-example.com.jks
+</span></span></code></pre></div><p>Also take a backup of the <code>keystore-example.com.jks</code> keystore file.</p>
+<ol start="2">
+<li>Obtain the renewed certificate from CA and save it as <code>example.com.p7b</code> format. Copy the file to <code>C:\Users\Administrator\Desktop\</code> folder in the server;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Apache Tomcat\conf\SSL\&gt;C:\Program Files\Java\jre\bin\keytool -import -alias example.com -trustcacerts -file C:\Users\Administrator\Desktop\example.com.p7b -keystore keystore-example.com.jks
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span><span style="display:flex;"><span>Certificate reply was installed in keystore
+</span></span></code></pre></div><ol start="3">
+<li>Verify that site certificate is imported correctly;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Apache Tomcat\conf\SSL\&gt;C:\Program Files\Java\jre\bin\keytool -list -v -alias example.com -keystore keystore-example.com.jks
+</span></span></code></pre></div><ol start="4">
+<li>
+<p>Restart Apache Tomcat service from Windows Services.</p>
+</li>
+<li>
+<p>Verify the changes by visiting hosted site&rsquo;s certificate.</p>
+</li>
+</ol>
+<h3 id="3-install-rootintermediate-to-java-keystore-1">
+  3. Install root/intermediate to Java keystore
+  <a class="heading-link" href="#3-install-rootintermediate-to-java-keystore-1">
+    <i class="fa fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ol>
+<li>
+<p>The root/intermediate certs are stored in <code>cacerts</code> keystore file located in <code>C:\Program Files\Java\jre\lib\security\</code>.</p>
+</li>
+<li>
+<p>To install a root certificate, copy the root certificate to <code>C:\Users\Administrator\Desktop\</code> folder and save as <code>root.cer</code>. Run the following command to import the certificate;</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Java\jre\lib\security\&gt;C:\Program Files\Java\jre\bin\keytool -import -trustcacerts -alias rootca -file C:\Users\Administrator\Desktop\root.cer -keystore cacerts
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span></code></pre></div><p>Here the <code>cacerts</code> keystore password is <code>changeit</code> (Default).</p>
+<ol start="3">
+<li>To view all the root certificate, run the following command;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Java\jre\lib\security\&gt;C:\Program Files\Java\jre\bin\keytool -list -v -keystore cacerts
+</span></span><span style="display:flex;"><span>Enter keystore password:
+</span></span></code></pre></div><ol start="4">
+<li>If you want to add an intermediate to <code>cacerts</code>, run the following to add the intermediate (assuming <code>intermediate.cer</code> is in <code>C:\Users\Administrator\Desktop\</code>);</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>C:\Program Files\Java\jre\lib\security\&gt;C:\Program Files\Java\jre\bin\keytool -import -alias intermediate -file C:\Users\Administrator\Desktop\intermediate.cer -keystore cacerts
+</span></span></code></pre></div>
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2023
+     John De 
+    ·
+    
+    Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+  Installing OwnCloud on CentOS · johndoeyo
+</title>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="John De">
+<meta name="description" content="Operating System: CentOS 7
+Web Server: Nginx 1.8.0
+Database: MariaDB 5.5.44
+Import Nginx repository; # yum -y install epel-release # rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-x-x.elx.ngx.noarch.rpm Install web server, database and other dependencies; # yum -y install nginx mariadb mariadb-server php-fpm php-cli php-gd php-mcrypt php-mysql php-pear php-xml bzip2 SELINUX is enabled by default, so create iptables and SELINUX rule to allow HTTP/HTTPS traffic; # iptables -I INPUT -p tcp --dport 80 -j ACCEPT # iptables -I INPUT -p tcp --dport 8080 -j ACCEPT # firewall-cmd --permanent --add-service=http # firewall-cmd --permanent --add-service=https # firewall-cmd –reload Start MariaDB, remove default configuration and set the root password; # systemctl start mariadb # mysql_secure_installation [Removed all the default database and user configuration] # mysql -u root –p Configure php-fpm; # nano /etc/php-fpm.">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Installing OwnCloud on CentOS"/>
+<meta name="twitter:description" content="Operating System: CentOS 7
+Web Server: Nginx 1.8.0
+Database: MariaDB 5.5.44
+Import Nginx repository; # yum -y install epel-release # rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-x-x.elx.ngx.noarch.rpm Install web server, database and other dependencies; # yum -y install nginx mariadb mariadb-server php-fpm php-cli php-gd php-mcrypt php-mysql php-pear php-xml bzip2 SELINUX is enabled by default, so create iptables and SELINUX rule to allow HTTP/HTTPS traffic; # iptables -I INPUT -p tcp --dport 80 -j ACCEPT # iptables -I INPUT -p tcp --dport 8080 -j ACCEPT # firewall-cmd --permanent --add-service=http # firewall-cmd --permanent --add-service=https # firewall-cmd –reload Start MariaDB, remove default configuration and set the root password; # systemctl start mariadb # mysql_secure_installation [Removed all the default database and user configuration] # mysql -u root –p Configure php-fpm; # nano /etc/php-fpm."/>
+
+<meta property="og:title" content="Installing OwnCloud on CentOS" />
+<meta property="og:description" content="Operating System: CentOS 7
+Web Server: Nginx 1.8.0
+Database: MariaDB 5.5.44
+Import Nginx repository; # yum -y install epel-release # rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-x-x.elx.ngx.noarch.rpm Install web server, database and other dependencies; # yum -y install nginx mariadb mariadb-server php-fpm php-cli php-gd php-mcrypt php-mysql php-pear php-xml bzip2 SELINUX is enabled by default, so create iptables and SELINUX rule to allow HTTP/HTTPS traffic; # iptables -I INPUT -p tcp --dport 80 -j ACCEPT # iptables -I INPUT -p tcp --dport 8080 -j ACCEPT # firewall-cmd --permanent --add-service=http # firewall-cmd --permanent --add-service=https # firewall-cmd –reload Start MariaDB, remove default configuration and set the root password; # systemctl start mariadb # mysql_secure_installation [Removed all the default database and user configuration] # mysql -u root –p Configure php-fpm; # nano /etc/php-fpm." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.example.com/posts/installing-owncloud-on-centos/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2015-11-25T01:18:37-05:00" />
+<meta property="article:modified_time" content="2015-11-25T01:18:37-05:00" />
+
+
+
+
+<link rel="canonical" href="http://www.example.com/posts/installing-owncloud-on-centos/">
+
+
+<link rel="preload" href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.36f76aaf39a14ecf5c3a3c6250dcaf06c238b3d8365d17d646f95cb1874e852b.css" integrity="sha256-NvdqrzmhTs9cOjxiUNyvBsI4s9g2XRfWRvlcsYdOhSs=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.593028e7f7ac55c003b79c230d1cd411bb4ca53b31556c3abb7f027170e646e9.css" integrity="sha256-WTAo5/esVcADt5wjDRzUEbtMpTsxVWw6u38CcXDmRuk=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<meta name="generator" content="Hugo 0.110.0">
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">
+      johndoeyo
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/posts/">Blog</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.example.com/posts/installing-owncloud-on-centos/">
+              Installing OwnCloud on CentOS
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              <time datetime="2015-11-25T01:18:37-05:00">
+                Nov 25, 2015
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              4-minute read
+            </span>
+          </div>
+          
+          
+          
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <blockquote>
+<p>Operating System: <em>CentOS 7</em><br>
+Web Server: <em>Nginx 1.8.0</em><br>
+Database: <em>MariaDB 5.5.44</em></p>
+</blockquote>
+<hr>
+<ol>
+<li>Import Nginx repository;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># yum -y install epel-release
+</span></span><span style="display:flex;"><span># rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-x-x.elx.ngx.noarch.rpm
+</span></span></code></pre></div><ol start="2">
+<li>Install web server, database and other dependencies;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># yum -y install nginx mariadb mariadb-server php-fpm php-cli php-gd php-mcrypt php-mysql php-pear php-xml bzip2
+</span></span></code></pre></div><ol start="3">
+<li>SELINUX is enabled by default, so create iptables and SELINUX rule to allow HTTP/HTTPS traffic;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+</span></span><span style="display:flex;"><span># iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
+</span></span><span style="display:flex;"><span># firewall-cmd --permanent --add-service=http
+</span></span><span style="display:flex;"><span># firewall-cmd --permanent --add-service=https
+</span></span><span style="display:flex;"><span># firewall-cmd –reload
+</span></span></code></pre></div><ol start="4">
+<li>Start MariaDB, remove default configuration and set the root password;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># systemctl start mariadb
+</span></span><span style="display:flex;"><span># mysql_secure_installation
+</span></span><span style="display:flex;"><span>[Removed all the default database and user configuration]
+</span></span><span style="display:flex;"><span># mysql -u root –p
+</span></span></code></pre></div><ol start="5">
+<li>Configure php-fpm;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># nano /etc/php-fpm.d/www.conf
+</span></span></code></pre></div><p>[Sample configuration]</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># grep -v &#34;^;&#34; /etc/php-fpm.d/www.conf | grep -v &#34;^$&#34;
+</span></span><span style="display:flex;"><span>[www]
+</span></span><span style="display:flex;"><span>listen = 127.0.0.1:9000
+</span></span><span style="display:flex;"><span>listen.allowed_clients = 127.0.0.1
+</span></span><span style="display:flex;"><span>user = nginx
+</span></span><span style="display:flex;"><span>group = nginx
+</span></span><span style="display:flex;"><span>pm = dynamic
+</span></span><span style="display:flex;"><span>pm.max_children = 50
+</span></span><span style="display:flex;"><span>pm.start_servers = 5
+</span></span><span style="display:flex;"><span>pm.min_spare_servers = 5
+</span></span><span style="display:flex;"><span>pm.max_spare_servers = 35
+</span></span><span style="display:flex;"><span>slowlog = /var/log/php-fpm/www-slow.log
+</span></span><span style="display:flex;"><span>env[PATH] = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/
+</span></span><span style="display:flex;"><span>php_admin_value[error_log] = /var/log/php-fpm/www-error.log
+</span></span><span style="display:flex;"><span>php_admin_flag[log_errors] = on
+</span></span><span style="display:flex;"><span>php_value[session.save_handler] = files
+</span></span><span style="display:flex;"><span>php_value[session.save_path] = /var/lib/php/session
+</span></span></code></pre></div><ol start="6">
+<li>Add permission for the web server in php-fpm;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># mkdir -p /var/lib/php/session
+</span></span><span style="display:flex;"><span># chown nginx:nginx -R /var/lib/php/session/
+</span></span></code></pre></div><ol start="7">
+<li>Start php-fpm and Nginx daemon;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># systemctl start php-fpm
+</span></span><span style="display:flex;"><span># systemctl start nginx
+</span></span></code></pre></div><ol start="8">
+<li>Verify if php-fpm can access environment path;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># printenv PATH
+</span></span></code></pre></div><p>The printenv PATH output is required to verify if php-fpm can have access to all the <code>env[PATH]</code>. If <code>env[PATH]</code> and <code>printenv PATH</code> are different, then define those paths.</p>
+<ol start="9">
+<li>Create self-signed SSL certification with default configuration;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># mkdir -p /etc/nginx/cert/
+</span></span><span style="display:flex;"><span># cd /etc/nginx/cert/
+</span></span><span style="display:flex;"><span># openssl req -new -x509 -days 365 -nodes -out /etc/nginx/cert/owncloud.crt -keyout /etc/nginx/cert/owncloud.key
+</span></span><span style="display:flex;"><span># cd /etc/nginx/cert/
+</span></span><span style="display:flex;"><span># cat owncloud.crt
+</span></span><span style="display:flex;"><span># cat owncloud.key
+</span></span><span style="display:flex;"><span># chmod 600 owncloud.crt
+</span></span><span style="display:flex;"><span># chmod 600 owncloud.key
+</span></span><span style="display:flex;"><span>This crt/key is only valid for one year.
+</span></span></code></pre></div><ol start="10">
+<li>Download OwnCloud <a href="https://github.com/owncloud">source</a>, extracting the tar.bz2 in <code>/tmp</code> and then move it into Nginx html folder;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># cd /tmp/
+</span></span><span style="display:flex;"><span># wget https://download.owncloud.org/community/owncloud-x.x.x.tar.bz2
+</span></span><span style="display:flex;"><span># tar -xjvf owncloud-x.x.x.tar.bz2
+</span></span><span style="display:flex;"><span># mv owncloud/ /usr/share/nginx/html/
+</span></span><span style="display:flex;"><span># cd /usr/share/nginx/html/
+</span></span><span style="display:flex;"><span># chown nginx:nginx -R owncloud/
+</span></span></code></pre></div><ol start="11">
+<li>Create <code>data</code> folder where OwnCloud will store all the user files;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># mkdir -p owncloud/data/
+</span></span><span style="display:flex;"><span># chown nginx:nginx -R owncloud/data/
+</span></span></code></pre></div><ol start="12">
+<li>Edit Nginx configuration so that it only accepts HTTPS connection;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># cd /etc/nginx/conf.d/
+</span></span><span style="display:flex;"><span># mv default.conf default
+</span></span><span style="display:flex;"><span># nano default
+</span></span><span style="display:flex;"><span>[Sample Configuration]
+</span></span><span style="display:flex;"><span># cat default
+</span></span><span style="display:flex;"><span>upstream php-handler {
+</span></span><span style="display:flex;"><span>server 127.0.0.1:9000;
+</span></span><span style="display:flex;"><span>#server unix:/var/run/php5-fpm.sock;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>server {
+</span></span><span style="display:flex;"><span>listen 80;
+</span></span><span style="display:flex;"><span>server_name example.com;
+</span></span><span style="display:flex;"><span>#return 301 https://$server_name$request_uri;
+</span></span><span style="display:flex;"><span>return 301 https://$server_name;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>server {
+</span></span><span style="display:flex;"><span>listen 443 ssl;
+</span></span><span style="display:flex;"><span>server_name example.com;
+</span></span><span style="display:flex;"><span>#SSL Certificate
+</span></span><span style="display:flex;"><span>ssl_certificate /etc/nginx/cert/owncloud.crt;
+</span></span><span style="display:flex;"><span>ssl_certificate_key /etc/nginx/cert/owncloud.key;
+</span></span><span style="display:flex;"><span># owncloud path
+</span></span><span style="display:flex;"><span>root /usr/share/nginx/html/owncloud/;
+</span></span><span style="display:flex;"><span>client_max_body_size 10G; # set max upload size
+</span></span><span style="display:flex;"><span>fastcgi_buffers 64 4K;
+</span></span><span style="display:flex;"><span>rewrite ^/caldav(.*)$ /remote.php/caldav$1 redirect;
+</span></span><span style="display:flex;"><span>rewrite ^/carddav(.*)$ /remote.php/carddav$1 redirect;
+</span></span><span style="display:flex;"><span>rewrite ^/webdav(.*)$ /remote.php/webdav$1 redirect;
+</span></span><span style="display:flex;"><span>index index.php;
+</span></span><span style="display:flex;"><span>error_page 403 /core/templates/403.php;
+</span></span><span style="display:flex;"><span>error_page 404 /core/templates/404.php;
+</span></span><span style="display:flex;"><span>location = /robots.txt {
+</span></span><span style="display:flex;"><span>allow all;
+</span></span><span style="display:flex;"><span>log_not_found off;
+</span></span><span style="display:flex;"><span>access_log off;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>location ~ ^/(data|config|\.ht|db_structure\.xml|README) {
+</span></span><span style="display:flex;"><span>deny all;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>location / {
+</span></span><span style="display:flex;"><span># The following 2 rules are only needed with webfinger
+</span></span><span style="display:flex;"><span>rewrite ^/.well-known/host-meta /public.php?service=host-meta last;
+</span></span><span style="display:flex;"><span>rewrite ^/.well-known/host-meta.json /public.php?service=host-meta-json last;
+</span></span><span style="display:flex;"><span>rewrite ^/.well-known/carddav /remote.php/carddav/ redirect;
+</span></span><span style="display:flex;"><span>rewrite ^/.well-known/caldav /remote.php/caldav/ redirect;
+</span></span><span style="display:flex;"><span>rewrite ^(/core/doc/[^\/]+/)$ $1/index.html;
+</span></span><span style="display:flex;"><span>try_files $uri $uri/ index.php;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>location ~ ^(.+?\.php)(/.*)?$ {
+</span></span><span style="display:flex;"><span>try_files $1 = 404;
+</span></span><span style="display:flex;"><span>include fastcgi_params;
+</span></span><span style="display:flex;"><span>fastcgi_param SCRIPT_FILENAME $document_root$1;
+</span></span><span style="display:flex;"><span>fastcgi_param PATH_INFO $2;
+</span></span><span style="display:flex;"><span>fastcgi_param HTTPS on;
+</span></span><span style="display:flex;"><span>fastcgi_pass php-handler;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span># Optional: set long EXPIRES header on static assets
+</span></span><span style="display:flex;"><span>location ~* ^.+\.(jpg|jpeg|gif|bmp|ico|png|css|js|swf)$ {
+</span></span><span style="display:flex;"><span>expires 30d;
+</span></span><span style="display:flex;"><span># Optional: Don&#39;t log access to assets
+</span></span><span style="display:flex;"><span>access_log off;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol start="13">
+<li>Setup Nginx, MariaDB and php-fpm to start automatically at startup and reboot the server;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># systemctl enable nginx mariadb php-fpm
+</span></span><span style="display:flex;"><span># init 6
+</span></span></code></pre></div><hr>
+<p>Browse to <a href="https://example.com">https://example.com/</a> and log in as <code>admin</code> using password <code>admin</code>.</p>
+<hr>
+<p><strong>Customize OwnCloud Footer</strong></p>
+<p>To customize your OwnCloud footer, change it to the following;</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># vi /usr/share/nginx/html/owncloud/lib/private/defaults.php
+</span></span><span style="display:flex;"><span>[Sample output]
+</span></span><span style="display:flex;"><span>function __construct() {
+</span></span><span style="display:flex;"><span>       $this-&gt;l = \OC::$server-&gt;getL10N(&#39;lib&#39;);
+</span></span><span style="display:flex;"><span>       $version = OC_Util::getVersion();
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultEntity = &#39;your_department_name&#39;;
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultName = &#39;your_company_short_name&#39;;
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultTitle = &#39;your_company_name&#39;;
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultBaseUrl = &#39;your_FQDN_url&#39;;
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultSyncClientUrl = &#39;https://owncloud.org/sync-clients/&#39;;
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultiOSClientUrl = &#39;https://itunes.apple.com/us/app/owncloud/id543672169?mt=8&#39;;
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultiTunesAppId = &#39;543672169&#39;;
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultAndroidClientUrl = &#39;https://play.google.com/store/apps/details?id=com.owncloud.android&#39;;
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultDocBaseUrl = &#39;https://doc.owncloud.org&#39;;
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultDocVersion = $version[0] . &#39;.&#39; . $version[1]; // used to generate doc links
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultSlogan = $this-&gt;l-&gt;t(&#39;your_company_name&#39;);
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultLogoClaim = &#39;&#39;;
+</span></span><span style="display:flex;"><span>       $this-&gt;defaultMailHeaderColor = &#39;#1d2d44&#39;; /* header color of mail notifications */
+</span></span></code></pre></div>
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2023
+     John De 
+    ·
+    
+    Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>
