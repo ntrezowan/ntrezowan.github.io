@@ -4,9 +4,9 @@
 
 1. Install Hugo
 
-  ``` bash
-  brew install hugo
-  ```
+    ``` bash
+    brew install hugo
+    ```
 
 2. Create a Hugo site
 
