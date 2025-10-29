@@ -88,7 +88,7 @@
             display: flex;
             flex: 1;
             overflow: hidden;
-            min-height: 0;
+            height: calc(100vh - 57px - 33px);
         }
         .sidebar {
             width: 300px;
@@ -147,7 +147,6 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            min-height: 0;
         }
         .runbook-header {
             background: #282828;
@@ -195,8 +194,8 @@
         .checklist {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 20px;
-            min-height: 0;
         }
         .phase-section {
             margin-bottom: 32px;
