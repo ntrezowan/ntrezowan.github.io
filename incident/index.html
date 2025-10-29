@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Logger</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23fb4934'/><text x='50' y='50' text-anchor='middle' dy='.35em' font-size='50' fill='%23282828' font-family='Arial,sans-serif' font-weight='bold'>!</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #1d2021;
+            color: #ebdbb2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .header {
+            background: #282828;
+            border-bottom: 2px solid #fb4934;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 {
+            color: #fb4934;
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .incident-badge {
+            background: #fb4934;
+            color: #282828;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .incident-badge.resolved {
+            background: #b8bb26;
+            animation: none;
+        }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #458588;
+            color: #ebdbb2;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #83a598;
+        }
+        .btn-success {
+            background: #98971a;
+        }
+        .btn-success:hover {
+            background: #b8bb26;
+        }
+        .btn-danger {
+            background: #cc241d;
+        }
+        .btn-danger:hover {
+            background: #fb4934;
+        }
+        .btn-warning {
+            background: #d79921;
+        }
+        .btn-warning:hover {
+            background: #fabd2f;
+        }
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 280px;
+            background: #282828;
+            border-right: 1px solid #3c3836;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .incident-info {
+            background: #3c3836;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .incident-info h3 {
+            color: #fabd2f;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .info-row {
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .info-label {
+            color: #928374;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .info-value {
+            color: #ebdbb2;
+            font-weight: 500;
+        }
+        .incident-title-display {
+            color: #fb4934;
+            font-size: 14px;
+            font-weight: 600;
+            word-break: break-word;
+        }
+        .incident-list {
+            margin-top: 20px;
+        }
+        .incident-list h3 {
+            color: #fabd2f;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .incident-item {
+            background: #3c3836;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 12px;
+        }
+        .incident-item:hover {
+            background: #504945;
+        }
+        .incident-item.active {
+            background: #504945;
+            border-left: 3px solid #fb4934;
+        }
+        .incident-item-title {
+            color: #ebdbb2;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .incident-item-date {
+            color: #928374;
+            font-size: 11px;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .timeline {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .timeline-entry {
+            background: #282828;
+            border-left: 4px solid #458588;
+            border-radius: 4px;
+            padding: 16px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .timeline-entry.info {
+            border-left-color: #458588;
+        }
+        .timeline-entry.warning {
+            border-left-color: #fabd2f;
+        }
+        .timeline-entry.critical {
+            border-left-color: #fb4934;
+        }
+        .timeline-entry.resolution {
+            border-left-color: #b8bb26;
+            background: #2a2e23;
+        }
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .entry-time {
+            color: #928374;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .entry-severity {
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .entry-severity.info {
+            background: #458588;
+            color: #282828;
+        }
+        .entry-severity.warning {
+            background: #fabd2f;
+            color: #282828;
+        }
+        .entry-severity.critical {
+            background: #fb4934;
+            color: #282828;
+        }
+        .entry-severity.resolution {
+            background: #b8bb26;
+            color: #282828;
+        }
+        .entry-content {
+            color: #ebdbb2;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .entry-actions {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .timeline-entry:hover .entry-actions {
+            opacity: 1;
+        }
+        .entry-actions button {
+            padding: 4px 8px;
+            font-size: 11px;
+            margin-left: 4px;
+        }
+        .entry-form {
+            background: #282828;
+            border-top: 2px solid #3c3836;
+            padding: 20px;
+        }
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+        .severity-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .severity-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+            opacity: 0.5;
+            transition: all 0.2s;
+        }
+        .severity-btn.active {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        textarea {
+            flex: 1;
+            background: #3c3836;
+            border: 1px solid #504945;
+            color: #ebdbb2;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #458588;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #282828;
+            border: 2px solid #504945;
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 {
+            color: #fabd2f;
+            font-size: 18px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            color: #928374;
+            font-size: 13px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background: #3c3836;
+            border: 1px solid #504945;
+            color: #ebdbb2;
+            padding: 10px 12px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .empty-state {
+            text-align: center;
+            color: #665c54;
+            padding: 60px 20px;
+            font-size: 14px;
+        }
+        .shortcut-hint {
+            font-size: 11px;
+            color: #665c54;
+            margin-top: 8px;
+        }
+        .stats {
+            padding: 8px 20px;
+            background: #282828;
+            border-top: 1px solid #3c3836;
+            font-size: 12px;
+            color: #928374;
+            display: flex;
+            gap: 20px;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1d2021;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #504945;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #665c54;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>
+                🔥 INCIDENT LOGGER
+                <span id="incidentBadge" class="incident-badge">ACTIVE</span>
+            </h1>
+        </div>
+        <div class="header-actions">
+            <button onclick="showNewIncidentModal()">+ New Incident</button>
+            <button class="btn-success" onclick="showResolveModal()" id="resolveBtn">✓ Mark Resolved</button>
+            <button class="btn-warning" onclick="exportMarkdown()">↓ Export MD</button>
+            <button onclick="exportJSON()">↓ Export JSON</button>
+            <button onclick="importJSON()">↑ Import</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="incident-info">
+                <h3>Current Incident</h3>
+                <div class="info-row">
+                    <span class="info-label">Title</span>
+                    <div class="incident-title-display" id="currentTitle">No incident selected</div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Started</span>
+                    <div class="info-value" id="startTime">-</div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Duration</span>
+                    <div class="info-value" id="duration">-</div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Entries</span>
+                    <div class="info-value" id="entryCount">0</div>
+                </div>
+            </div>
+
+            <div class="incident-list">
+                <h3>All Incidents</h3>
+                <div id="incidentList"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="timeline" id="timeline"></div>
+            
+            <div class="entry-form">
+                <div class="form-row">
+                    <div class="severity-buttons">
+                        <button class="severity-btn btn-success active" data-severity="info" onclick="setSeverity('info')">INFO</button>
+                        <button class="severity-btn btn-warning" data-severity="warning" onclick="setSeverity('warning')">WARN</button>
+                        <button class="severity-btn btn-danger" data-severity="critical" onclick="setSeverity('critical')">CRIT</button>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <textarea id="entryInput" placeholder="What happened? (Ctrl+Enter to add, be specific: 'restarted pod payment-api-7d9f - OOMKilled')"></textarea>
+                    <button onclick="addEntry()" style="height: 80px;">Add Entry</button>
+                </div>
+                <div class="shortcut-hint">
+                    Shortcuts: Ctrl+Enter = Add Entry | Ctrl+N = New Incident | Ctrl+R = Mark Resolved | Ctrl+E = Export MD
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats">
+        <span id="statsTotal">0 total incidents</span>
+        <span id="statsActive">0 active</span>
+        <span id="statsResolved">0 resolved</span>
+    </div>
+
+    <!-- New Incident Modal -->
+    <div class="modal" id="newIncidentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Incident</h2>
+                <button onclick="closeModal('newIncidentModal')">✕</button>
+            </div>
+            <form onsubmit="createIncident(event)">
+                <div class="form-group">
+                    <label>Incident Title *</label>
+                    <input type="text" id="incidentTitleInput" required placeholder="e.g., Payment API Down, Database High CPU">
+                </div>
+                <div class="form-group">
+                    <label>Initial Notes (optional)</label>
+                    <textarea id="incidentNotesInput" placeholder="What's happening right now?"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal('newIncidentModal')">Cancel</button>
+                    <button type="submit" class="btn-danger">Start Incident</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resolve Incident Modal -->
+    <div class="modal" id="resolveModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Resolve Incident</h2>
+                <button onclick="closeModal('resolveModal')">✕</button>
+            </div>
+            <form onsubmit="resolveIncident(event)">
+                <div class="form-group">
+                    <label>Resolution Summary *</label>
+                    <textarea id="resolutionInput" required placeholder="What fixed it? Root cause? What we learned?"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal('resolveModal')">Cancel</button>
+                    <button type="submit" class="btn-success">Mark Resolved</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <input type="file" id="importInput" style="display: none;" accept=".json" onchange="handleImport(event)">
+
+    <script>
+        let incidents = JSON.parse(localStorage.getItem('incidents')) || [];
+        let currentIncidentId = localStorage.getItem('currentIncidentId') || null;
+        let currentSeverity = 'info';
+
+        function getCurrentIncident() {
+            return incidents.find(i => i.id === currentIncidentId);
+        }
+
+        function saveData() {
+            localStorage.setItem('incidents', JSON.stringify(incidents));
+            localStorage.setItem('currentIncidentId', currentIncidentId);
+        }
+
+        function formatTimestamp(date) {
+            return new Date(date).toISOString().replace('T', ' ').substr(0, 19) + ' UTC';
+        }
+
+        function formatDuration(start, end) {
+            const duration = (end ? new Date(end) : new Date()) - new Date(start);
+            const hours = Math.floor(duration / 3600000);
+            const minutes = Math.floor((duration % 3600000) / 60000);
+            const seconds = Math.floor((duration % 60000) / 1000);
+            return `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        function setSeverity(severity) {
+            currentSeverity = severity;
+            document.querySelectorAll('.severity-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.severity === severity);
+            });
+        }
+
+        function addEntry() {
+            const incident = getCurrentIncident();
+            if (!incident) {
+                alert('No active incident. Create one first.');
+                return;
+            }
+
+            const content = document.getElementById('entryInput').value.trim();
+            if (!content) return;
+
+            if (incident.status === 'resolved') {
+                if (!confirm('This incident is marked as resolved. Add entry anyway?')) {
+                    return;
+                }
+            }
+
+            const entry = {
+                id: Date.now().toString(),
+                timestamp: new Date().toISOString(),
+                severity: currentSeverity,
+                content: content
+            };
+
+            incident.entries.push(entry);
+            saveData();
+            document.getElementById('entryInput').value = '';
+            renderTimeline();
+            updateIncidentInfo();
+        }
+
+        function deleteEntry(entryId) {
+            if (!confirm('Delete this entry?')) return;
+
+            const incident = getCurrentIncident();
+            incident.entries = incident.entries.filter(e => e.id !== entryId);
+            saveData();
+            renderTimeline();
+            updateIncidentInfo();
+        }
+
+        function showNewIncidentModal() {
+            document.getElementById('newIncidentModal').classList.add('active');
+            document.getElementById('incidentTitleInput').focus();
+        }
+
+        function createIncident(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('incidentTitleInput').value.trim();
+            const notes = document.getElementById('incidentNotesInput').value.trim();
+
+            const incident = {
+                id: Date.now().toString(),
+                title: title,
+                startTime: new Date().toISOString(),
+                endTime: null,
+                status: 'active',
+                entries: [],
+                resolution: null
+            };
+
+            if (notes) {
+                incident.entries.push({
+                    id: Date.now().toString(),
+                    timestamp: new Date().toISOString(),
+                    severity: 'info',
+                    content: notes
+                });
+            }
+
+            incidents.unshift(incident);
+            currentIncidentId = incident.id;
+            saveData();
+            closeModal('newIncidentModal');
+            document.getElementById('incidentTitleInput').value = '';
+            document.getElementById('incidentNotesInput').value = '';
+            renderAll();
+        }
+
+        function showResolveModal() {
+            const incident = getCurrentIncident();
+            if (!incident) {
+                alert('No active incident selected.');
+                return;
+            }
+            if (incident.status === 'resolved') {
+                alert('This incident is already resolved.');
+                return;
+            }
+            document.getElementById('resolveModal').classList.add('active');
+            document.getElementById('resolutionInput').focus();
+        }
+
+        function resolveIncident(event) {
+            event.preventDefault();
+
+            const incident = getCurrentIncident();
+            const resolution = document.getElementById('resolutionInput').value.trim();
+
+            incident.status = 'resolved';
+            incident.endTime = new Date().toISOString();
+            incident.resolution = resolution;
+
+            incident.entries.push({
+                id: Date.now().toString(),
+                timestamp: new Date().toISOString(),
+                severity: 'resolution',
+                content: `INCIDENT RESOLVED\n\n${resolution}`
+            });
+
+            saveData();
+            closeModal('resolveModal');
+            document.getElementById('resolutionInput').value = '';
+            renderAll();
+        }
+
+        function switchIncident(incidentId) {
+            currentIncidentId = incidentId;
+            saveData();
+            renderAll();
+        }
+
+        function deleteIncident(incidentId) {
+            if (!confirm('Delete this entire incident and all entries? This cannot be undone.')) return;
+
+            incidents = incidents.filter(i => i.id !== incidentId);
+            if (currentIncidentId === incidentId) {
+                currentIncidentId = incidents.length > 0 ? incidents[0].id : null;
+            }
+            saveData();
+            renderAll();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function renderTimeline() {
+            const timeline = document.getElementById('timeline');
+            const incident = getCurrentIncident();
+
+            if (!incident) {
+                timeline.innerHTML = '<div class="empty-state">No incident selected.<br><br><button onclick="showNewIncidentModal()">+ Create First Incident</button></div>';
+                return;
+            }
+
+            if (incident.entries.length === 0) {
+                timeline.innerHTML = '<div class="empty-state">No entries yet. Start logging what you\'re doing.</div>';
+                return;
+            }
+
+            const sorted = [...incident.entries].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            let html = '';
+            sorted.forEach(entry => {
+                const severityClass = entry.severity;
+                html += `
+                    <div class="timeline-entry ${severityClass}">
+                        <div class="entry-header">
+                            <span class="entry-time">${formatTimestamp(entry.timestamp)}</span>
+                            <span class="entry-severity ${severityClass}">${entry.severity}</span>
+                        </div>
+                        <div class="entry-content">${escapeHtml(entry.content)}</div>
+                        ${entry.severity !== 'resolution' ? `
+                        <div class="entry-actions">
+                            <button class="btn-danger" onclick="deleteEntry('${entry.id}')">Delete</button>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            timeline.innerHTML = html;
+            timeline.scrollTop = 0;
+        }
+
+        function renderIncidentList() {
+            const listDiv = document.getElementById('incidentList');
+
+            if (incidents.length === 0) {
+                listDiv.innerHTML = '<div style="color: #665c54; font-size: 12px; text-align: center; padding: 20px;">No incidents yet</div>';
+                return;
+            }
+
+            let html = '';
+            incidents.forEach(incident => {
+                const isActive = incident.id === currentIncidentId;
+                const statusIcon = incident.status === 'resolved' ? '✓' : '🔥';
+                html += `
+                    <div class="incident-item ${isActive ? 'active' : ''}" onclick="switchIncident('${incident.id}')">
+                        <div class="incident-item-title">${statusIcon} ${escapeHtml(incident.title)}</div>
+                        <div class="incident-item-date">${formatTimestamp(incident.startTime)}</div>
+                        <div class="incident-item-date">${incident.entries.length} entries</div>
+                    </div>
+                `;
+            });
+
+            listDiv.innerHTML = html;
+        }
+
+        function updateIncidentInfo() {
+            const incident = getCurrentIncident();
+
+            if (!incident) {
+                document.getElementById('currentTitle').textContent = 'No incident selected';
+                document.getElementById('startTime').textContent = '-';
+                document.getElementById('duration').textContent = '-';
+                document.getElementById('entryCount').textContent = '0';
+                document.getElementById('incidentBadge').textContent = 'NO INCIDENT';
+                document.getElementById('incidentBadge').classList.remove('resolved');
+                document.getElementById('resolveBtn').disabled = true;
+                return;
+            }
+
+            document.getElementById('currentTitle').textContent = incident.title;
+            document.getElementById('startTime').textContent = formatTimestamp(incident.startTime);
+            document.getElementById('duration').textContent = formatDuration(incident.startTime, incident.endTime);
+            document.getElementById('entryCount').textContent = incident.entries.length;
+
+            if (incident.status === 'resolved') {
+                document.getElementById('incidentBadge').textContent = 'RESOLVED';
+                document.getElementById('incidentBadge').classList.add('resolved');
+                document.getElementById('resolveBtn').disabled = true;
+            } else {
+                document.getElementById('incidentBadge').textContent = 'ACTIVE';
+                document.getElementById('incidentBadge').classList.remove('resolved');
+                document.getElementById('resolveBtn').disabled = false;
+            }
+        }
+
+        function updateStats() {
+            const total = incidents.length;
+            const active = incidents.filter(i => i.status === 'active').length;
+            const resolved = incidents.filter(i => i.status === 'resolved').length;
+
+            document.getElementById('statsTotal').textContent = `${total} total incidents`;
+            document.getElementById('statsActive').textContent = `${active} active`;
+            document.getElementById('statsResolved').textContent = `${resolved} resolved`;
+        }
+
+        function renderAll() {
+            renderTimeline();
+            renderIncidentList();
+            updateIncidentInfo();
+            updateStats();
+        }
+
+        function exportMarkdown() {
+            const incident = getCurrentIncident();
+            if (!incident) {
+                alert('No incident selected to export.');
+                return;
+            }
+
+            let md = `# Incident Report: ${incident.title}\n\n`;
+            md += `**Status:** ${incident.status.toUpperCase()}\n`;
+            md += `**Started:** ${formatTimestamp(incident.startTime)}\n`;
+            md += `**Duration:** ${formatDuration(incident.startTime, incident.endTime)}\n`;
+            if (incident.endTime) {
+                md += `**Resolved:** ${formatTimestamp(incident.endTime)}\n`;
+            }
+            md += `\n---\n\n`;
+
+            md += `## Timeline\n\n`;
+
+            const sorted = [...incident.entries].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+            sorted.forEach(entry => {
+                md += `### ${formatTimestamp(entry.timestamp)} - ${entry.severity.toUpperCase()}\n\n`;
+                md += `${entry.content}\n\n`;
+            });
+
+            if (incident.resolution) {
+                md += `---\n\n## Resolution\n\n${incident.resolution}\n`;
+            }
+
+            const blob = new Blob([md], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `incident-${incident.id}-${incident.startTime.split('T')[0]}.md`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportJSON() {
+            const incident = getCurrentIncident();
+            if (!incident) {
+                const data = JSON.stringify(incidents, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `all-incidents-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } else {
+                const data = JSON.stringify(incident, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `incident-${incident.id}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function importJSON() {
+            document.getElementById('importInput').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+
+                    if (Array.isArray(imported)) {
+                        if (confirm(`Import ${imported.length} incidents? This will replace all current data.`)) {
+                            incidents = imported;
+                            currentIncidentId = incidents.length > 0 ? incidents[0].id : null;
+                            saveData();
+                            renderAll();
+                        }
+                    } else if (imported.id && imported.title) {
+                        if (confirm(`Import incident "${imported.title}"? This will add it to your list.`)) {
+                            incidents.unshift(imported);
+                            currentIncidentId = imported.id;
+                            saveData();
+                            renderAll();
+                        }
+                    } else {
+                        alert('Invalid file format');
+                    }
+                } catch (err) {
+                    alert('Failed to parse JSON file');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            const modKey = isMac ? e.metaKey : e.ctrlKey;
+
+            if (modKey && e.key === 'Enter') {
+                e.preventDefault();
+                addEntry();
+            }
+
+            if (modKey && e.key === 'n') {
+                e.preventDefault();
+                showNewIncidentModal();
+            }
+
+            if (modKey && e.key === 'r') {
+                e.preventDefault();
+                showResolveModal();
+            }
+
+            if (modKey && e.key === 'e') {
+                e.preventDefault();
+                exportMarkdown();
+            }
+
+            if (e.key === 'Escape') {
+                closeModal('newIncidentModal');
+                closeModal('resolveModal');
+            }
+        });
+
+        // Auto-update duration every second
+        setInterval(() => {
+            const incident = getCurrentIncident();
+            if (incident && incident.status === 'active') {
+                document.getElementById('duration').textContent = formatDuration(incident.startTime, null);
+            }
+        }, 1000);
+
+        // Initial render
+        renderAll();
+
+        // Show new incident modal if no incidents exist
+        if (incidents.length === 0) {
+            setTimeout(() => showNewIncidentModal(), 500);
+        }
+    </script>
+</body>
+</html>
