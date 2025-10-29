@@ -23,6 +23,15 @@
             flex-direction: column;
             overflow: hidden;
         }
+        .security-warning {
+            background: #fb4934;
+            color: #282828;
+            padding: 10px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 2px solid #cc241d;
+        }
         .header {
             background: #282828;
             border-bottom: 2px solid #458588;
@@ -88,7 +97,6 @@
             display: flex;
             flex: 1;
             overflow: hidden;
-            height: calc(100vh - 57px - 33px);
         }
         .sidebar {
             width: 300px;
@@ -144,15 +152,18 @@
         }
         .content {
             flex: 1;
-            display: flex;
-            flex-direction: column;
+            position: relative;
             overflow: hidden;
         }
         .runbook-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
             background: #282828;
             border-bottom: 1px solid #3c3836;
             padding: 20px;
-            flex-shrink: 0;
+            z-index: 10;
         }
         .runbook-title {
             color: #83a598;
@@ -192,7 +203,11 @@
             background: linear-gradient(90deg, #98971a, #b8bb26);
         }
         .checklist {
-            flex: 1;
+            position: absolute;
+            top: 210px;
+            bottom: 0;
+            left: 0;
+            right: 0;
             overflow-y: auto;
             overflow-x: hidden;
             padding: 20px;
@@ -518,6 +533,10 @@
     </style>
 </head>
 <body>
+    <div class="security-warning">
+        ⚠️ WARNING: Data stored locally in browser. Do NOT store passwords, API keys, or confidential info. Export regularly to backup. Use placeholders like {{password}} for sensitive values.
+    </div>
+
     <div class="header">
         <h1>📋 RUNBOOK CHECKLIST</h1>
         <div class="header-actions">
@@ -594,9 +613,9 @@
     <input type="file" id="importInput" style="display: none;" accept=".json" onchange="handleImport(event)">
 
     <script>
-        let runbooks = JSON.parse(localStorage.getItem('runbooks_v2')) || getDefaultRunbooks();
-        let currentRunbookId = localStorage.getItem('currentRunbookId_v2') || null;
-        let executions = JSON.parse(localStorage.getItem('executions_v2')) || {};
+        let runbooks = JSON.parse(localStorage.getItem('runbooks_v3')) || getDefaultRunbooks();
+        let currentRunbookId = localStorage.getItem('currentRunbookId_v3') || null;
+        let executions = JSON.parse(localStorage.getItem('executions_v3')) || {};
         let expandedPhases = {};
 
         function getDefaultRunbooks() {
@@ -670,9 +689,9 @@
         }
 
         function saveData() {
-            localStorage.setItem('runbooks_v2', JSON.stringify(runbooks));
-            localStorage.setItem('currentRunbookId_v2', currentRunbookId);
-            localStorage.setItem('executions_v2', JSON.stringify(executions));
+            localStorage.setItem('runbooks_v3', JSON.stringify(runbooks));
+            localStorage.setItem('currentRunbookId_v3', currentRunbookId);
+            localStorage.setItem('executions_v3', JSON.stringify(executions));
         }
 
         function formatTimestamp(date) {
@@ -734,7 +753,6 @@
                 startNewExecution(runbookId);
             }
             
-            // Expand all phases by default
             const runbook = getCurrentRunbook();
             const phases = [...new Set(runbook.steps.map(s => s.phase))];
             expandedPhases[runbookId] = {};
@@ -795,7 +813,6 @@
             document.getElementById('exportBtn').disabled = false;
             document.getElementById('historyBtn').disabled = false;
 
-            // Group steps by phase
             const phases = {};
             runbook.steps.forEach(step => {
                 if (!phases[step.phase]) {
@@ -821,7 +838,6 @@
                 <div class="checklist">
             `;
 
-            // Render each phase
             Object.keys(phases).forEach(phaseName => {
                 const phaseSteps = phases[phaseName];
                 const phaseProgress = execution ? calculatePhaseProgress(runbook, execution, phaseName) : 0;
@@ -956,7 +972,6 @@
                     return;
                 }
 
-                // Add IDs to steps
                 steps.forEach((step, index) => {
                     step.id = (index + 1).toString();
                 });
@@ -973,7 +988,6 @@
                 currentRunbookId = runbook.id;
                 startNewExecution(runbook.id);
                 
-                // Initialize expanded phases
                 const phases = [...new Set(steps.map(s => s.phase))];
                 expandedPhases[runbook.id] = {};
                 phases.forEach(phase => {
@@ -1039,7 +1053,6 @@
             }
             md += `\n---\n\n`;
 
-            // Group by phases
             const phases = {};
             runbook.steps.forEach(step => {
                 if (!phases[step.phase]) {
@@ -1079,6 +1092,8 @@
             a.download = `runbook-${runbook.id}-${execution.startTime.split('T')[0]}.md`;
             a.click();
             URL.revokeObjectURL(url);
+            
+            localStorage.setItem('last_export_runbook', Date.now().toString());
         }
 
         function exportJSON() {
@@ -1090,6 +1105,8 @@
             a.download = `runbooks-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
+            
+            localStorage.setItem('last_export_runbook', Date.now().toString());
         }
 
         function importJSON() {
@@ -1146,7 +1163,19 @@
             return div.innerHTML;
         }
 
-        // Keyboard shortcuts
+        function checkLastExport() {
+            const lastExport = localStorage.getItem('last_export_runbook');
+            if (lastExport) {
+                const daysSince = Math.floor((Date.now() - parseInt(lastExport)) / 86400000);
+                if (daysSince > 7 && runbooks.length > 0) {
+                    const banner = document.createElement('div');
+                    banner.style.cssText = 'background: #d79921; color: #282828; padding: 8px 20px; font-size: 12px; font-weight: 600; text-align: center; border-bottom: 1px solid #b57614;';
+                    banner.textContent = `⚠️ Last export was ${daysSince} days ago. Export your data to backup!`;
+                    document.body.insertBefore(banner, document.body.children[1]);
+                }
+            }
+        }
+
         document.addEventListener('keydown', (e) => {
             const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
             const modKey = isMac ? e.metaKey : e.ctrlKey;
@@ -1172,8 +1201,8 @@
             }
         });
 
-        // Initial render
         renderAll();
+        checkLastExport();
 
         if (runbooks.length === 0) {
             setTimeout(() => showNewRunbookModal(), 500);
