@@ -23,15 +23,6 @@
             flex-direction: column;
             overflow: hidden;
         }
-        .security-warning {
-            background: #fb4934;
-            color: #282828;
-            padding: 10px 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-align: center;
-            border-bottom: 2px solid #cc241d;
-        }
         .header {
             background: #282828;
             border-bottom: 2px solid #458588;
@@ -50,6 +41,19 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+        .sync-status {
+            font-size: 11px;
+            color: #928374;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sync-status.synced {
+            color: #b8bb26;
+        }
+        .sync-status.error {
+            color: #fb4934;
         }
         .header-actions {
             display: flex;
@@ -92,6 +96,12 @@
         }
         .btn-warning:hover {
             background: #fabd2f;
+        }
+        .btn-sync {
+            background: #689d6a;
+        }
+        .btn-sync:hover {
+            background: #8ec07c;
         }
         .main-container {
             display: flex;
@@ -516,6 +526,19 @@
             background: #282828;
             border-radius: 4px;
         }
+        .help-text {
+            font-size: 11px;
+            color: #665c54;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        .code-inline {
+            background: #3c3836;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #d8a657;
+        }
         ::-webkit-scrollbar {
             width: 10px;
             height: 10px;
@@ -533,13 +556,16 @@
     </style>
 </head>
 <body>
-    <div class="security-warning">
-        ⚠️ WARNING: Data stored locally in browser. Do NOT store passwords, API keys, or confidential info. Export regularly to backup. Use placeholders like {{password}} for sensitive values.
-    </div>
-
     <div class="header">
-        <h1>📋 RUNBOOK CHECKLIST</h1>
+        <div>
+            <h1>📋 RUNBOOK CHECKLIST</h1>
+            <div class="sync-status" id="syncStatus">
+                <span id="syncStatusText">Offline mode</span>
+            </div>
+        </div>
         <div class="header-actions">
+            <button class="btn-sync" onclick="showSyncSetupModal()" id="syncSetupBtn">☁️ Setup Sync</button>
+            <button class="btn-sync" onclick="syncNow()" id="syncNowBtn" style="display: none;">↻ Sync</button>
             <button onclick="showNewRunbookModal()">+ New Runbook</button>
             <button onclick="showHistoryModal()" id="historyBtn" disabled>History</button>
             <button class="btn-warning" onclick="resetCurrentRunbook()" id="resetBtn" disabled>↻ Reset</button>
@@ -565,6 +591,45 @@
         <span id="statsExecutions">0 total executions</span>
     </div>
 
+    <!-- Sync Setup Modal -->
+    <div class="modal" id="syncSetupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Setup GitHub Sync</h2>
+                <button onclick="closeModal('syncSetupModal')">✕</button>
+            </div>
+            <div style="margin-bottom: 20px; color: #a89984; font-size: 13px; line-height: 1.6;">
+                <p style="margin-bottom: 12px;">Sync your runbooks across devices using GitHub Gists (private, encrypted storage).</p>
+                <p><strong style="color: #fabd2f;">Setup Steps:</strong></p>
+                <ol style="margin-left: 20px; margin-top: 8px;">
+                    <li>Go to <a href="https://github.com/settings/tokens" target="_blank" style="color: #83a598;">github.com/settings/tokens</a></li>
+                    <li>Click "Generate new token" → "Generate new token (classic)"</li>
+                    <li>Name it "Runbook Sync"</li>
+                    <li>Check ONLY the <span class="code-inline">gist</span> scope</li>
+                    <li>Click "Generate token"</li>
+                    <li>Copy the token and paste below</li>
+                </ol>
+            </div>
+            <form onsubmit="setupSync(event)">
+                <div class="form-group">
+                    <label>GitHub Personal Access Token *</label>
+                    <input type="password" id="githubPAT" required placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                    <div class="help-text">
+                        Your token is stored locally and used to save data to a private GitHub Gist. It never leaves your browser.
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal('syncSetupModal')">Cancel</button>
+                    <button type="submit" class="btn-success">Enable Sync</button>
+                </div>
+            </form>
+            <div style="margin-top: 20px; padding: 12px; background: #3c3836; border-radius: 4px; font-size: 11px; color: #928374;">
+                <strong style="color: #d79921;">Already configured?</strong><br>
+                <button type="button" class="btn-danger" onclick="disableSync()" style="margin-top: 8px; font-size: 11px; padding: 6px 12px;">Disable Sync &amp; Clear Token</button>
+            </div>
+        </div>
+    </div>
+
     <!-- New Runbook Modal -->
     <div class="modal" id="newRunbookModal">
         <div class="modal-content">
@@ -584,7 +649,7 @@
                 <div class="form-group">
                     <label>Steps (JSON format) *</label>
                     <textarea id="runbookSteps" required placeholder='[{"phase":"Pre-Upgrade","title":"Backup config","description":"","command":"","required":true}]' style="min-height: 200px;"></textarea>
-                    <div style="font-size: 11px; color: #665c54; margin-top: 4px;">
+                    <div class="help-text">
                         Format: [{"phase":"Phase Name","title":"Step Title","description":"Details","command":"Command here","required":true}]
                     </div>
                 </div>
@@ -613,10 +678,13 @@
     <input type="file" id="importInput" style="display: none;" accept=".json" onchange="handleImport(event)">
 
     <script>
-        let runbooks = JSON.parse(localStorage.getItem('runbooks_v3')) || getDefaultRunbooks();
-        let currentRunbookId = localStorage.getItem('currentRunbookId_v3') || null;
-        let executions = JSON.parse(localStorage.getItem('executions_v3')) || {};
+        const GITHUB_API = 'https://api.github.com';
+        let runbooks = JSON.parse(localStorage.getItem('runbooks_v4')) || getDefaultRunbooks();
+        let currentRunbookId = localStorage.getItem('currentRunbookId_v4') || null;
+        let executions = JSON.parse(localStorage.getItem('executions_v4')) || {};
         let expandedPhases = {};
+        let syncInProgress = false;
+        let saveDebounceTimer = null;
 
         function getDefaultRunbooks() {
             return [
@@ -689,9 +757,201 @@
         }
 
         function saveData() {
-            localStorage.setItem('runbooks_v3', JSON.stringify(runbooks));
-            localStorage.setItem('currentRunbookId_v3', currentRunbookId);
-            localStorage.setItem('executions_v3', JSON.stringify(executions));
+            localStorage.setItem('runbooks_v4', JSON.stringify(runbooks));
+            localStorage.setItem('currentRunbookId_v4', currentRunbookId);
+            localStorage.setItem('executions_v4', JSON.stringify(executions));
+            
+            // Debounced auto-sync
+            if (localStorage.getItem('github_pat')) {
+                clearTimeout(saveDebounceTimer);
+                saveDebounceTimer = setTimeout(() => {
+                    syncToGitHub();
+                }, 3000); // 3 second debounce
+            }
+        }
+
+        async function syncToGitHub() {
+            if (syncInProgress) return;
+            
+            const pat = localStorage.getItem('github_pat');
+            if (!pat) return;
+            
+            syncInProgress = true;
+            updateSyncStatus('syncing', 'Syncing...');
+            
+            const gistId = localStorage.getItem('gist_id');
+            const data = {
+                runbooks: runbooks,
+                executions: executions,
+                currentRunbookId: currentRunbookId,
+                lastSync: new Date().toISOString()
+            };
+            
+            const payload = {
+                description: 'Runbook Checklist Data (Auto-synced)',
+                public: false,
+                files: {
+                    'runbooks-data.json': {
+                        content: JSON.stringify(data, null, 2)
+                    }
+                }
+            };
+            
+            try {
+                let response;
+                if (gistId) {
+                    response = await fetch(`${GITHUB_API}/gists/${gistId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `token ${pat}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                } else {
+                    response = await fetch(`${GITHUB_API}/gists`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `token ${pat}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (response.ok) {
+                        const gist = await response.json();
+                        localStorage.setItem('gist_id', gist.id);
+                    }
+                }
+                
+                if (response.ok) {
+                    updateSyncStatus('synced', 'Synced with GitHub');
+                } else {
+                    const error = await response.json();
+                    console.error('GitHub sync failed:', error);
+                    updateSyncStatus('error', 'Sync failed');
+                }
+            } catch (err) {
+                console.error('GitHub sync error:', err);
+                updateSyncStatus('error', 'Sync error');
+            } finally {
+                syncInProgress = false;
+            }
+        }
+
+        async function syncFromGitHub() {
+            const pat = localStorage.getItem('github_pat');
+            const gistId = localStorage.getItem('gist_id');
+            
+            if (!pat || !gistId) {
+                alert('GitHub sync not configured. Click "Setup Sync" first.');
+                return;
+            }
+            
+            updateSyncStatus('syncing', 'Pulling from GitHub...');
+            
+            try {
+                const response = await fetch(`${GITHUB_API}/gists/${gistId}`, {
+                    headers: {
+                        'Authorization': `token ${pat}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const gist = await response.json();
+                    const content = gist.files['runbooks-data.json'].content;
+                    const data = JSON.parse(content);
+                    
+                    runbooks = data.runbooks;
+                    executions = data.executions;
+                    currentRunbookId = data.currentRunbookId || null;
+                    
+                    saveData();
+                    renderAll();
+                    updateSyncStatus('synced', 'Synced with GitHub');
+                    alert('✅ Data pulled from GitHub successfully!');
+                } else {
+                    const error = await response.json();
+                    console.error('GitHub pull failed:', error);
+                    updateSyncStatus('error', 'Pull failed');
+                    alert('❌ Failed to pull from GitHub. Check console for errors.');
+                }
+            } catch (err) {
+                console.error('GitHub pull error:', err);
+                updateSyncStatus('error', 'Pull error');
+                alert('❌ Error pulling from GitHub: ' + err.message);
+            }
+        }
+
+        function updateSyncStatus(state, text) {
+            const statusEl = document.getElementById('syncStatus');
+            const textEl = document.getElementById('syncStatusText');
+            
+            statusEl.className = 'sync-status';
+            if (state === 'synced') {
+                statusEl.classList.add('synced');
+                textEl.textContent = '☁️ ' + text;
+            } else if (state === 'error') {
+                statusEl.classList.add('error');
+                textEl.textContent = '⚠️ ' + text;
+            } else if (state === 'syncing') {
+                textEl.textContent = '↻ ' + text;
+            } else {
+                textEl.textContent = text;
+            }
+        }
+
+        function showSyncSetupModal() {
+            document.getElementById('syncSetupModal').classList.add('active');
+            document.getElementById('githubPAT').focus();
+        }
+
+        function setupSync(event) {
+            event.preventDefault();
+            
+            const pat = document.getElementById('githubPAT').value.trim();
+            
+            if (!pat.startsWith('ghp_') && !pat.startsWith('github_pat_')) {
+                alert('Invalid token format. GitHub PATs start with "ghp_" or "github_pat_"');
+                return;
+            }
+            
+            localStorage.setItem('github_pat', pat);
+            
+            document.getElementById('syncSetupBtn').style.display = 'none';
+            document.getElementById('syncNowBtn').style.display = 'inline-block';
+            
+            closeModal('syncSetupModal');
+            document.getElementById('githubPAT').value = '';
+            
+            updateSyncStatus('syncing', 'Setting up...');
+            syncToGitHub();
+            
+            alert('✅ GitHub sync enabled! Your data will auto-sync every 3 seconds after changes.');
+        }
+
+        function disableSync() {
+            if (!confirm('Disable GitHub sync? Your data will remain in localStorage but will no longer sync to GitHub.')) {
+                return;
+            }
+            
+            localStorage.removeItem('github_pat');
+            localStorage.removeItem('gist_id');
+            
+            document.getElementById('syncSetupBtn').style.display = 'inline-block';
+            document.getElementById('syncNowBtn').style.display = 'none';
+            
+            updateSyncStatus('offline', 'Offline mode');
+            closeModal('syncSetupModal');
+            
+            alert('✅ GitHub sync disabled. Your local data is intact.');
+        }
+
+        function syncNow() {
+            if (!confirm('Pull latest data from GitHub? This will overwrite any local changes.')) {
+                return;
+            }
+            syncFromGitHub();
         }
 
         function formatTimestamp(date) {
@@ -897,7 +1157,7 @@
 
             html += `
                     <div class="shortcut-hint">
-                        💡 Click phase headers to collapse/expand sections. All phases start expanded.
+                        💡 Click phase headers to collapse/expand sections. Data auto-syncs to GitHub every 3 seconds after changes.
                     </div>
                 </div>
             `;
@@ -1092,8 +1352,6 @@
             a.download = `runbook-${runbook.id}-${execution.startTime.split('T')[0]}.md`;
             a.click();
             URL.revokeObjectURL(url);
-            
-            localStorage.setItem('last_export_runbook', Date.now().toString());
         }
 
         function exportJSON() {
@@ -1105,8 +1363,6 @@
             a.download = `runbooks-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            
-            localStorage.setItem('last_export_runbook', Date.now().toString());
         }
 
         function importJSON() {
@@ -1163,19 +1419,6 @@
             return div.innerHTML;
         }
 
-        function checkLastExport() {
-            const lastExport = localStorage.getItem('last_export_runbook');
-            if (lastExport) {
-                const daysSince = Math.floor((Date.now() - parseInt(lastExport)) / 86400000);
-                if (daysSince > 7 && runbooks.length > 0) {
-                    const banner = document.createElement('div');
-                    banner.style.cssText = 'background: #d79921; color: #282828; padding: 8px 20px; font-size: 12px; font-weight: 600; text-align: center; border-bottom: 1px solid #b57614;';
-                    banner.textContent = `⚠️ Last export was ${daysSince} days ago. Export your data to backup!`;
-                    document.body.insertBefore(banner, document.body.children[1]);
-                }
-            }
-        }
-
         document.addEventListener('keydown', (e) => {
             const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
             const modKey = isMac ? e.metaKey : e.ctrlKey;
@@ -1198,15 +1441,13 @@
             if (e.key === 'Escape') {
                 closeModal('newRunbookModal');
                 closeModal('historyModal');
+                closeModal('syncSetupModal');
             }
         });
 
+        // Initialize
         renderAll();
-        checkLastExport();
 
-        if (runbooks.length === 0) {
-            setTimeout(() => showNewRunbookModal(), 500);
-        }
-    </script>
-</body>
-</html>
+        // Check if sync is configured
+        if (localStorage.getItem('github_pat')) {
+            document.getElementById('
