@@ -178,8 +178,9 @@
                 <span>Center</span>
             </label>
         </div>
-        <button class="sync-btn" id="syncSetupBtn" onclick="showSyncSetup()" title="Setup GitHub Sync">☁️ Setup</button>
-        <button class="sync-btn" id="syncNowBtn" onclick="syncNow()" style="display:none;" title="Sync Now">↻ Sync</button>
+        <button class="sync-btn" id="loginBtn" onclick="showLoginModal()" title="Login to GitHub">☁️ Login</button>
+        <button class="sync-btn" id="pushBtn" onclick="pushNow()" style="display:none;" title="Push to GitHub">↑ Push</button>
+        <button class="sync-btn" id="pullBtn" onclick="pullNow()" style="display:none;" title="Pull from GitHub">↓ Pull</button>
         <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">◐</button>
         <button onclick="toggleHelp()" title="Keyboard Shortcuts">?</button>
     </div>
@@ -205,10 +206,10 @@
         <span class="sync-status" id="syncStatus"></span>
     </div>
 
-    <div class="modal" id="syncModal" onclick="if(event.target === this) closeSyncModal()">
+    <div class="modal" id="loginModal" onclick="if(event.target === this) closeLoginModal()">
         <div class="modal-content">
-            <h2>Setup GitHub Sync</h2>
-            <p>Sync your notes across devices using GitHub Gists (private storage).</p>
+            <h2>Login to GitHub</h2>
+            <p>Enter your GitHub Personal Access Token to enable sync.</p>
             <h3>Setup Steps:</h3>
             <ol>
                 <li>Go to <a href="https://github.com/settings/tokens" target="_blank" style="color: #7daea3;">github.com/settings/tokens</a></li>
@@ -219,12 +220,12 @@
                 <li>Copy token and paste below</li>
             </ol>
             <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-            <p style="font-size: 12px; margin-top: 8px; color: #928374;">Token stored locally. Auto-syncs every 2 minutes.</p>
-            <button onclick="setupSync()" style="margin-top: 16px;">Enable Sync</button>
-            <button onclick="closeSyncModal()" style="margin-left: 8px;">Cancel</button>
+            <p style="font-size: 12px; margin-top: 8px; color: #928374;">Token stored locally. Auto-pulls on login.</p>
+            <button onclick="login()" style="margin-top: 16px;">Login</button>
+            <button onclick="closeLoginModal()" style="margin-left: 8px;">Cancel</button>
             <div style="margin-top: 20px; padding: 12px; background: #3c3836; border-radius: 4px; font-size: 12px;">
-                <strong>Already configured?</strong><br>
-                <button onclick="disableSync()" class="sync-btn" style="margin-top: 8px; padding: 4px 10px; font-size: 12px; background: #cc241d;">Disable Sync</button>
+                <strong>Already logged in?</strong><br>
+                <button onclick="logout()" class="sync-btn" style="margin-top: 8px; padding: 4px 10px; font-size: 12px; background: #cc241d;">Logout</button>
             </div>
         </div>
     </div>
@@ -255,8 +256,6 @@
     <script>
         const GITHUB_API = 'https://api.github.com';
         const LINE_LIMIT = 10000;
-        const SAVE_DEBOUNCE_MS = 60000;
-        const SYNC_INTERVAL_MS = 120000; // 2 minutes
 
         let tabs = JSON.parse(localStorage.getItem('notes_tabs')) || [{id: 1, name: 'Note 1', content: ''}];
         let currentTabId = parseInt(localStorage.getItem('notes_current_tab')) || 1;
@@ -265,8 +264,6 @@
         let isCentered = localStorage.getItem('notes_centered') !== 'false';
         let saveTimeout = null;
         let searchMatches = [];
-        let syncInterval = null;
-        let lastSyncTime = 0;
         
         const editor = document.getElementById('editor');
         const preview = document.getElementById('preview');
@@ -281,10 +278,11 @@
         const replaceInput = document.getElementById('replaceInput');
         const searchResults = document.getElementById('searchResults');
         const helpModal = document.getElementById('helpModal');
-        const syncModal = document.getElementById('syncModal');
+        const loginModal = document.getElementById('loginModal');
         const syncStatus = document.getElementById('syncStatus');
-        const syncSetupBtn = document.getElementById('syncSetupBtn');
-        const syncNowBtn = document.getElementById('syncNowBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const pushBtn = document.getElementById('pushBtn');
+        const pullBtn = document.getElementById('pullBtn');
         
         const savedFont = localStorage.getItem('notes_font') || 'normal';
         fontSelect.value = savedFont;
@@ -369,11 +367,6 @@
             renderTabs();
             updateStats();
             if (isPreviewMode) updatePreview();
-        }
-
-        function debouncedSave() {
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => saveTabs(), SAVE_DEBOUNCE_MS);
         }
 
         function saveTabs() {
@@ -477,7 +470,7 @@
                 editor.selectionStart = index;
                 editor.selectionEnd = index + replacement.length;
                 editor.focus();
-                debouncedSave();
+                saveTabs();
                 updateStats();
                 findMatches();
             } else {
@@ -487,7 +480,7 @@
                     editor.selectionStart = firstIndex;
                     editor.selectionEnd = firstIndex + replacement.length;
                     editor.focus();
-                    debouncedSave();
+                    saveTabs();
                     updateStats();
                     findMatches();
                 }
@@ -502,7 +495,7 @@
             if (count === 0) { searchResults.textContent = 'No matches'; return; }
             if (confirm(`Replace ${count} occurrence${count > 1 ? 's' : ''}?`)) {
                 editor.value = editor.value.split(query).join(replacement);
-                debouncedSave();
+                saveTabs();
                 updateStats();
                 findMatches();
                 searchResults.textContent = `Replaced ${count} occurrence${count > 1 ? 's' : ''}`;
@@ -522,11 +515,11 @@
             if (selectedText) { editor.selectionStart = start + before.length; editor.selectionEnd = end + before.length; }
             else editor.selectionStart = editor.selectionEnd = start + before.length;
             editor.focus();
-            debouncedSave();
+            saveTabs();
             updateStats();
         }
 
-        editor.addEventListener('input', () => { debouncedSave(); updateStats(); if (isPreviewMode) updatePreview(); });
+        editor.addEventListener('input', () => { saveTabs(); updateStats(); if (isPreviewMode) updatePreview(); });
 
         document.addEventListener('keydown', (e) => {
             const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
@@ -555,61 +548,68 @@
                 editor.selectionStart = start + 4;
                 editor.selectionEnd = start + 4 + selectedText.length;
                 editor.focus();
-                debouncedSave();
+                saveTabs();
                 updateStats();
             }
         });
 
-        // GITHUB SYNC FUNCTIONS
-        function showSyncSetup() { syncModal.classList.add('active'); document.getElementById('githubToken').focus(); }
-        function closeSyncModal() { syncModal.classList.remove('active'); }
+        // SYNC FUNCTIONS
+        function showLoginModal() { loginModal.classList.add('active'); document.getElementById('githubToken').focus(); }
+        function closeLoginModal() { loginModal.classList.remove('active'); }
 
-        async function setupSync() {
+        async function login() {
             const token = document.getElementById('githubToken').value.trim();
             if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
                 alert('Invalid token format. GitHub PATs start with "ghp_" or "github_pat_"');
                 return;
             }
             localStorage.setItem('notes_github_token', token);
-            syncSetupBtn.style.display = 'none';
-            syncNowBtn.style.display = 'inline-block';
-            closeSyncModal();
-            updateSyncStatus('syncing', 'Setting up...');
-            await syncToGitHub();
-            startAutoSync();
+            loginBtn.style.display = 'none';
+            pushBtn.style.display = 'inline-block';
+            pullBtn.style.display = 'inline-block';
+            closeLoginModal();
+            document.getElementById('githubToken').value = '';
+            updateSyncStatus('syncing', '↻ Pulling...');
+            await pullFromGitHub(true);
         }
 
-        function disableSync() {
-            if (!confirm('Disable GitHub sync? Local data will remain but will no longer sync.')) return;
+        function logout() {
+            if (!confirm('Logout? You will need to enter token again to sync.')) return;
             localStorage.removeItem('notes_github_token');
             localStorage.removeItem('notes_gist_id');
-            syncSetupBtn.style.display = 'inline-block';
-            syncNowBtn.style.display = 'none';
-            stopAutoSync();
+            loginBtn.style.display = 'inline-block';
+            pushBtn.style.display = 'none';
+            pullBtn.style.display = 'none';
             updateSyncStatus('', '');
-            closeSyncModal();
+            closeLoginModal();
         }
 
-        async function syncToGitHub() {
+        async function pushNow() {
             const token = localStorage.getItem('notes_github_token');
             if (!token) return;
+            updateSyncStatus('syncing', '↻ Pushing...');
             const gistId = localStorage.getItem('notes_gist_id');
-            updateSyncStatus('syncing', '↻ Syncing...');
             const data = { tabs, currentTabId, lastSync: new Date().toISOString() };
-            const payload = { description: 'Notes Data (Auto-synced)', public: false, files: { 'notes-data.json': { content: JSON.stringify(data, null, 2) } } };
+            const payload = { description: 'Notes Data', public: false, files: { 'notes-data.json': { content: JSON.stringify(data, null, 2) } } };
             try {
                 let response;
                 if (gistId) response = await fetch(`${GITHUB_API}/gists/${gistId}`, { method: 'PATCH', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 else { response = await fetch(`${GITHUB_API}/gists`, { method: 'POST', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if (response.ok) { const gist = await response.json(); localStorage.setItem('notes_gist_id', gist.id); } }
-                if (response.ok) { updateSyncStatus('synced', '☁️ Synced'); lastSyncTime = Date.now(); }
-                else { console.error('Sync failed:', await response.json()); updateSyncStatus('error', '⚠️ Sync failed'); }
-            } catch (err) { console.error('Sync error:', err); updateSyncStatus('error', '⚠️ Sync error'); }
+                if (response.ok) updateSyncStatus('synced', '☁️ Pushed');
+                else { console.error('Push failed:', await response.json()); updateSyncStatus('error', '⚠️ Push failed'); }
+            } catch (err) { console.error('Push error:', err); updateSyncStatus('error', '⚠️ Push error'); }
         }
 
-        async function syncFromGitHub() {
+        async function pullNow() {
+            if (!confirm('Pull from GitHub? This will overwrite your local notes.')) return;
+            await pullFromGitHub(false);
+        }
+
+        async function pullFromGitHub(silent) {
             const token = localStorage.getItem('notes_github_token');
             const gistId = localStorage.getItem('notes_gist_id');
-            if (!token || !gistId) { alert('GitHub sync not configured'); return; }
+            if (!token) { if (!silent) alert('Not logged in'); return; }
+            if (!gistId) { if (!silent) updateSyncStatus('error', '⚠️ No Gist found'); return; }
             updateSyncStatus('syncing', '↻ Pulling...');
             try {
                 const response = await fetch(`${GITHUB_API}/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
@@ -623,15 +623,9 @@
                     renderTabs();
                     editor.value = tabs.find(t => t.id === currentTabId).content;
                     updateStats();
-                    updateSyncStatus('synced', '☁️ Synced');
-                    lastSyncTime = Date.now();
+                    updateSyncStatus('synced', '☁️ Pulled');
                 } else { console.error('Pull failed:', await response.json()); updateSyncStatus('error', '⚠️ Pull failed'); }
             } catch (err) { console.error('Pull error:', err); updateSyncStatus('error', '⚠️ Pull error'); }
-        }
-
-        function syncNow() {
-            if (!confirm('Pull latest data from GitHub? This will overwrite any local changes.')) return;
-            syncFromGitHub();
         }
 
         function updateSyncStatus(state, text) {
@@ -639,21 +633,12 @@
             syncStatus.textContent = text;
         }
 
-        function startAutoSync() {
-            stopAutoSync();
-            syncInterval = setInterval(() => {
-                if (Date.now() - lastSyncTime >= SYNC_INTERVAL_MS) syncToGitHub();
-            }, SYNC_INTERVAL_MS);
-        }
-
-        function stopAutoSync() { if (syncInterval) { clearInterval(syncInterval); syncInterval = null; } }
-
-        // Check if sync is configured on load
+        // Check if logged in on load
         if (localStorage.getItem('notes_github_token')) {
-            syncSetupBtn.style.display = 'none';
-            syncNowBtn.style.display = 'inline-block';
+            loginBtn.style.display = 'none';
+            pushBtn.style.display = 'inline-block';
+            pullBtn.style.display = 'inline-block';
             updateSyncStatus('synced', '☁️ Ready');
-            startAutoSync();
         }
 
         renderTabs();
