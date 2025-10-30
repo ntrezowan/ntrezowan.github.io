@@ -1,6 +1,5 @@
-// CLI SYNC ADDON 
+// CLI SYNC ADDON
 // Adds GitHub Gist sync to CLI tool without modifying original code
-// Usage: Add <script src="cli-sync-addon.js"></script> before </body> in index.html
 
 (function() {
     'use strict';
@@ -9,92 +8,106 @@
     
     // Create sync buttons in header
     function injectSyncButtons() {
-        const header = document.querySelector('.header-actions');
+        // Try multiple possible header selectors
+        let header = document.querySelector('.header-actions');
+        if (!header) header = document.querySelector('.toolbar');
+        if (!header) header = document.querySelector('header');
+        if (!header) header = document.querySelector('.header');
+        
         if (!header) {
-            console.error('CLI Sync: Could not find header-actions element');
-            return;
+            // If no header found, create button container at top of body
+            console.warn('CLI Sync: No header found, creating sync bar at top');
+            const syncBar = document.createElement('div');
+            syncBar.style.cssText = 'position: fixed; top: 0; right: 0; z-index: 9999; padding: 10px; background: #282828; border-bottom: 1px solid #3c3836; display: flex; gap: 8px;';
+            syncBar.id = 'cliSyncBar';
+            document.body.insertBefore(syncBar, document.body.firstChild);
+            header = syncBar;
         }
 
         // Create button container
-        const syncContainer = document.createElement('div');
-        syncContainer.style.cssText = 'display: flex; gap: 8px; margin-left: 8px;';
+        const syncContainer = document.createElement('span');
+        syncContainer.style.cssText = 'display: inline-flex; gap: 8px; margin-left: 8px;';
 
         // Login button
         const loginBtn = document.createElement('button');
         loginBtn.id = 'cliSyncLoginBtn';
-        loginBtn.className = 'btn-sync';
         loginBtn.textContent = '☁️ Login';
         loginBtn.onclick = showLoginModal;
-        loginBtn.style.cssText = 'background: #689d6a;';
+        loginBtn.style.cssText = 'background: #689d6a; color: #ebdbb2; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: monospace; font-size: 13px; font-weight: 600;';
 
         // Push button
         const pushBtn = document.createElement('button');
         pushBtn.id = 'cliSyncPushBtn';
-        pushBtn.className = 'btn-sync';
         pushBtn.textContent = '↑ Push';
         pushBtn.onclick = pushNow;
-        pushBtn.style.cssText = 'background: #689d6a; display: none;';
+        pushBtn.style.cssText = 'background: #689d6a; color: #ebdbb2; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: monospace; font-size: 13px; font-weight: 600; display: none;';
 
         // Pull button
         const pullBtn = document.createElement('button');
         pullBtn.id = 'cliSyncPullBtn';
-        pullBtn.className = 'btn-sync';
         pullBtn.textContent = '↓ Pull';
         pullBtn.onclick = pullNow;
-        pullBtn.style.cssText = 'background: #689d6a; display: none;';
+        pullBtn.style.cssText = 'background: #689d6a; color: #ebdbb2; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: monospace; font-size: 13px; font-weight: 600; display: none;';
 
         syncContainer.appendChild(loginBtn);
         syncContainer.appendChild(pushBtn);
         syncContainer.appendChild(pullBtn);
-        header.insertBefore(syncContainer, header.firstChild);
+        
+        // Append to header
+        header.appendChild(syncContainer);
 
-        // Add sync status to stats bar
+        // Add sync status to bottom stats bar (if exists)
         const stats = document.querySelector('.stats');
         if (stats) {
             const syncStatus = document.createElement('span');
             syncStatus.id = 'cliSyncStatus';
-            syncStatus.style.cssText = 'font-size: 11px; color: #928374;';
+            syncStatus.style.cssText = 'font-size: 11px; color: #928374; margin-left: 20px;';
             stats.appendChild(syncStatus);
         }
+
+        console.log('CLI Sync: Buttons injected successfully');
     }
 
     // Create login modal
     function createLoginModal() {
         const modal = document.createElement('div');
         modal.id = 'cliSyncLoginModal';
-        modal.className = 'modal';
+        modal.style.cssText = 'display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 10000; justify-content: center; align-items: center; padding: 20px;';
         modal.onclick = (e) => { if (e.target === modal) closeLoginModal(); };
-        modal.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Login to GitHub</h2>
-                    <button onclick="window.cliSyncCloseModal()">✕</button>
-                </div>
-                <p style="margin-bottom: 12px; color: #a89984;">Enter your GitHub Personal Access Token to enable sync.</p>
-                <input type="password" id="cliSyncGithubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width: 100%; padding: 10px; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; border-radius: 4px; font-family: 'JetBrains Mono', monospace; margin-bottom: 12px;">
-                <p style="font-size: 12px; color: #665c54; margin-bottom: 16px;">Token stored locally. Auto-pulls on login. Get token at <a href="https://github.com/settings/tokens" target="_blank" style="color: #8ec07c;">github.com/settings/tokens</a> (gist scope only)</p>
-                <button onclick="window.cliSyncLogin()" style="background: #689d6a;">Login</button>
-                <button onclick="window.cliSyncCloseModal()" style="margin-left: 8px;">Cancel</button>
-                <div style="margin-top: 20px; padding: 12px; background: #3c3836; border-radius: 4px; font-size: 12px;">
-                    <strong>Already logged in?</strong><br>
-                    <button onclick="window.cliSyncLogout()" style="margin-top: 8px; padding: 4px 10px; font-size: 12px; background: #cc241d;">Logout</button>
-                </div>
+        
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = 'background: #282828; border: 2px solid #504945; border-radius: 8px; padding: 24px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;';
+        modalContent.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #fabd2f; font-size: 18px; margin: 0;">Login to GitHub</h2>
+                <button onclick="window.cliSyncCloseModal()" style="background: #458588; color: #ebdbb2; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">✕</button>
+            </div>
+            <p style="margin-bottom: 12px; color: #a89984; font-family: monospace; font-size: 13px;">Enter your GitHub Personal Access Token to enable sync.</p>
+            <input type="password" id="cliSyncGithubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width: 100%; padding: 10px; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; border-radius: 4px; font-family: monospace; margin-bottom: 12px; font-size: 13px;">
+            <p style="font-size: 12px; color: #665c54; margin-bottom: 16px; font-family: monospace;">Token stored locally. Auto-pulls on login. Get token at <a href="https://github.com/settings/tokens" target="_blank" style="color: #8ec07c;">github.com/settings/tokens</a> (gist scope only)</p>
+            <button onclick="window.cliSyncLogin()" style="background: #689d6a; color: #ebdbb2; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-family: monospace; font-size: 13px; font-weight: 600;">Login</button>
+            <button onclick="window.cliSyncCloseModal()" style="margin-left: 8px; background: #458588; color: #ebdbb2; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-family: monospace; font-size: 13px;">Cancel</button>
+            <div style="margin-top: 20px; padding: 12px; background: #3c3836; border-radius: 4px; font-size: 12px; font-family: monospace;">
+                <strong>Already logged in?</strong><br>
+                <button onclick="window.cliSyncLogout()" style="margin-top: 8px; padding: 6px 12px; font-size: 12px; background: #cc241d; color: #ebdbb2; border: none; border-radius: 4px; cursor: pointer; font-family: monospace;">Logout</button>
             </div>
         `;
+        
+        modal.appendChild(modalContent);
         document.body.appendChild(modal);
     }
 
     function showLoginModal() {
         const modal = document.getElementById('cliSyncLoginModal');
         if (modal) {
-            modal.classList.add('active');
+            modal.style.display = 'flex';
             document.getElementById('cliSyncGithubToken').focus();
         }
     }
 
     function closeLoginModal() {
         const modal = document.getElementById('cliSyncLoginModal');
-        if (modal) modal.classList.remove('active');
+        if (modal) modal.style.display = 'none';
     }
 
     async function login() {
@@ -181,10 +194,12 @@
             } else {
                 console.error('Push failed:', await response.json());
                 updateSyncStatus('error', '⚠️ Push failed');
+                alert('Push failed. Check console for details.');
             }
         } catch (err) {
             console.error('Push error:', err);
             updateSyncStatus('error', '⚠️ Push error');
+            alert('Push error: ' + err.message);
         }
     }
 
@@ -203,7 +218,7 @@
         }
 
         if (!gistId) {
-            if (!silent) updateSyncStatus('error', '⚠️ No Gist found');
+            if (!silent) updateSyncStatus('error', '⚠️ No Gist found. Push first.');
             return;
         }
 
@@ -234,16 +249,21 @@
             } else {
                 console.error('Pull failed:', await response.json());
                 updateSyncStatus('error', '⚠️ Pull failed');
+                if (!silent) alert('Pull failed. Check console for details.');
             }
         } catch (err) {
             console.error('Pull error:', err);
             updateSyncStatus('error', '⚠️ Pull error');
+            if (!silent) alert('Pull error: ' + err.message);
         }
     }
 
     function updateSyncStatus(state, text) {
         const statusEl = document.getElementById('cliSyncStatus');
-        if (!statusEl) return;
+        if (!statusEl) {
+            console.log('CLI Sync Status:', text);
+            return;
+        }
 
         statusEl.className = '';
         if (state === 'synced') {
@@ -261,13 +281,14 @@
         }
     }
 
-    // Expose functions to window for onclick handlers in modal
+    // Expose functions to window for onclick handlers
     window.cliSyncLogin = login;
     window.cliSyncLogout = logout;
     window.cliSyncCloseModal = closeLoginModal;
 
     // Initialize on page load
     function init() {
+        console.log('CLI Sync Addon: Initializing...');
         injectSyncButtons();
         createLoginModal();
 
@@ -278,6 +299,7 @@
             document.getElementById('cliSyncPullBtn').style.display = 'inline-block';
             updateSyncStatus('synced', '☁️ Ready');
         }
+        console.log('CLI Sync Addon: Initialized successfully');
     }
 
     // Wait for DOM to be ready
