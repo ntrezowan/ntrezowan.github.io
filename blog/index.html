@@ -27,7 +27,7 @@
         .back-link { text-align: center; margin-top: 40px; }
         .back-link a { color: #83a598; text-decoration: none; font-size: 14px; }
         .back-link a:hover { text-decoration: underline; }
-        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 32px; }
         .feature-item { background: #3c3836; padding: 12px; border-radius: 4px; border-left: 3px solid #504945; }
         .feature-item.notes { border-left-color: #fe8019; }
         .feature-item.cli { border-left-color: #b8bb26; }
@@ -37,8 +37,12 @@
         .feature-item.config { border-left-color: #83a598; }
         .feature-title { font-weight: 600; color: #ebdbb2; margin-bottom: 8px; font-size: 15px; }
         .feature-desc { color: #a89984; font-size: 12px; line-height: 1.5; }
-        .tool-links { margin-bottom: 16px; }
+        .access-section { margin-bottom: 32px; }
+        .access-section h2 { color: #fabd2f; font-size: 20px; margin-bottom: 16px; }
+        .tool-links { margin: 0; padding: 0; }
         .tool-links li { list-style: none; margin-bottom: 6px; }
+        .tool-links a { color: #83a598; text-decoration: none; font-size: 14px; }
+        .tool-links a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -51,32 +55,45 @@
             <div class="post-meta">
                 <span>✍️ oh-thor</span>
             </div>
+
+            <div class="access-section">
+                <h2>Access</h2>
+                <ul class="tool-links">
+                    <li><a href="https://ntrezowan.github.io/notes">ntrezowan.github.io/notes</a></li>
+                    <li><a href="https://ntrezowan.github.io/cli">ntrezowan.github.io/cli</a></li>
+                    <li><a href="https://ntrezowan.github.io/incident">ntrezowan.github.io/incident</a></li>
+                    <li><a href="https://ntrezowan.github.io/runbook">ntrezowan.github.io/runbook</a></li>
+                    <li><a href="https://ntrezowan.github.io/snippet">ntrezowan.github.io/snippet</a></li>
+                    <li><a href="https://ntrezowan.github.io/config">ntrezowan.github.io/config</a></li>
+                </ul>
+            </div>
+
             <h1 class="post-title">Tools</h1>
             <div class="post-content">
                 <div class="feature-grid">
                     <div class="feature-item notes">
                         <div class="feature-title">📝 Notes</div>
-                        <div class="feature-desc">Markdown editor with multi-tab support, syntax highlighting, and preview mode.</div>
+                        <div class="feature-desc">Because you'll forget what you did in production 5 minutes after doing it.</div>
                     </div>
                     <div class="feature-item cli">
                         <div class="feature-title">💻 CLI</div>
-                        <div class="feature-desc">Command cheatsheet manager with categories and quick search.</div>
+                        <div class="feature-desc">For the 47th time you've googled "kubectl get pods with custom columns".</div>
                     </div>
                     <div class="feature-item incident">
                         <div class="feature-title">🔥 Incident</div>
-                        <div class="feature-desc">Timeline logger for tracking outages with severity levels and resolution notes.</div>
+                        <div class="feature-desc">Document the chaos while everything burns so you can explain it at the post-mortem.</div>
                     </div>
                     <div class="feature-item runbook">
                         <div class="feature-title">📋 Runbook</div>
-                        <div class="feature-desc">Step-by-step checklist system with phases, progress tracking, and execution history.</div>
+                        <div class="feature-desc">Step-by-step instructions because you'll mess up the upgrade at 2am without them.</div>
                     </div>
                     <div class="feature-item snippet">
                         <div class="feature-title">📝 Snippet</div>
-                        <div class="feature-desc">Code template vault with syntax highlighting for 13 languages.</div>
+                        <div class="feature-desc">Stop copy-pasting that Terraform module from Teams DMs. Put it here instead.</div>
                     </div>
                     <div class="feature-item config">
                         <div class="feature-title">⚙️ Config</div>
-                        <div class="feature-desc">Environment variable registry for endpoints, ARNs, and configuration values.</div>
+                        <div class="feature-desc">Because you keep forgetting which AWS account is prod and is this where you suppose to be?</div>
                     </div>
                 </div>
 
@@ -165,22 +182,12 @@
                     <li><strong>Keyboard shortcuts</strong> - Cmd+N (new), Cmd+K (search), Esc (close)</li>
                 </ul>
 
-                <h2>Access</h2>
-                <ul class="tool-links">
-                    <li><a href="https://ntrezowan.github.io/notes">ntrezowan.github.io/notes</a></li>
-                    <li><a href="https://ntrezowan.github.io/cli">ntrezowan.github.io/cli</a></li>
-                    <li><a href="https://ntrezowan.github.io/incident">ntrezowan.github.io/incident</a></li>
-                    <li><a href="https://ntrezowan.github.io/runbook">ntrezowan.github.io/runbook</a></li>
-                    <li><a href="https://ntrezowan.github.io/snippet">ntrezowan.github.io/snippet</a></li>
-                    <li><a href="https://ntrezowan.github.io/config">ntrezowan.github.io/config</a></li>
-                </ul>
-
                 <h2>How to Sync</h2>
                 <p><strong>One-time setup:</strong></p>
                 <ul>
                     <li>Go to <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a></li>
                     <li>Click "Generate new token (classic)"</li>
-                    <li>Name it "DevOps Toolkit Sync"</li>
+                    <li>Name it "tools-sync-token"</li>
                     <li>Check ONLY the <code>gist</code> scope</li>
                     <li>Generate token and copy it</li>
                 </ul>
@@ -200,11 +207,11 @@
 
                 <h2>Tech Stack</h2>
                 <ul>
-                    <li><strong>Frontend:</strong> Vanilla JavaScript (no frameworks)</li>
-                    <li><strong>Storage:</strong> localStorage + GitHub Gists API</li>
-                    <li><strong>Styling:</strong> Gruvbox Dark theme, CSS Grid/Flexbox</li>
-                    <li><strong>Markdown:</strong> marked.js (Notes)</li>
-                    <li><strong>Syntax highlighting:</strong> highlight.js (Snippet)</li>
+                    <li><strong>Frontend:</strong> JavaScript </li>
+                    <li><strong>Storage:</strong> localStorage + GitHub Gists</li>
+                    <li><strong>Styling:</strong> Gruvbox Dark </li>
+                    <li><strong>Markdown:</strong> marked.js </li>
+                    <li><strong>Syntax highlighting:</strong> highlight.js </li>
                     <li><strong>Fonts:</strong> JetBrains Mono, Inter</li>
                 </ul>
 
