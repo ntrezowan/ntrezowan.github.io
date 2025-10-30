@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snippet Manager</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23d79921'/><text x='50' y='50' text-anchor='middle' dy='.35em' font-size='50' fill='%23282828' font-family='Arial,sans-serif' font-weight='bold'>{}</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/gruvbox-dark-hard.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'JetBrains Mono', monospace; background: #1d2021; color: #ebdbb2; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .header { background: #282828; border-bottom: 2px solid #d79921; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; flex-shrink: 0; }
+        .header h1 { color: #d8a657; font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        button { background: #458588; color: #ebdbb2; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+        button:hover { background: #83a598; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-success { background: #98971a; }
+        .btn-success:hover { background: #b8bb26; }
+        .btn-danger { background: #cc241d; }
+        .btn-danger:hover { background: #fb4934; }
+        .btn-warning { background: #d79921; }
+        .btn-warning:hover { background: #fabd2f; }
+        .btn-sync { background: #689d6a; }
+        .btn-sync:hover { background: #8ec07c; }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 300px; background: #282828; border-right: 1px solid #3c3836; overflow-y: auto; padding: 16px; flex-shrink: 0; }
+        .search-box { margin-bottom: 16px; }
+        .search-box input { width: 100%; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+        .search-box input:focus { outline: none; border-color: #d79921; }
+        .tags-filter { margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag-chip { background: #3c3836; color: #ebdbb2; padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer; transition: all 0.2s; border: 1px solid #504945; }
+        .tag-chip:hover { background: #504945; }
+        .tag-chip.active { background: #d79921; color: #282828; border-color: #d79921; }
+        .snippet-list h3 { color: #fabd2f; font-size: 14px; margin-bottom: 12px; text-transform: uppercase; }
+        .snippet-item { background: #3c3836; padding: 12px; margin-bottom: 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-size: 13px; border-left: 3px solid transparent; }
+        .snippet-item:hover { background: #504945; }
+        .snippet-item.active { background: #504945; border-left-color: #d79921; }
+        .snippet-item-title { color: #ebdbb2; font-weight: 600; margin-bottom: 4px; }
+        .snippet-item-meta { color: #928374; font-size: 11px; display: flex; gap: 8px; align-items: center; }
+        .lang-badge { background: #504945; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
+        .content { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .snippet-header { background: #282828; border-bottom: 1px solid #3c3836; padding: 20px; display: flex; justify-content: space-between; align-items: flex-start; }
+        .snippet-title-display { color: #d8a657; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .snippet-meta-display { color: #928374; font-size: 13px; display: flex; gap: 12px; align-items: center; }
+        .snippet-actions { display: flex; gap: 8px; }
+        .snippet-code-container { flex: 1; overflow-y: auto; padding: 20px; }
+        .snippet-code { background: #282828; border: 1px solid #3c3836; border-radius: 6px; padding: 16px; overflow-x: auto; }
+        .snippet-code pre { margin: 0; }
+        .snippet-code code { font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6; }
+        .empty-state { text-align: center; color: #665c54; padding: 60px 20px; font-size: 14px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: #282828; border: 2px solid #504945; border-radius: 8px; padding: 24px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { color: #fabd2f; font-size: 18px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; color: #928374; font-size: 13px; margin-bottom: 6px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; padding: 10px 12px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+        .form-group textarea { min-height: 300px; resize: vertical; font-family: 'JetBrains Mono', monospace; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #d79921; }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .stats { padding: 8px 20px; background: #282828; border-top: 1px solid #3c3836; font-size: 12px; color: #928374; display: flex; gap: 20px; flex-shrink: 0; }
+        .sync-status { font-size: 11px; }
+        .sync-status.synced { color: #a9b665; }
+        .sync-status.error { color: #fb4934; }
+        .help-text { font-size: 11px; color: #665c54; margin-top: 6px; line-height: 1.4; }
+        .tag-input-container { display: flex; flex-wrap: wrap; gap: 6px; background: #3c3836; border: 1px solid #504945; border-radius: 4px; padding: 8px; }
+        .tag-input-container input { border: none; background: transparent; color: #ebdbb2; font-family: 'JetBrains Mono', monospace; font-size: 13px; flex: 1; min-width: 120px; padding: 4px; }
+        .tag-input-container input:focus { outline: none; }
+        .tag-badge { background: #d79921; color: #282828; padding: 4px 8px; border-radius: 12px; font-size: 11px; display: flex; align-items: center; gap: 6px; }
+        .tag-badge span { cursor: pointer; font-weight: bold; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #1d2021; }
+        ::-webkit-scrollbar-thumb { background: #504945; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #665c54; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📝 SNIPPET MANAGER</h1>
+        <div class="header-actions">
+            <button class="btn-sync" id="loginBtn" onclick="showLoginModal()">☁️ Login</button>
+            <button class="btn-sync" id="pushBtn" onclick="pushNow()" style="display:none;">↑ Push</button>
+            <button class="btn-sync" id="pullBtn" onclick="pullNow()" style="display:none;">↓ Pull</button>
+            <button onclick="showAddModal()">+ New Snippet</button>
+            <button onclick="exportJSON()">↓ Export JSON</button>
+            <button onclick="importJSON()">↑ Import</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search snippets..." onkeyup="filterSnippets()">
+            </div>
+            <div class="tags-filter" id="tagsFilter"></div>
+            <div class="snippet-list">
+                <h3>Snippets (<span id="snippetCount">0</span>)</h3>
+                <div id="snippetList"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="snippetView"></div>
+        </div>
+    </div>
+
+    <div class="stats">
+        <span id="statsTotal">0 snippets</span>
+        <span id="statsLanguages">0 languages</span>
+        <span class="sync-status" id="syncStatus"></span>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Login to GitHub</h2><button onclick="closeModal('loginModal')">✕</button></div>
+            <p style="margin-bottom: 12px; color: #a89984;">Enter your GitHub Personal Access Token to enable sync.</p>
+            <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width: 100%; padding: 10px; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; border-radius: 4px; font-family: 'JetBrains Mono', monospace; margin-bottom: 12px;">
+            <p style="font-size: 12px; color: #665c54; margin-bottom: 16px;">Token stored locally. Auto-pulls on login. Get token at <a href="https://github.com/settings/tokens" target="_blank" style="color: #8ec07c;">github.com/settings/tokens</a> (gist scope only)</p>
+            <button onclick="login()">Login</button>
+            <button onclick="closeModal('loginModal')" style="margin-left: 8px;">Cancel</button>
+            <div style="margin-top: 20px; padding: 12px; background: #3c3836; border-radius: 4px; font-size: 12px;">
+                <strong>Already logged in?</strong><br>
+                <button onclick="logout()" class="btn-danger" style="margin-top: 8px; padding: 4px 10px; font-size: 12px;">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="snippetModal">
+        <div class="modal-content">
+            <div class="modal-header"><h2 id="modalTitle">Add Snippet</h2><button onclick="closeModal('snippetModal')">✕</button></div>
+            <form onsubmit="saveSnippet(event)">
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" id="snippetTitle" required placeholder="e.g., AWS VPC Terraform Module">
+                </div>
+                <div class="form-group">
+                    <label>Language *</label>
+                    <select id="snippetLanguage" required>
+                        <option value="bash">Bash</option>
+                        <option value="python">Python</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="terraform">Terraform</option>
+                        <option value="yaml">YAML</option>
+                        <option value="json">JSON</option>
+                        <option value="dockerfile">Dockerfile</option>
+                        <option value="go">Go</option>
+                        <option value="sql">SQL</option>
+                        <option value="xml">XML</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="plaintext">Plain Text</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tags (press Enter to add)</label>
+                    <div class="tag-input-container" id="tagInputContainer">
+                        <input type="text" id="tagInput" placeholder="Add tag..." onkeydown="handleTagInput(event)">
+                    </div>
+                    <div class="help-text">Common tags: terraform, kubernetes, docker, ansible, monitoring, aws, gcp</div>
+                </div>
+                <div class="form-group">
+                    <label>Code *</label>
+                    <textarea id="snippetCode" required placeholder="Paste your code here..."></textarea>
+                </div>
+                <input type="hidden" id="snippetId">
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal('snippetModal')">Cancel</button>
+                    <button type="submit" class="btn-success">Save Snippet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <input type="file" id="importInput" style="display: none;" accept=".json" onchange="handleImport(event)">
+
+    <script>
+        const GITHUB_API = 'https://api.github.com';
+        let snippets = JSON.parse(localStorage.getItem('snippets')) || [];
+        let currentSnippetId = null;
+        let editingTags = [];
+        let activeTagFilter = null;
+
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function saveData() { localStorage.setItem('snippets', JSON.stringify(snippets)); }
+
+        function showAddModal() {
+            document.getElementById('modalTitle').textContent = 'Add Snippet';
+            document.getElementById('snippetTitle').value = '';
+            document.getElementById('snippetLanguage').value = 'bash';
+            document.getElementById('snippetCode').value = '';
+            document.getElementById('snippetId').value = '';
+            editingTags = [];
+            renderTagInput();
+            document.getElementById('snippetModal').classList.add('active');
+            document.getElementById('snippetTitle').focus();
+        }
+
+        function showEditModal(snippetId) {
+            const snippet = snippets.find(s => s.id === snippetId);
+            if (!snippet) return;
+            document.getElementById('modalTitle').textContent = 'Edit Snippet';
+            document.getElementById('snippetTitle').value = snippet.title;
+            document.getElementById('snippetLanguage').value = snippet.language;
+            document.getElementById('snippetCode').value = snippet.code;
+            document.getElementById('snippetId').value = snippet.id;
+            editingTags = [...snippet.tags];
+            renderTagInput();
+            document.getElementById('snippetModal').classList.add('active');
+            document.getElementById('snippetTitle').focus();
+        }
+
+        function handleTagInput(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = event.target;
+                const tag = input.value.trim().toLowerCase();
+                if (tag && !editingTags.includes(tag)) {
+                    editingTags.push(tag);
+                    input.value = '';
+                    renderTagInput();
+                }
+            }
+        }
+
+        function removeTag(tag) {
+            editingTags = editingTags.filter(t => t !== tag);
+            renderTagInput();
+        }
+
+        function renderTagInput() {
+            const container = document.getElementById('tagInputContainer');
+            const input = document.getElementById('tagInput');
+            const badges = editingTags.map(tag => 
+                `<div class="tag-badge">${escapeHtml(tag)}<span onclick="removeTag('${tag}')">×</span></div>`
+            ).join('');
+            container.innerHTML = badges + input.outerHTML;
+            document.getElementById('tagInput').addEventListener('keydown', handleTagInput);
+        }
+
+        function saveSnippet(event) {
+            event.preventDefault();
+            const id = document.getElementById('snippetId').value;
+            const snippet = {
+                id: id || Date.now().toString(),
+                title: document.getElementById('snippetTitle').value.trim(),
+                language: document.getElementById('snippetLanguage').value,
+                tags: editingTags,
+                code: document.getElementById('snippetCode').value,
+                created: id ? snippets.find(s => s.id === id).created : new Date().toISOString(),
+                updated: new Date().toISOString()
+            };
+            if (id) snippets = snippets.map(s => s.id === id ? snippet : s);
+            else snippets.unshift(snippet);
+            saveData();
+            closeModal('snippetModal');
+            renderAll();
+            if (id) selectSnippet(id);
+            else selectSnippet(snippet.id);
+        }
+
+        function deleteSnippet(snippetId) {
+            if (!confirm('Delete this snippet? Cannot be undone.')) return;
+            snippets = snippets.filter(s => s.id !== snippetId);
+            if (currentSnippetId === snippetId) currentSnippetId = null;
+            saveData();
+            renderAll();
+        }
+
+        function selectSnippet(snippetId) {
+            currentSnippetId = snippetId;
+            renderSnippetView();
+            renderSnippetList();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Copied to clipboard!');
+            }).catch(() => {
+                alert('❌ Failed to copy. Try manually selecting and copying.');
+            });
+        }
+
+        function downloadSnippet() {
+            const snippet = snippets.find(s => s.id === currentSnippetId);
+            if (!snippet) return;
+            const ext = {
+                'bash': 'sh', 'python': 'py', 'javascript': 'js', 'typescript': 'ts',
+                'terraform': 'tf', 'yaml': 'yaml', 'json': 'json', 'dockerfile': 'Dockerfile',
+                'go': 'go', 'sql': 'sql', 'xml': 'xml', 'markdown': 'md', 'plaintext': 'txt'
+            };
+            const filename = `${snippet.title.toLowerCase().replace(/\s+/g, '-')}.${ext[snippet.language] || 'txt'}`;
+            const blob = new Blob([snippet.code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function renderSnippetView() {
+            const view = document.getElementById('snippetView');
+            const snippet = snippets.find(s => s.id === currentSnippetId);
+            if (!snippet) {
+                view.innerHTML = '<div class="empty-state">Select a snippet to view<br><br><button onclick="showAddModal()">+ Add First Snippet</button></div>';
+                return;
+            }
+            const tags = snippet.tags.map(tag => `<span class="lang-badge">${escapeHtml(tag)}</span>`).join('');
+            view.innerHTML = `
+                <div class="snippet-header">
+                    <div>
+                        <div class="snippet-title-display">${escapeHtml(snippet.title)}</div>
+                        <div class="snippet-meta-display">
+                            <span class="lang-badge">${escapeHtml(snippet.language)}</span>
+                            ${tags}
+                            <span>Updated: ${new Date(snippet.updated).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                    <div class="snippet-actions">
+                        <button onclick="copyToClipboard(snippets.find(s => s.id === '${snippet.id}').code)">📋 Copy</button>
+                        <button onclick="downloadSnippet()">💾 Download</button>
+                        <button class="btn-warning" onclick="showEditModal('${snippet.id}')">✏️ Edit</button>
+                        <button class="btn-danger" onclick="deleteSnippet('${snippet.id}')">🗑️ Delete</button>
+                    </div>
+                </div>
+                <div class="snippet-code-container">
+                    <div class="snippet-code">
+                        <pre><code class="language-${snippet.language}">${escapeHtml(snippet.code)}</code></pre>
+                    </div>
+                </div>
+            `;
+            document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+        }
+
+        function filterSnippets() {
+            renderSnippetList();
+        }
+
+        function toggleTagFilter(tag) {
+            activeTagFilter = activeTagFilter === tag ? null : tag;
+            renderTagsFilter();
+            renderSnippetList();
+        }
+
+        function renderTagsFilter() {
+            const allTags = [...new Set(snippets.flatMap(s => s.tags))].sort();
+            const tagsHtml = allTags.map(tag => 
+                `<div class="tag-chip ${activeTagFilter === tag ? 'active' : ''}" onclick="toggleTagFilter('${tag}')">${escapeHtml(tag)}</div>`
+            ).join('');
+            document.getElementById('tagsFilter').innerHTML = tagsHtml;
+        }
+
+        function renderSnippetList() {
+            const list = document.getElementById('snippetList');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = snippets;
+            if (search) filtered = filtered.filter(s => 
+                s.title.toLowerCase().includes(search) || 
+                s.tags.some(t => t.includes(search)) ||
+                s.code.toLowerCase().includes(search)
+            );
+            if (activeTagFilter) filtered = filtered.filter(s => s.tags.includes(activeTagFilter));
+            document.getElementById('snippetCount').textContent = filtered.length;
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="color: #665c54; font-size: 12px; text-align: center; padding: 20px;">No snippets found</div>';
+                return;
+            }
+            let html = '';
+            filtered.forEach(snippet => {
+                const isActive = snippet.id === currentSnippetId;
+                const tags = snippet.tags.slice(0, 2).map(t => `<span class="lang-badge">${escapeHtml(t)}</span>`).join('');
+                html += `
+                    <div class="snippet-item ${isActive ? 'active' : ''}" onclick="selectSnippet('${snippet.id}')">
+                        <div class="snippet-item-title">${escapeHtml(snippet.title)}</div>
+                        <div class="snippet-item-meta">
+                            <span class="lang-badge">${escapeHtml(snippet.language)}</span>
+                            ${tags}
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        function updateStats() {
+            const languages = [...new Set(snippets.map(s => s.language))].length;
+            document.getElementById('statsTotal').textContent = `${snippets.length} snippets`;
+            document.getElementById('statsLanguages').textContent = `${languages} languages`;
+        }
+
+        function renderAll() {
+            renderSnippetList();
+            renderSnippetView();
+            renderTagsFilter();
+            updateStats();
+        }
+
+        function exportJSON() {
+            const data = JSON.stringify(snippets, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `snippets-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importJSON() { document.getElementById('importInput').click(); }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        if (confirm(`Import ${imported.length} snippets? This will replace all current data.`)) {
+                            snippets = imported;
+                            currentSnippetId = null;
+                            saveData();
+                            renderAll();
+                        }
+                    } else { alert('Invalid file format'); }
+                } catch (err) { alert('Failed to parse JSON file'); }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+
+        document.addEventListener('keydown', (e) => {
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            const modKey = isMac ? e.metaKey : e.ctrlKey;
+            if (modKey && e.key === 'n') { e.preventDefault(); showAddModal(); }
+            if (modKey && e.key === 'k') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+            if (e.key === 'Escape') { closeModal('snippetModal'); closeModal('loginModal'); }
+        });
+
+        // SYNC FUNCTIONS
+        function showLoginModal() { document.getElementById('loginModal').classList.add('active'); document.getElementById('githubToken').focus(); }
+
+        async function login() {
+            const token = document.getElementById('githubToken').value.trim();
+            if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) { alert('Invalid token format.'); return; }
+            localStorage.setItem('snippets_github_token', token);
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('pushBtn').style.display = 'inline-block';
+            document.getElementById('pullBtn').style.display = 'inline-block';
+            closeModal('loginModal');
+            document.getElementById('githubToken').value = '';
+            updateSyncStatus('syncing', '↻ Pulling...');
+            await pullFromGitHub(true);
+        }
+
+        function logout() {
+            if (!confirm('Logout?')) return;
+            localStorage.removeItem('snippets_github_token');
+            localStorage.removeItem('snippets_gist_id');
+            document.getElementById('loginBtn').style.display = 'inline-block';
+            document.getElementById('pushBtn').style.display = 'none';
+            document.getElementById('pullBtn').style.display = 'none';
+            updateSyncStatus('', '');
+            closeModal('loginModal');
+        }
+
+        async function pushNow() {
+            const token = localStorage.getItem('snippets_github_token');
+            if (!token) return;
+            updateSyncStatus('syncing', '↻ Pushing...');
+            const gistId = localStorage.getItem('snippets_gist_id');
+            const data = { snippets, lastSync: new Date().toISOString() };
+            const payload = { description: 'Snippets Data', public: false, files: { 'snippets-data.json': { content: JSON.stringify(data, null, 2) } } };
+            try {
+                let response;
+                if (gistId) response = await fetch(`${GITHUB_API}/gists/${gistId}`, { method: 'PATCH', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                else { response = await fetch(`${GITHUB_API}/gists`, { method: 'POST', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if (response.ok) { const gist = await response.json(); localStorage.setItem('snippets_gist_id', gist.id); } }
+                if (response.ok) updateSyncStatus('synced', '☁️ Pushed');
+                else { console.error('Push failed:', await response.json()); updateSyncStatus('error', '⚠️ Push failed'); }
+            } catch (err) { console.error('Push error:', err); updateSyncStatus('error', '⚠️ Push error'); }
+        }
+
+        async function pullNow() { if (!confirm('Pull from GitHub? This will overwrite your local snippets.')) return; await pullFromGitHub(false); }
+
+        async function pullFromGitHub(silent) {
+            const token = localStorage.getItem('snippets_github_token');
+            const gistId = localStorage.getItem('snippets_gist_id');
+            if (!token) { if (!silent) alert('Not logged in'); return; }
+            if (!gistId) { if (!silent) updateSyncStatus('error', '⚠️ No Gist found'); return; }
+            updateSyncStatus('syncing', '↻ Pulling...');
+            try {
+                const response = await fetch(`${GITHUB_API}/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
+                if (response.ok) {
+                    const gist = await response.json();
+                    const content = gist.files['snippets-data.json'].content;
+                    const data = JSON.parse(content);
+                    snippets = data.snippets;
+                    currentSnippetId = null;
+                    saveData();
+                    renderAll();
+                    updateSyncStatus('synced', '☁️ Pulled');
+                } else { console.error('Pull failed:', await response.json()); updateSyncStatus('error', '⚠️ Pull failed'); }
+            } catch (err) { console.error('Pull error:', err); updateSyncStatus('error', '⚠️ Pull error'); }
+        }
+
+        function updateSyncStatus(state, text) {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.className = 'sync-status';
+            if (state === 'synced') { statusEl.classList.add('synced'); statusEl.textContent = '☁️ ' + text; }
+            else if (state === 'error') { statusEl.classList.add('error'); statusEl.textContent = '⚠️ ' + text; }
+            else if (state === 'syncing') { statusEl.textContent = '↻ ' + text; }
+            else { statusEl.textContent = text; }
+        }
+
+        if (localStorage.getItem('snippets_github_token')) {
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('pushBtn').style.display = 'inline-block';
+            document.getElementById('pullBtn').style.display = 'inline-block';
+            updateSyncStatus('synced', '☁️ Ready');
+        }
+
+        renderAll();
+        if (snippets.length === 0) setTimeout(() => showAddModal(), 500);
+    </script>
+</body>
+</html>
