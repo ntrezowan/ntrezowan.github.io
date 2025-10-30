@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23ebdbb2'/><text x='50' y='50' text-anchor='middle' dy='.35em' font-size='50' fill='%23282828' font-family='Arial,sans-serif' font-weight='bold'>✍</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'JetBrains Mono', monospace; background: #1d2021; color: #ebdbb2; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        .header { text-align: center; margin-bottom: 60px; }
+        .header h1 { color: #fabd2f; font-size: 42px; font-weight: 700; }
+        .post { background: #282828; border: 2px solid #3c3836; border-radius: 8px; padding: 32px; margin-bottom: 40px; }
+        .post-meta { color: #928374; font-size: 13px; margin-bottom: 20px; display: flex; gap: 16px; }
+        .post-title { color: #83a598; font-size: 28px; font-weight: 700; margin-bottom: 20px; }
+        .post-content { color: #ebdbb2; font-size: 14px; line-height: 1.8; }
+        .post-content h2 { color: #fabd2f; font-size: 20px; margin-top: 32px; margin-bottom: 16px; }
+        .post-content h3 { color: #d8a657; font-size: 18px; margin-top: 24px; margin-bottom: 12px; }
+        .post-content ul { margin-left: 24px; margin-bottom: 16px; }
+        .post-content li { margin-bottom: 8px; }
+        .post-content strong { color: #fe8019; }
+        .post-content code { background: #3c3836; color: #d8a657; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+        .post-content a { color: #83a598; text-decoration: none; }
+        .post-content a:hover { text-decoration: underline; }
+        .back-link { text-align: center; margin-top: 40px; }
+        .back-link a { color: #83a598; text-decoration: none; font-size: 14px; }
+        .back-link a:hover { text-decoration: underline; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px; }
+        .feature-item { background: #3c3836; padding: 12px; border-radius: 4px; border-left: 3px solid #504945; }
+        .feature-item.notes { border-left-color: #fe8019; }
+        .feature-item.cli { border-left-color: #b8bb26; }
+        .feature-item.incident { border-left-color: #fb4934; }
+        .feature-item.runbook { border-left-color: #458588; }
+        .feature-item.snippet { border-left-color: #d79921; }
+        .feature-item.config { border-left-color: #83a598; }
+        .feature-title { font-weight: 600; color: #ebdbb2; margin-bottom: 8px; font-size: 15px; }
+        .feature-desc { color: #a89984; font-size: 12px; line-height: 1.5; }
+        .tool-links { margin-bottom: 16px; }
+        .tool-links li { list-style: none; margin-bottom: 6px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Blog</h1>
+        </div>
+
+        <article class="post">
+            <div class="post-meta">
+                <span>✍️ oh-thor</span>
+            </div>
+            <h1 class="post-title">Tools</h1>
+            <div class="post-content">
+                <div class="feature-grid">
+                    <div class="feature-item notes">
+                        <div class="feature-title">📝 Notes</div>
+                        <div class="feature-desc">Markdown editor with multi-tab support, syntax highlighting, and preview mode.</div>
+                    </div>
+                    <div class="feature-item cli">
+                        <div class="feature-title">💻 CLI</div>
+                        <div class="feature-desc">Command cheatsheet manager with categories and quick search.</div>
+                    </div>
+                    <div class="feature-item incident">
+                        <div class="feature-title">🔥 Incident</div>
+                        <div class="feature-desc">Timeline logger for tracking outages with severity levels and resolution notes.</div>
+                    </div>
+                    <div class="feature-item runbook">
+                        <div class="feature-title">📋 Runbook</div>
+                        <div class="feature-desc">Step-by-step checklist system with phases, progress tracking, and execution history.</div>
+                    </div>
+                    <div class="feature-item snippet">
+                        <div class="feature-title">📝 Snippet</div>
+                        <div class="feature-desc">Code template vault with syntax highlighting for 13 languages.</div>
+                    </div>
+                    <div class="feature-item config">
+                        <div class="feature-title">⚙️ Config</div>
+                        <div class="feature-desc">Environment variable registry for endpoints, ARNs, and configuration values.</div>
+                    </div>
+                </div>
+
+                <h2>Key Features</h2>
+
+                <h3>📝 Notes</h3>
+                <ul>
+                    <li><strong>Multi-tab editor</strong> - Organize notes in separate tabs</li>
+                    <li><strong>Markdown support</strong> - Preview with syntax highlighting</li>
+                    <li><strong>Search & replace</strong> - Find and replace text across notes</li>
+                    <li><strong>Font options</strong> - Normal or monospace, adjustable size</li>
+                    <li><strong>Centered mode</strong> - Focus view with 10% margins</li>
+                    <li><strong>Keyboard shortcuts</strong> - Cmd+B (bold), Cmd+I (italic), Cmd+K (link), Cmd+E (preview)</li>
+                    <li><strong>Auto-save</strong> - Saves 1 minute after you stop typing</li>
+                </ul>
+
+                <h3>💻 CLI</h3>
+                <ul>
+                    <li><strong>Command storage</strong> - Save frequently used commands</li>
+                    <li><strong>Categories</strong> - Organize by tool (kubectl, aws, docker, etc.)</li>
+                    <li><strong>Quick search</strong> - Filter commands instantly</li>
+                    <li><strong>Copy button</strong> - One-click copy to clipboard</li>
+                    <li><strong>Add/Edit/Delete</strong> - Manage commands easily</li>
+                    <li><strong>Sync addon</strong> - GitHub sync via external script</li>
+                </ul>
+
+                <h3>🔥 Incident</h3>
+                <ul>
+                    <li><strong>Timeline logging</strong> - Track events chronologically</li>
+                    <li><strong>Severity levels</strong> - Info, Warning, Critical</li>
+                    <li><strong>Resolution tracking</strong> - Mark incidents resolved with summary</li>
+                    <li><strong>Multiple incidents</strong> - Switch between active/resolved incidents</li>
+                    <li><strong>Duration tracking</strong> - Real-time incident duration counter</li>
+                    <li><strong>Export markdown</strong> - Generate incident reports</li>
+                    <li><strong>Entry deletion</strong> - Remove timeline entries</li>
+                </ul>
+
+                <h3>📋 Runbook</h3>
+                <ul>
+                    <li><strong>Phase-based workflow</strong> - Organize steps into phases (Pre-Upgrade, Upgrade, Post-Upgrade)</li>
+                    <li><strong>Step tracking</strong> - Checkboxes, notes, timestamps</li>
+                    <li><strong>Progress indicators</strong> - Overall and per-phase progress bars</li>
+                    <li><strong>Required steps</strong> - Mark critical steps</li>
+                    <li><strong>Command blocks</strong> - Display commands with syntax highlighting</li>
+                    <li><strong>Execution history</strong> - Track multiple runbook executions</li>
+                    <li><strong>Export markdown</strong> - Generate execution reports</li>
+                    <li><strong>Reset function</strong> - Start new execution while preserving history</li>
+                </ul>
+
+                <h3>📝 Snippet</h3>
+                <ul>
+                    <li><strong>13 languages</strong> - Bash, Python, JavaScript, TypeScript, Terraform, YAML, JSON, Dockerfile, Go, SQL, XML, Markdown, Plain Text</li>
+                    <li><strong>Syntax highlighting</strong> - highlight.js integration</li>
+                    <li><strong>Tag system</strong> - Add multiple tags per snippet</li>
+                    <li><strong>Tag filtering</strong> - Click tags to filter snippets</li>
+                    <li><strong>Search</strong> - Search across title, tags, and code</li>
+                    <li><strong>Copy to clipboard</strong> - One-click copy</li>
+                    <li><strong>Download as file</strong> - Auto file extension (.sh, .py, .tf, etc.)</li>
+                    <li><strong>Last updated tracking</strong> - See when snippets were modified</li>
+                </ul>
+
+                <h3>⚙️ Config</h3>
+                <ul>
+                    <li><strong>Key-value storage</strong> - Store config values with descriptions</li>
+                    <li><strong>Environment tagging</strong> - Prod, Staging, Dev, All</li>
+                    <li><strong>Custom tags</strong> - Tag configs (aws, k8s, database, etc.)</li>
+                    <li><strong>Masked values</strong> - Hide sensitive values, click to reveal</li>
+                    <li><strong>Copy key/value</strong> - Quick copy buttons</li>
+                    <li><strong>Copy as export</strong> - Copy as <code>export KEY=VALUE</code> for bash</li>
+                    <li><strong>Bulk .env export</strong> - Download all configs as .env file</li>
+                    <li><strong>Last used tracking</strong> - See when you last copied a value</li>
+                    <li><strong>Environment filtering</strong> - Filter by prod/staging/dev</li>
+                    <li><strong>Color coding</strong> - Visual distinction between environments</li>
+                </ul>
+
+                <h2>Universal Features</h2>
+                <ul>
+                    <li><strong>GitHub Gist sync</strong> - Login/Push/Pull workflow</li>
+                    <li><strong>Auto-pull on login</strong> - Syncs data when you log in</li>
+                    <li><strong>Manual push</strong> - Force push when you need it</li>
+                    <li><strong>Export/Import JSON</strong> - Backup and restore data</li>
+                    <li><strong>Dark theme</strong> - Gruvbox color scheme</li>
+                    <li><strong>No backend needed</strong> - All tools run in browser</li>
+                    <li><strong>localStorage</strong> - Data persists locally</li>
+                    <li><strong>Single HTML files</strong> - Easy to deploy and host</li>
+                    <li><strong>Keyboard shortcuts</strong> - Cmd+N (new), Cmd+K (search), Esc (close)</li>
+                </ul>
+
+                <h2>Access</h2>
+                <ul class="tool-links">
+                    <li><a href="https://ntrezowan.github.io/notes">ntrezowan.github.io/notes</a></li>
+                    <li><a href="https://ntrezowan.github.io/cli">ntrezowan.github.io/cli</a></li>
+                    <li><a href="https://ntrezowan.github.io/incident">ntrezowan.github.io/incident</a></li>
+                    <li><a href="https://ntrezowan.github.io/runbook">ntrezowan.github.io/runbook</a></li>
+                    <li><a href="https://ntrezowan.github.io/snippet">ntrezowan.github.io/snippet</a></li>
+                    <li><a href="https://ntrezowan.github.io/config">ntrezowan.github.io/config</a></li>
+                </ul>
+
+                <h2>How to Sync</h2>
+                <p><strong>One-time setup:</strong></p>
+                <ul>
+                    <li>Go to <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a></li>
+                    <li>Click "Generate new token (classic)"</li>
+                    <li>Name it "DevOps Toolkit Sync"</li>
+                    <li>Check ONLY the <code>gist</code> scope</li>
+                    <li>Generate token and copy it</li>
+                </ul>
+                <p><strong>In each tool:</strong></p>
+                <ul>
+                    <li>Click "☁️ Login"</li>
+                    <li>Paste your token</li>
+                    <li>Click "Login" (auto-pulls existing data)</li>
+                    <li>Make changes, click "↑ Push" when done</li>
+                </ul>
+                <p><strong>On another device:</strong></p>
+                <ul>
+                    <li>Login with the same token</li>
+                    <li>Data auto-pulls from GitHub</li>
+                    <li>Make changes, push when done</li>
+                </ul>
+
+                <h2>Tech Stack</h2>
+                <ul>
+                    <li><strong>Frontend:</strong> Vanilla JavaScript (no frameworks)</li>
+                    <li><strong>Storage:</strong> localStorage + GitHub Gists API</li>
+                    <li><strong>Styling:</strong> Gruvbox Dark theme, CSS Grid/Flexbox</li>
+                    <li><strong>Markdown:</strong> marked.js (Notes)</li>
+                    <li><strong>Syntax highlighting:</strong> highlight.js (Snippet)</li>
+                    <li><strong>Fonts:</strong> JetBrains Mono, Inter</li>
+                </ul>
+
+                <h2>Design Principles</h2>
+                <ul>
+                    <li><strong>Single-file apps</strong> - No build process, no dependencies</li>
+                    <li><strong>Offline-first</strong> - Works without internet (except sync)</li>
+                    <li><strong>No tracking</strong> - No analytics, no cookies, no third-party scripts</li>
+                    <li><strong>Fast</strong> - Instant load, no server round trips</li>
+                    <li><strong>Keyboard-driven</strong> - Shortcuts for common actions</li>
+                    <li><strong>Persistent</strong> - Data survives browser restarts</li>
+                    <li><strong>Private</strong> - Data stored locally and in your GitHub account only</li>
+                </ul>
+
+                <h2>Limitations</h2>
+                <ul>
+                    <li><strong>No real-time sync</strong> - Manual push/pull required</li>
+                    <li><strong>No conflict resolution</strong> - Last write wins</li>
+                    <li><strong>Don't edit on multiple devices simultaneously</strong> - One device at a time</li>
+                    <li><strong>localStorage limits</strong> - ~5-10MB per domain (browser-dependent)</li>
+                    <li><strong>No password manager</strong> - Don't store sensitive secrets in Config tool</li>
+                </ul>
+            </div>
+        </article>
+
+        <div class="back-link">
+            <a href="https://ntrezowan.github.io">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
