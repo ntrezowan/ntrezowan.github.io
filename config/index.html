@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Config Registry</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%2383a598'/><text x='50' y='50' text-anchor='middle' dy='.35em' font-size='50' fill='%23282828' font-family='Arial,sans-serif' font-weight='bold'>⚙</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'JetBrains Mono', monospace; background: #1d2021; color: #ebdbb2; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .header { background: #282828; border-bottom: 2px solid #83a598; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; flex-shrink: 0; }
+        .header h1 { color: #83a598; font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        button { background: #458588; color: #ebdbb2; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+        button:hover { background: #83a598; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-success { background: #98971a; }
+        .btn-success:hover { background: #b8bb26; }
+        .btn-danger { background: #cc241d; }
+        .btn-danger:hover { background: #fb4934; }
+        .btn-warning { background: #d79921; }
+        .btn-warning:hover { background: #fabd2f; }
+        .btn-sync { background: #689d6a; }
+        .btn-sync:hover { background: #8ec07c; }
+        .btn-small { padding: 4px 10px; font-size: 11px; }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 320px; background: #282828; border-right: 1px solid #3c3836; overflow-y: auto; padding: 16px; flex-shrink: 0; }
+        .search-box { margin-bottom: 16px; }
+        .search-box input { width: 100%; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+        .search-box input:focus { outline: none; border-color: #83a598; }
+        .env-filter { margin-bottom: 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+        .env-chip { background: #3c3836; color: #ebdbb2; padding: 6px 12px; border-radius: 12px; font-size: 11px; cursor: pointer; transition: all 0.2s; border: 1px solid #504945; }
+        .env-chip:hover { background: #504945; }
+        .env-chip.active { border-width: 2px; font-weight: 700; }
+        .env-chip.prod { border-color: #fb4934; }
+        .env-chip.prod.active { background: #fb4934; color: #282828; }
+        .env-chip.staging { border-color: #fabd2f; }
+        .env-chip.staging.active { background: #fabd2f; color: #282828; }
+        .env-chip.dev { border-color: #83a598; }
+        .env-chip.dev.active { background: #83a598; color: #282828; }
+        .env-chip.all { border-color: #928374; }
+        .env-chip.all.active { background: #928374; color: #282828; }
+        .config-list h3 { color: #fabd2f; font-size: 14px; margin-bottom: 12px; text-transform: uppercase; }
+        .config-item { background: #3c3836; padding: 12px; margin-bottom: 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-size: 13px; border-left: 3px solid transparent; }
+        .config-item:hover { background: #504945; }
+        .config-item.active { background: #504945; border-left-color: #83a598; }
+        .config-item.prod { border-left-color: #fb4934; }
+        .config-item.staging { border-left-color: #fabd2f; }
+        .config-item.dev { border-left-color: #83a598; }
+        .config-item-key { color: #ebdbb2; font-weight: 600; margin-bottom: 4px; word-break: break-all; }
+        .config-item-meta { color: #928374; font-size: 11px; display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+        .env-badge { padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; }
+        .env-badge.prod { background: #fb4934; color: #282828; }
+        .env-badge.staging { background: #fabd2f; color: #282828; }
+        .env-badge.dev { background: #83a598; color: #282828; }
+        .env-badge.all { background: #928374; color: #282828; }
+        .content { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .config-header { background: #282828; border-bottom: 1px solid #3c3836; padding: 20px; }
+        .config-key-display { color: #83a598; font-size: 20px; font-weight: 700; margin-bottom: 12px; word-break: break-all; }
+        .config-value-container { background: #3c3836; border: 1px solid #504945; border-radius: 6px; padding: 16px; margin-bottom: 16px; position: relative; }
+        .config-value-display { color: #b8bb26; font-size: 16px; font-weight: 600; word-break: break-all; font-family: 'JetBrains Mono', monospace; }
+        .config-value-masked { color: #665c54; font-size: 16px; cursor: pointer; user-select: none; }
+        .config-value-masked:hover { color: #928374; }
+        .config-description { color: #a89984; font-size: 13px; line-height: 1.6; margin-bottom: 16px; }
+        .config-meta { color: #928374; font-size: 12px; display: flex; gap: 16px; margin-bottom: 16px; }
+        .config-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+        .config-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+        .tag-badge { background: #504945; color: #ebdbb2; padding: 4px 10px; border-radius: 12px; font-size: 11px; }
+        .config-detail { flex: 1; overflow-y: auto; padding: 20px; }
+        .empty-state { text-align: center; color: #665c54; padding: 60px 20px; font-size: 14px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: #282828; border: 2px solid #504945; border-radius: 8px; padding: 24px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { color: #fabd2f; font-size: 18px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; color: #928374; font-size: 13px; margin-bottom: 6px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; padding: 10px 12px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #83a598; }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .stats { padding: 8px 20px; background: #282828; border-top: 1px solid #3c3836; font-size: 12px; color: #928374; display: flex; gap: 20px; flex-shrink: 0; }
+        .sync-status { font-size: 11px; }
+        .sync-status.synced { color: #a9b665; }
+        .sync-status.error { color: #fb4934; }
+        .help-text { font-size: 11px; color: #665c54; margin-top: 6px; line-height: 1.4; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+        .checkbox-group input[type="checkbox"] { width: auto; cursor: pointer; }
+        .checkbox-group label { margin: 0; cursor: pointer; font-weight: normal; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #1d2021; }
+        ::-webkit-scrollbar-thumb { background: #504945; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #665c54; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚙️ CONFIG REGISTRY</h1>
+        <div class="header-actions">
+            <button class="btn-sync" id="loginBtn" onclick="showLoginModal()">☁️ Login</button>
+            <button class="btn-sync" id="pushBtn" onclick="pushNow()" style="display:none;">↑ Push</button>
+            <button class="btn-sync" id="pullBtn" onclick="pullNow()" style="display:none;">↓ Pull</button>
+            <button onclick="showAddModal()">+ New Config</button>
+            <button onclick="exportEnvFile()">↓ Export .env</button>
+            <button onclick="exportJSON()">↓ Export JSON</button>
+            <button onclick="importJSON()">↑ Import</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search configs..." onkeyup="filterConfigs()">
+            </div>
+            <div class="env-filter">
+                <div class="env-chip all active" onclick="filterByEnv('all')">All</div>
+                <div class="env-chip prod" onclick="filterByEnv('prod')">Prod</div>
+                <div class="env-chip staging" onclick="filterByEnv('staging')">Staging</div>
+                <div class="env-chip dev" onclick="filterByEnv('dev')">Dev</div>
+            </div>
+            <div class="config-list">
+                <h3>Configs (<span id="configCount">0</span>)</h3>
+                <div id="configList"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="configView"></div>
+        </div>
+    </div>
+
+    <div class="stats">
+        <span id="statsTotal">0 configs</span>
+        <span id="statsProd">0 prod</span>
+        <span id="statsStaging">0 staging</span>
+        <span id="statsDev">0 dev</span>
+        <span class="sync-status" id="syncStatus"></span>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Login to GitHub</h2><button onclick="closeModal('loginModal')">✕</button></div>
+            <p style="margin-bottom: 12px; color: #a89984;">Enter your GitHub Personal Access Token to enable sync.</p>
+            <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width: 100%; padding: 10px; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; border-radius: 4px; font-family: 'JetBrains Mono', monospace; margin-bottom: 12px;">
+            <p style="font-size: 12px; color: #665c54; margin-bottom: 16px;">Token stored locally. Auto-pulls on login. Get token at <a href="https://github.com/settings/tokens" target="_blank" style="color: #8ec07c;">github.com/settings/tokens</a> (gist scope only)</p>
+            <button onclick="login()">Login</button>
+            <button onclick="closeModal('loginModal')" style="margin-left: 8px;">Cancel</button>
+            <div style="margin-top: 20px; padding: 12px; background: #3c3836; border-radius: 4px; font-size: 12px;">
+                <strong>Already logged in?</strong><br>
+                <button onclick="logout()" class="btn-danger" style="margin-top: 8px; padding: 4px 10px; font-size: 12px;">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="configModal">
+        <div class="modal-content">
+            <div class="modal-header"><h2 id="modalTitle">Add Config</h2><button onclick="closeModal('configModal')">✕</button></div>
+            <form onsubmit="saveConfig(event)">
+                <div class="form-group">
+                    <label>Key *</label>
+                    <input type="text" id="configKey" required placeholder="e.g., prod-k8s-cluster-arn">
+                    <div class="help-text">Use lowercase with hyphens. Example: aws-prod-account-id</div>
+                </div>
+                <div class="form-group">
+                    <label>Value *</label>
+                    <textarea id="configValue" required placeholder="e.g., arn:aws:eks:us-east-1:123456:cluster/prod" style="min-height: 100px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Environment *</label>
+                    <select id="configEnv" required>
+                        <option value="prod">Production</option>
+                        <option value="staging">Staging</option>
+                        <option value="dev">Development</option>
+                        <option value="all">All / Shared</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="configDescription" placeholder="What is this config for?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tags (comma-separated)</label>
+                    <input type="text" id="configTags" placeholder="e.g., aws, kubernetes, east">
+                    <div class="help-text">Tags help you search. Example: aws, k8s, database</div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="configMasked">
+                    <label for="configMasked">Mask value (click to reveal)</label>
+                </div>
+                <input type="hidden" id="configId">
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal('configModal')">Cancel</button>
+                    <button type="submit" class="btn-success">Save Config</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <input type="file" id="importInput" style="display: none;" accept=".json" onchange="handleImport(event)">
+
+    <script>
+        const GITHUB_API = 'https://api.github.com';
+        let configs = JSON.parse(localStorage.getItem('configs')) || [];
+        let currentConfigId = null;
+        let activeEnvFilter = 'all';
+
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function saveData() { localStorage.setItem('configs', JSON.stringify(configs)); }
+
+        function showAddModal() {
+            document.getElementById('modalTitle').textContent = 'Add Config';
+            document.getElementById('configKey').value = '';
+            document.getElementById('configValue').value = '';
+            document.getElementById('configEnv').value = 'prod';
+            document.getElementById('configDescription').value = '';
+            document.getElementById('configTags').value = '';
+            document.getElementById('configMasked').checked = false;
+            document.getElementById('configId').value = '';
+            document.getElementById('configModal').classList.add('active');
+            document.getElementById('configKey').focus();
+        }
+
+        function showEditModal(configId) {
+            const config = configs.find(c => c.id === configId);
+            if (!config) return;
+            document.getElementById('modalTitle').textContent = 'Edit Config';
+            document.getElementById('configKey').value = config.key;
+            document.getElementById('configValue').value = config.value;
+            document.getElementById('configEnv').value = config.environment;
+            document.getElementById('configDescription').value = config.description || '';
+            document.getElementById('configTags').value = config.tags.join(', ');
+            document.getElementById('configMasked').checked = config.masked || false;
+            document.getElementById('configId').value = config.id;
+            document.getElementById('configModal').classList.add('active');
+            document.getElementById('configKey').focus();
+        }
+
+        function saveConfig(event) {
+            event.preventDefault();
+            const id = document.getElementById('configId').value;
+            const tags = document.getElementById('configTags').value.split(',').map(t => t.trim().toLowerCase()).filter(t => t);
+            const config = {
+                id: id || Date.now().toString(),
+                key: document.getElementById('configKey').value.trim(),
+                value: document.getElementById('configValue').value.trim(),
+                environment: document.getElementById('configEnv').value,
+                description: document.getElementById('configDescription').value.trim(),
+                tags: tags,
+                masked: document.getElementById('configMasked').checked,
+                created: id ? configs.find(c => c.id === id).created : new Date().toISOString(),
+                updated: new Date().toISOString(),
+                lastUsed: id ? configs.find(c => c.id === id).lastUsed : null
+            };
+            if (id) configs = configs.map(c => c.id === id ? config : c);
+            else configs.unshift(config);
+            saveData();
+            closeModal('configModal');
+            renderAll();
+            if (id) selectConfig(id);
+            else selectConfig(config.id);
+        }
+
+        function deleteConfig(configId) {
+            if (!confirm('Delete this config? Cannot be undone.')) return;
+            configs = configs.filter(c => c.id !== configId);
+            if (currentConfigId === configId) currentConfigId = null;
+            saveData();
+            renderAll();
+        }
+
+        function selectConfig(configId) {
+            currentConfigId = configId;
+            renderConfigView();
+            renderConfigList();
+        }
+
+        function copyValue(configId, type) {
+            const config = configs.find(c => c.id === configId);
+            if (!config) return;
+            let text = '';
+            if (type === 'key') text = config.key;
+            else if (type === 'value') text = config.value;
+            else if (type === 'export') text = `export ${config.key.toUpperCase().replace(/-/g, '_')}="${config.value}"`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                config.lastUsed = new Date().toISOString();
+                saveData();
+                alert('✅ Copied to clipboard!');
+            }).catch(() => {
+                alert('❌ Failed to copy. Try manually selecting and copying.');
+            });
+        }
+
+        function toggleValueVisibility(configId) {
+            const valueEl = document.getElementById('configValueDisplay');
+            const config = configs.find(c => c.id === configId);
+            if (!config || !config.masked) return;
+            
+            if (valueEl.classList.contains('config-value-masked')) {
+                valueEl.classList.remove('config-value-masked');
+                valueEl.classList.add('config-value-display');
+                valueEl.textContent = config.value;
+            } else {
+                valueEl.classList.add('config-value-masked');
+                valueEl.classList.remove('config-value-display');
+                valueEl.textContent = '••••••••••••••••••••';
+            }
+        }
+
+        function renderConfigView() {
+            const view = document.getElementById('configView');
+            const config = configs.find(c => c.id === currentConfigId);
+            if (!config) {
+                view.innerHTML = '<div class="empty-state">Select a config to view<br><br><button onclick="showAddModal()">+ Add First Config</button></div>';
+                return;
+            }
+            
+            const tags = config.tags.map(tag => `<span class="tag-badge">${escapeHtml(tag)}</span>`).join('');
+            const valueClass = config.masked ? 'config-value-masked' : 'config-value-display';
+            const valueText = config.masked ? '••••••••••••••••••••' : escapeHtml(config.value);
+            const lastUsedText = config.lastUsed ? `Last used: ${new Date(config.lastUsed).toLocaleString()}` : 'Never used';
+            
+            view.innerHTML = `
+                <div class="config-detail">
+                    <div class="config-header">
+                        <div class="config-key-display">${escapeHtml(config.key)}</div>
+                        <div class="config-value-container">
+                            <div id="configValueDisplay" class="${valueClass}" ${config.masked ? `onclick="toggleValueVisibility('${config.id}')"` : ''}>${valueText}</div>
+                            ${config.masked ? '<div class="help-text">Click to reveal value</div>' : ''}
+                        </div>
+                        <div class="config-actions">
+                            <button class="btn-small" onclick="copyValue('${config.id}', 'key')">📋 Copy Key</button>
+                            <button class="btn-small btn-success" onclick="copyValue('${config.id}', 'value')">📋 Copy Value</button>
+                            <button class="btn-small btn-warning" onclick="copyValue('${config.id}', 'export')">📋 Copy as export</button>
+                            <button class="btn-small" onclick="showEditModal('${config.id}')">✏️ Edit</button>
+                            <button class="btn-small btn-danger" onclick="deleteConfig('${config.id}')">🗑️ Delete</button>
+                        </div>
+                        ${config.description ? `<div class="config-description">${escapeHtml(config.description)}</div>` : ''}
+                        <div class="config-meta">
+                            <span class="env-badge ${config.environment}">${config.environment.toUpperCase()}</span>
+                            <span>Created: ${new Date(config.created).toLocaleDateString()}</span>
+                            <span>Updated: ${new Date(config.updated).toLocaleDateString()}</span>
+                            <span>${lastUsedText}</span>
+                        </div>
+                        ${tags ? `<div class="config-tags">${tags}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterByEnv(env) {
+            activeEnvFilter = env;
+            document.querySelectorAll('.env-chip').forEach(chip => chip.classList.remove('active'));
+            document.querySelector(`.env-chip.${env}`).classList.add('active');
+            renderConfigList();
+        }
+
+        function filterConfigs() {
+            renderConfigList();
+        }
+
+        function renderConfigList() {
+            const list = document.getElementById('configList');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = configs;
+            
+            if (activeEnvFilter !== 'all') {
+                filtered = filtered.filter(c => c.environment === activeEnvFilter);
+            }
+            
+            if (search) {
+                filtered = filtered.filter(c => 
+                    c.key.toLowerCase().includes(search) || 
+                    c.value.toLowerCase().includes(search) ||
+                    c.description.toLowerCase().includes(search) ||
+                    c.tags.some(t => t.includes(search))
+                );
+            }
+            
+            document.getElementById('configCount').textContent = filtered.length;
+            
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="color: #665c54; font-size: 12px; text-align: center; padding: 20px;">No configs found</div>';
+                return;
+            }
+            
+            let html = '';
+            filtered.forEach(config => {
+                const isActive = config.id === currentConfigId;
+                const tags = config.tags.slice(0, 2).map(t => `<span class="tag-badge">${escapeHtml(t)}</span>`).join('');
+                html += `
+                    <div class="config-item ${config.environment} ${isActive ? 'active' : ''}" onclick="selectConfig('${config.id}')">
+                        <div class="config-item-key">${escapeHtml(config.key)}</div>
+                        <div class="config-item-meta">
+                            <span class="env-badge ${config.environment}">${config.environment.toUpperCase()}</span>
+                            ${tags}
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        function updateStats() {
+            const prod = configs.filter(c => c.environment === 'prod').length;
+            const staging = configs.filter(c => c.environment === 'staging').length;
+            const dev = configs.filter(c => c.environment === 'dev').length;
+            document.getElementById('statsTotal').textContent = `${configs.length} configs`;
+            document.getElementById('statsProd').textContent = `${prod} prod`;
+            document.getElementById('statsStaging').textContent = `${staging} staging`;
+            document.getElementById('statsDev').textContent = `${dev} dev`;
+        }
+
+        function renderAll() {
+            renderConfigList();
+            renderConfigView();
+            updateStats();
+        }
+
+        function exportEnvFile() {
+            let env = '';
+            configs.forEach(config => {
+                const key = config.key.toUpperCase().replace(/-/g, '_');
+                const value = config.value.includes(' ') || config.value.includes('\n') ? `"${config.value}"` : config.value;
+                env += `${key}=${value}\n`;
+            });
+            const blob = new Blob([env], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `config-${new Date().toISOString().split('T')[0]}.env`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportJSON() {
+            const data = JSON.stringify(configs, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `configs-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importJSON() { document.getElementById('importInput').click(); }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        if (confirm(`Import ${imported.length} configs? This will replace all current data.`)) {
+                            configs = imported;
+                            currentConfigId = null;
+                            saveData();
+                            renderAll();
+                        }
+                    } else { alert('Invalid file format'); }
+                } catch (err) { alert('Failed to parse JSON file'); }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+
+        document.addEventListener('keydown', (e) => {
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            const modKey = isMac ? e.metaKey : e.ctrlKey;
+            if (modKey && e.key === 'n') { e.preventDefault(); showAddModal(); }
+            if (modKey && e.key === 'k') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+            if (e.key === 'Escape') { closeModal('configModal'); closeModal('loginModal'); }
+        });
+
+        // SYNC FUNCTIONS
+        function showLoginModal() { document.getElementById('loginModal').classList.add('active'); document.getElementById('githubToken').focus(); }
+
+        async function login() {
+            const token = document.getElementById('githubToken').value.trim();
+            if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) { alert('Invalid token format.'); return; }
+            localStorage.setItem('configs_github_token', token);
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('pushBtn').style.display = 'inline-block';
+            document.getElementById('pullBtn').style.display = 'inline-block';
+            closeModal('loginModal');
+            document.getElementById('githubToken').value = '';
+            updateSyncStatus('syncing', '↻ Pulling...');
+            await pullFromGitHub(true);
+        }
+
+        function logout() {
+            if (!confirm('Logout?')) return;
+            localStorage.removeItem('configs_github_token');
+            localStorage.removeItem('configs_gist_id');
+            document.getElementById('loginBtn').style.display = 'inline-block';
+            document.getElementById('pushBtn').style.display = 'none';
+            document.getElementById('pullBtn').style.display = 'none';
+            updateSyncStatus('', '');
+            closeModal('loginModal');
+        }
+
+        async function pushNow() {
+            const token = localStorage.getItem('configs_github_token');
+            if (!token) return;
+            updateSyncStatus('syncing', '↻ Pushing...');
+            const gistId = localStorage.getItem('configs_gist_id');
+            const data = { configs, lastSync: new Date().toISOString() };
+            const payload = { description: 'Config Registry Data', public: false, files: { 'configs-data.json': { content: JSON.stringify(data, null, 2) } } };
+            try {
+                let response;
+                if (gistId) response = await fetch(`${GITHUB_API}/gists/${gistId}`, { method: 'PATCH', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                else { response = await fetch(`${GITHUB_API}/gists`, { method: 'POST', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if (response.ok) { const gist = await response.json(); localStorage.setItem('configs_gist_id', gist.id); } }
+                if (response.ok) updateSyncStatus('synced', '☁️ Pushed');
+                else { console.error('Push failed:', await response.json()); updateSyncStatus('error', '⚠️ Push failed'); }
+            } catch (err) { console.error('Push error:', err); updateSyncStatus('error', '⚠️ Push error'); }
+        }
+
+        async function pullNow() { if (!confirm('Pull from GitHub? This will overwrite your local configs.')) return; await pullFromGitHub(false); }
+
+        async function pullFromGitHub(silent) {
+            const token = localStorage.getItem('configs_github_token');
+            const gistId = localStorage.getItem('configs_gist_id');
+            if (!token) { if (!silent) alert('Not logged in'); return; }
+            if (!gistId) { if (!silent) updateSyncStatus('error', '⚠️ No Gist found'); return; }
+            updateSyncStatus('syncing', '↻ Pulling...');
+            try {
+                const response = await fetch(`${GITHUB_API}/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
+                if (response.ok) {
+                    const gist = await response.json();
+                    const content = gist.files['configs-data.json'].content;
+                    const data = JSON.parse(content);
+                    configs = data.configs;
+                    currentConfigId = null;
+                    saveData();
+                    renderAll();
+                    updateSyncStatus('synced', '☁️ Pulled');
+                } else { console.error('Pull failed:', await response.json()); updateSyncStatus('error', '⚠️ Pull failed'); }
+            } catch (err) { console.error('Pull error:', err); updateSyncStatus('error', '⚠️ Pull error'); }
+        }
+
+        function updateSyncStatus(state, text) {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.className = 'sync-status';
+            if (state === 'synced') { statusEl.classList.add('synced'); statusEl.textContent = '☁️ ' + text; }
+            else if (state === 'error') { statusEl.classList.add('error'); statusEl.textContent = '⚠️ ' + text; }
+            else if (state === 'syncing') { statusEl.textContent = '↻ ' + text; }
+            else { statusEl.textContent = text; }
+        }
+
+        if (localStorage.getItem('configs_github_token')) {
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('pushBtn').style.display = 'inline-block';
+            document.getElementById('pullBtn').style.display = 'inline-block';
+            updateSyncStatus('synced', '☁️ Ready');
+        }
+
+        renderAll();
+        if (configs.length === 0) setTimeout(() => showAddModal(), 500);
+    </script>
+</body>
+</html>
