@@ -5,567 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Runbook Checklist</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23458588'/><text x='50' y='50' text-anchor='middle' dy='.35em' font-size='50' fill='%23282828' font-family='Arial,sans-serif' font-weight='bold'>✓</text></svg>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'JetBrains Mono', monospace;
-            background: #1d2021;
-            color: #ebdbb2;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .header {
-            background: #282828;
-            border-bottom: 2px solid #458588;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            flex-shrink: 0;
-        }
-        .header h1 {
-            color: #83a598;
-            font-size: 22px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .sync-status {
-            font-size: 11px;
-            color: #928374;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .sync-status.synced {
-            color: #b8bb26;
-        }
-        .sync-status.error {
-            color: #fb4934;
-        }
-        .header-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        button {
-            background: #458588;
-            color: #ebdbb2;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        button:hover {
-            background: #83a598;
-        }
-        button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        .btn-success {
-            background: #98971a;
-        }
-        .btn-success:hover {
-            background: #b8bb26;
-        }
-        .btn-danger {
-            background: #cc241d;
-        }
-        .btn-danger:hover {
-            background: #fb4934;
-        }
-        .btn-warning {
-            background: #d79921;
-        }
-        .btn-warning:hover {
-            background: #fabd2f;
-        }
-        .btn-sync {
-            background: #689d6a;
-        }
-        .btn-sync:hover {
-            background: #8ec07c;
-        }
-        .main-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        .sidebar {
-            width: 300px;
-            background: #282828;
-            border-right: 1px solid #3c3836;
-            overflow-y: auto;
-            padding: 16px;
-            flex-shrink: 0;
-        }
-        .sidebar h3 {
-            color: #fabd2f;
-            font-size: 14px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-        }
-        .runbook-item {
-            background: #3c3836;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13px;
-            border-left: 3px solid transparent;
-        }
-        .runbook-item:hover {
-            background: #504945;
-        }
-        .runbook-item.active {
-            background: #504945;
-            border-left-color: #458588;
-        }
-        .runbook-item-title {
-            color: #ebdbb2;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .runbook-item-meta {
-            color: #928374;
-            font-size: 11px;
-        }
-        .runbook-item-progress {
-            margin-top: 6px;
-            height: 4px;
-            background: #1d2021;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .runbook-item-progress-bar {
-            height: 100%;
-            background: #458588;
-            transition: width 0.3s;
-        }
-        .content {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-        .runbook-header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: #282828;
-            border-bottom: 1px solid #3c3836;
-            padding: 20px;
-            z-index: 10;
-        }
-        .runbook-title {
-            color: #83a598;
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .runbook-description {
-            color: #928374;
-            font-size: 13px;
-            line-height: 1.5;
-            margin-bottom: 12px;
-        }
-        .progress-bar-container {
-            margin-top: 16px;
-        }
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 12px;
-            color: #928374;
-        }
-        .progress-bar {
-            height: 12px;
-            background: #3c3836;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #458588, #83a598);
-            transition: width 0.3s;
-            border-radius: 6px;
-        }
-        .progress-bar-fill.complete {
-            background: linear-gradient(90deg, #98971a, #b8bb26);
-        }
-        .checklist {
-            position: absolute;
-            top: 210px;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 20px;
-        }
-        .phase-section {
-            margin-bottom: 32px;
-            background: #282828;
-            border: 2px solid #3c3836;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .phase-header {
-            background: #3c3836;
-            padding: 16px 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-        .phase-header:hover {
-            background: #504945;
-        }
-        .phase-header.complete {
-            background: #2a2e23;
-            border-left: 4px solid #b8bb26;
-        }
-        .phase-title-container {
-            flex: 1;
-        }
-        .phase-title {
-            color: #fabd2f;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .phase-progress-text {
-            color: #928374;
-            font-size: 12px;
-        }
-        .phase-toggle {
-            color: #928374;
-            font-size: 20px;
-            transition: transform 0.3s;
-        }
-        .phase-toggle.collapsed {
-            transform: rotate(-90deg);
-        }
-        .phase-progress-bar {
-            height: 6px;
-            background: #1d2021;
-            margin: 0 20px 12px 20px;
-        }
-        .phase-progress-fill {
-            height: 100%;
-            background: #458588;
-            transition: width 0.3s;
-        }
-        .phase-progress-fill.complete {
-            background: #b8bb26;
-        }
-        .phase-steps {
-            padding: 20px;
-            display: none;
-        }
-        .phase-steps.expanded {
-            display: block;
-        }
-        .step {
-            background: #1d2021;
-            border: 1px solid #3c3836;
-            border-radius: 6px;
-            padding: 16px;
-            margin-bottom: 16px;
-            transition: all 0.2s;
-        }
-        .step.completed {
-            border-color: #98971a;
-            background: #232623;
-        }
-        .step.critical {
-            border-left: 4px solid #fb4934;
-        }
-        .step-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            background: #3c3836;
-            border: 2px solid #504945;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-        .checkbox-container:hover {
-            border-color: #83a598;
-        }
-        .checkbox-container.checked {
-            background: #98971a;
-            border-color: #b8bb26;
-        }
-        .checkbox-container.checked::after {
-            content: '✓';
-            color: #282828;
-            font-size: 16px;
-            font-weight: 700;
-        }
-        .step-content {
-            flex: 1;
-        }
-        .step-number {
-            color: #928374;
-            font-size: 11px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .step-title {
-            color: #ebdbb2;
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-        .step-description {
-            color: #a89984;
-            font-size: 13px;
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-        .step-command {
-            background: #282828;
-            border: 1px solid #3c3836;
-            border-radius: 4px;
-            padding: 10px;
-            font-size: 12px;
-            color: #d8a657;
-            margin-bottom: 10px;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-        .step-notes {
-            margin-top: 12px;
-        }
-        .step-notes textarea {
-            width: 100%;
-            background: #3c3836;
-            border: 1px solid #504945;
-            color: #ebdbb2;
-            padding: 10px;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            resize: vertical;
-            min-height: 60px;
-        }
-        .step-notes textarea:focus {
-            outline: none;
-            border-color: #458588;
-        }
-        .step-notes-label {
-            color: #928374;
-            font-size: 11px;
-            margin-bottom: 6px;
-            display: block;
-        }
-        .step-timestamp {
-            color: #458588;
-            font-size: 11px;
-            margin-top: 8px;
-            font-weight: 600;
-        }
-        .step-required {
-            display: inline-block;
-            background: #fb4934;
-            color: #282828;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 10px;
-            font-weight: 700;
-            margin-left: 8px;
-        }
-        .empty-state {
-            text-align: center;
-            color: #665c54;
-            padding: 60px 20px;
-            font-size: 14px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .modal.active {
-            display: flex;
-        }
-        .modal-content {
-            background: #282828;
-            border: 2px solid #504945;
-            border-radius: 8px;
-            padding: 24px;
-            max-width: 700px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .modal-header h2 {
-            color: #fabd2f;
-            font-size: 18px;
-        }
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            color: #928374;
-            font-size: 13px;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            background: #3c3836;
-            border: 1px solid #504945;
-            color: #ebdbb2;
-            padding: 10px 12px;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-        }
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #458588;
-        }
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-        .history-item {
-            background: #3c3836;
-            border: 1px solid #504945;
-            border-radius: 4px;
-            padding: 12px;
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-        .history-item-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        .history-item-date {
-            color: #928374;
-            font-weight: 600;
-        }
-        .history-item-duration {
-            color: #83a598;
-        }
-        .history-item-steps {
-            color: #a89984;
-        }
-        .stats {
-            padding: 8px 20px;
-            background: #282828;
-            border-top: 1px solid #3c3836;
-            font-size: 12px;
-            color: #928374;
-            display: flex;
-            gap: 20px;
-            flex-shrink: 0;
-        }
-        .shortcut-hint {
-            font-size: 11px;
-            color: #665c54;
-            margin-top: 16px;
-            padding: 12px;
-            background: #282828;
-            border-radius: 4px;
-        }
-        .help-text {
-            font-size: 11px;
-            color: #665c54;
-            margin-top: 6px;
-            line-height: 1.4;
-        }
-        .code-inline {
-            background: #3c3836;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: monospace;
-            color: #d8a657;
-        }
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1d2021;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #504945;
-            border-radius: 5px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #665c54;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'JetBrains Mono', monospace; background: #1d2021; color: #ebdbb2; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .header { background: #282828; border-bottom: 2px solid #458588; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; flex-shrink: 0; }
+        .header h1 { color: #83a598; font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .sync-status { font-size: 11px; color: #928374; display: flex; align-items: center; gap: 6px; }
+        .sync-status.synced { color: #b8bb26; }
+        .sync-status.error { color: #fb4934; }
+        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        button { background: #458588; color: #ebdbb2; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+        button:hover { background: #83a598; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-success { background: #98971a; }
+        .btn-success:hover { background: #b8bb26; }
+        .btn-danger { background: #cc241d; }
+        .btn-danger:hover { background: #fb4934; }
+        .btn-warning { background: #d79921; }
+        .btn-warning:hover { background: #fabd2f; }
+        .btn-sync { background: #689d6a; }
+        .btn-sync:hover { background: #8ec07c; }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 300px; background: #282828; border-right: 1px solid #3c3836; overflow-y: auto; padding: 16px; flex-shrink: 0; }
+        .sidebar h3 { color: #fabd2f; font-size: 14px; margin-bottom: 12px; text-transform: uppercase; }
+        .runbook-item { background: #3c3836; padding: 12px; margin-bottom: 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-size: 13px; border-left: 3px solid transparent; }
+        .runbook-item:hover { background: #504945; }
+        .runbook-item.active { background: #504945; border-left-color: #458588; }
+        .runbook-item-title { color: #ebdbb2; font-weight: 600; margin-bottom: 4px; }
+        .runbook-item-meta { color: #928374; font-size: 11px; }
+        .runbook-item-progress { margin-top: 6px; height: 4px; background: #1d2021; border-radius: 2px; overflow: hidden; }
+        .runbook-item-progress-bar { height: 100%; background: #458588; transition: width 0.3s; }
+        .content { flex: 1; position: relative; overflow: hidden; }
+        .runbook-header { position: absolute; top: 0; left: 0; right: 0; background: #282828; border-bottom: 1px solid #3c3836; padding: 20px; z-index: 10; }
+        .runbook-title { color: #83a598; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .runbook-description { color: #928374; font-size: 13px; line-height: 1.5; margin-bottom: 12px; }
+        .progress-bar-container { margin-top: 16px; }
+        .progress-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: #928374; }
+        .progress-bar { height: 12px; background: #3c3836; border-radius: 6px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #458588, #83a598); transition: width 0.3s; border-radius: 6px; }
+        .progress-bar-fill.complete { background: linear-gradient(90deg, #98971a, #b8bb26); }
+        .checklist { position: absolute; top: 210px; bottom: 0; left: 0; right: 0; overflow-y: auto; overflow-x: hidden; padding: 20px; }
+        .phase-section { margin-bottom: 32px; background: #282828; border: 2px solid #3c3836; border-radius: 8px; overflow: hidden; }
+        .phase-header { background: #3c3836; padding: 16px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+        .phase-header:hover { background: #504945; }
+        .phase-header.complete { background: #2a2e23; border-left: 4px solid #b8bb26; }
+        .phase-title-container { flex: 1; }
+        .phase-title { color: #fabd2f; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .phase-progress-text { color: #928374; font-size: 12px; }
+        .phase-toggle { color: #928374; font-size: 20px; transition: transform 0.3s; }
+        .phase-toggle.collapsed { transform: rotate(-90deg); }
+        .phase-progress-bar { height: 6px; background: #1d2021; margin: 0 20px 12px 20px; }
+        .phase-progress-fill { height: 100%; background: #458588; transition: width 0.3s; }
+        .phase-progress-fill.complete { background: #b8bb26; }
+        .phase-steps { padding: 20px; display: none; }
+        .phase-steps.expanded { display: block; }
+        .step { background: #1d2021; border: 1px solid #3c3836; border-radius: 6px; padding: 16px; margin-bottom: 16px; transition: all 0.2s; }
+        .step.completed { border-color: #98971a; background: #232623; }
+        .step.critical { border-left: 4px solid #fb4934; }
+        .step-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+        .checkbox-container { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #3c3836; border: 2px solid #504945; border-radius: 4px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; margin-top: 2px; }
+        .checkbox-container:hover { border-color: #83a598; }
+        .checkbox-container.checked { background: #98971a; border-color: #b8bb26; }
+        .checkbox-container.checked::after { content: '✓'; color: #282828; font-size: 16px; font-weight: 700; }
+        .step-content { flex: 1; }
+        .step-number { color: #928374; font-size: 11px; font-weight: 600; margin-bottom: 4px; }
+        .step-title { color: #ebdbb2; font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .step-description { color: #a89984; font-size: 13px; line-height: 1.5; margin-bottom: 10px; }
+        .step-command { background: #282828; border: 1px solid #3c3836; border-radius: 4px; padding: 10px; font-size: 12px; color: #d8a657; margin-bottom: 10px; white-space: pre-wrap; word-break: break-all; }
+        .step-notes { margin-top: 12px; }
+        .step-notes textarea { width: 100%; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; resize: vertical; min-height: 60px; }
+        .step-notes textarea:focus { outline: none; border-color: #458588; }
+        .step-notes-label { color: #928374; font-size: 11px; margin-bottom: 6px; display: block; }
+        .step-timestamp { color: #458588; font-size: 11px; margin-top: 8px; font-weight: 600; }
+        .step-required { display: inline-block; background: #fb4934; color: #282828; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-left: 8px; }
+        .empty-state { text-align: center; color: #665c54; padding: 60px 20px; font-size: 14px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: #282828; border: 2px solid #504945; border-radius: 8px; padding: 24px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { color: #fabd2f; font-size: 18px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; color: #928374; font-size: 13px; margin-bottom: 6px; font-weight: 600; }
+        .form-group input, .form-group textarea { width: 100%; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; padding: 10px 12px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #458588; }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .history-item { background: #3c3836; border: 1px solid #504945; border-radius: 4px; padding: 12px; margin-bottom: 10px; font-size: 12px; }
+        .history-item-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .history-item-date { color: #928374; font-weight: 600; }
+        .history-item-duration { color: #83a598; }
+        .history-item-steps { color: #a89984; }
+        .stats { padding: 8px 20px; background: #282828; border-top: 1px solid #3c3836; font-size: 12px; color: #928374; display: flex; gap: 20px; flex-shrink: 0; }
+        .shortcut-hint { font-size: 11px; color: #665c54; margin-top: 16px; padding: 12px; background: #282828; border-radius: 4px; }
+        .help-text { font-size: 11px; color: #665c54; margin-top: 6px; line-height: 1.4; }
+        .code-inline { background: #3c3836; padding: 2px 6px; border-radius: 3px; font-family: monospace; color: #d8a657; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #1d2021; }
+        ::-webkit-scrollbar-thumb { background: #504945; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #665c54; }
     </style>
 </head>
 <body>
     <div class="header">
         <div>
             <h1>📋 RUNBOOK CHECKLIST</h1>
-            <div class="sync-status" id="syncStatus">
-                <span id="syncStatusText">Offline mode</span>
-            </div>
+            <div class="sync-status" id="syncStatus"><span id="syncStatusText">Offline mode</span></div>
         </div>
         <div class="header-actions">
-            <button class="btn-sync" onclick="showSyncSetupModal()" id="syncSetupBtn">☁️ Setup Sync</button>
-            <button class="btn-sync" onclick="syncNow()" id="syncNowBtn" style="display: none;">↻ Sync</button>
+            <button class="btn-sync" id="loginBtn" onclick="showLoginModal()">☁️ Login</button>
+            <button class="btn-sync" id="pushBtn" onclick="pushNow()" style="display:none;">↑ Push</button>
+            <button class="btn-sync" id="pullBtn" onclick="pullNow()" style="display:none;">↓ Pull</button>
             <button onclick="showNewRunbookModal()">+ New Runbook</button>
             <button onclick="showHistoryModal()" id="historyBtn" disabled>History</button>
             <button class="btn-warning" onclick="resetCurrentRunbook()" id="resetBtn" disabled>↻ Reset</button>
@@ -580,7 +130,6 @@
             <h3>Your Runbooks</h3>
             <div id="runbookList"></div>
         </div>
-
         <div class="content">
             <div id="runbookView"></div>
         </div>
@@ -591,52 +140,24 @@
         <span id="statsExecutions">0 total executions</span>
     </div>
 
-    <!-- Sync Setup Modal -->
-    <div class="modal" id="syncSetupModal">
+    <div class="modal" id="loginModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Setup GitHub Sync</h2>
-                <button onclick="closeModal('syncSetupModal')">✕</button>
-            </div>
-            <div style="margin-bottom: 20px; color: #a89984; font-size: 13px; line-height: 1.6;">
-                <p style="margin-bottom: 12px;">Sync your runbooks across devices using GitHub Gists (private, encrypted storage).</p>
-                <p><strong style="color: #fabd2f;">Setup Steps:</strong></p>
-                <ol style="margin-left: 20px; margin-top: 8px;">
-                    <li>Go to <a href="https://github.com/settings/tokens" target="_blank" style="color: #83a598;">github.com/settings/tokens</a></li>
-                    <li>Click "Generate new token" → "Generate new token (classic)"</li>
-                    <li>Name it "Runbook Sync"</li>
-                    <li>Check ONLY the <span class="code-inline">gist</span> scope</li>
-                    <li>Click "Generate token"</li>
-                    <li>Copy the token and paste below</li>
-                </ol>
-            </div>
-            <form onsubmit="setupSync(event)">
-                <div class="form-group">
-                    <label>GitHub Personal Access Token *</label>
-                    <input type="password" id="githubPAT" required placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-                    <div class="help-text">
-                        Your token is stored locally and used to save data to a private GitHub Gist. It never leaves your browser.
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" onclick="closeModal('syncSetupModal')">Cancel</button>
-                    <button type="submit" class="btn-success">Enable Sync</button>
-                </div>
-            </form>
-            <div style="margin-top: 20px; padding: 12px; background: #3c3836; border-radius: 4px; font-size: 11px; color: #928374;">
-                <strong style="color: #d79921;">Already configured?</strong><br>
-                <button type="button" class="btn-danger" onclick="disableSync()" style="margin-top: 8px; font-size: 11px; padding: 6px 12px;">Disable Sync &amp; Clear Token</button>
+            <div class="modal-header"><h2>Login to GitHub</h2><button onclick="closeModal('loginModal')">✕</button></div>
+            <p style="margin-bottom: 12px; color: #a89984;">Enter your GitHub Personal Access Token to enable sync.</p>
+            <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width: 100%; padding: 10px; background: #3c3836; border: 1px solid #504945; color: #ebdbb2; border-radius: 4px; font-family: 'JetBrains Mono', monospace; margin-bottom: 12px;">
+            <p style="font-size: 12px; color: #665c54; margin-bottom: 16px;">Token stored locally. Auto-pulls on login. Get token at <a href="https://github.com/settings/tokens" target="_blank" style="color: #8ec07c;">github.com/settings/tokens</a> (gist scope only)</p>
+            <button onclick="login()">Login</button>
+            <button onclick="closeModal('loginModal')" style="margin-left: 8px;">Cancel</button>
+            <div style="margin-top: 20px; padding: 12px; background: #3c3836; border-radius: 4px; font-size: 12px;">
+                <strong>Already logged in?</strong><br>
+                <button onclick="logout()" class="btn-danger" style="margin-top: 8px; padding: 4px 10px; font-size: 12px;">Logout</button>
             </div>
         </div>
     </div>
 
-    <!-- New Runbook Modal -->
     <div class="modal" id="newRunbookModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Create Runbook</h2>
-                <button onclick="closeModal('newRunbookModal')">✕</button>
-            </div>
+            <div class="modal-header"><h2>Create Runbook</h2><button onclick="closeModal('newRunbookModal')">✕</button></div>
             <form onsubmit="createRunbook(event)">
                 <div class="form-group">
                     <label>Runbook Title *</label>
@@ -649,9 +170,7 @@
                 <div class="form-group">
                     <label>Steps (JSON format) *</label>
                     <textarea id="runbookSteps" required placeholder='[{"phase":"Pre-Upgrade","title":"Backup config","description":"","command":"","required":true}]' style="min-height: 200px;"></textarea>
-                    <div class="help-text">
-                        Format: [{"phase":"Phase Name","title":"Step Title","description":"Details","command":"Command here","required":true}]
-                    </div>
+                    <div class="help-text">Format: [{"phase":"Phase Name","title":"Step Title","description":"Details","command":"Command here","required":true}]</div>
                 </div>
                 <div class="form-actions">
                     <button type="button" onclick="closeModal('newRunbookModal')">Cancel</button>
@@ -661,642 +180,186 @@
         </div>
     </div>
 
-    <!-- History Modal -->
     <div class="modal" id="historyModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Execution History</h2>
-                <button onclick="closeModal('historyModal')">✕</button>
-            </div>
+            <div class="modal-header"><h2>Execution History</h2><button onclick="closeModal('historyModal')">✕</button></div>
             <div id="historyContent"></div>
-            <div class="form-actions">
-                <button onclick="closeModal('historyModal')">Close</button>
-            </div>
+            <div class="form-actions"><button onclick="closeModal('historyModal')">Close</button></div>
         </div>
     </div>
 
     <input type="file" id="importInput" style="display: none;" accept=".json" onchange="handleImport(event)">
-
     <script>
         const GITHUB_API = 'https://api.github.com';
-        let runbooks = JSON.parse(localStorage.getItem('runbooks_v4')) || getDefaultRunbooks();
-        let currentRunbookId = localStorage.getItem('currentRunbookId_v4') || null;
-        let executions = JSON.parse(localStorage.getItem('executions_v4')) || {};
+        let runbooks = JSON.parse(localStorage.getItem('runbooks_v5')) || getDefaultRunbooks();
+        let currentRunbookId = localStorage.getItem('currentRunbookId_v5') || null;
+        let executions = JSON.parse(localStorage.getItem('executions_v5')) || {};
         let expandedPhases = {};
-        let syncInProgress = false;
-        let saveDebounceTimer = null;
 
         function getDefaultRunbooks() {
-            return [
-                {
-                    id: '1',
-                    title: 'F5 BigIP Upgrade',
-                    description: 'Complete procedure for upgrading F5 BigIP load balancer firmware',
-                    steps: [
-                        { id: '1', phase: 'Pre-Upgrade', title: 'Backup current configuration', description: 'Create UCS archive of current config', command: 'tmsh save /sys ucs /var/local/ucs/pre-upgrade-$(date +%Y%m%d).ucs', required: true },
-                        { id: '2', phase: 'Pre-Upgrade', title: 'Document current version', description: 'Record current software version', command: 'tmsh show /sys version', required: true },
-                        { id: '3', phase: 'Pre-Upgrade', title: 'Check available disk space', description: 'Verify enough space for new image', command: 'df -h /shared', required: true },
-                        { id: '4', phase: 'Pre-Upgrade', title: 'Verify HA sync status', description: 'Confirm device group is in sync', command: 'tmsh show /cm sync-status', required: true },
-                        { id: '5', phase: 'Pre-Upgrade', title: 'Create maintenance window', description: 'Schedule and announce maintenance window', command: '', required: true },
-                        { id: '6', phase: 'Pre-Upgrade', title: 'Notify stakeholders', description: 'Send notifications to affected teams', command: '', required: true },
-                        { id: '7', phase: 'Pre-Upgrade', title: 'Download upgrade image', description: 'Download ISO from F5 Downloads', command: '', required: true },
-                        { id: '8', phase: 'Pre-Upgrade', title: 'Verify image checksum', description: 'Validate MD5 checksum matches F5 website', command: 'md5sum BIGIP-*.iso', required: true },
-                        { id: '9', phase: 'Upgrade', title: 'Upload image to F5', description: 'Transfer ISO to /shared/images/', command: 'scp BIGIP-*.iso root@{{f5-host}}:/shared/images/', required: true },
-                        { id: '10', phase: 'Upgrade', title: 'Install image to volume', description: 'Install software to inactive volume', command: 'tmsh install /sys software image BIGIP-*.iso volume HD1.2', required: true },
-                        { id: '11', phase: 'Upgrade', title: 'Monitor installation progress', description: 'Watch installation logs (takes 15-30 min)', command: 'tail -f /var/log/ltm', required: true },
-                        { id: '12', phase: 'Upgrade', title: 'Set boot location', description: 'Configure system to boot from new volume', command: 'tmsh modify /sys db bootloader.volume value HD1.2', required: true },
-                        { id: '13', phase: 'Upgrade', title: 'Reboot to new image', description: 'Reboot system (5-10 min downtime)', command: 'tmsh reboot', required: true },
-                        { id: '14', phase: 'Upgrade', title: 'Verify boot successful', description: 'Confirm system booted from new volume', command: 'tmsh show /sys software status', required: true },
-                        { id: '15', phase: 'Upgrade', title: 'Check module versions', description: 'Verify all modules upgraded correctly', command: 'tmsh show /sys version', required: true },
-                        { id: '16', phase: 'Post-Upgrade', title: 'Verify license activation', description: 'Confirm license is active', command: 'tmsh show /sys license', required: true },
-                        { id: '17', phase: 'Post-Upgrade', title: 'Test traffic flow', description: 'Verify virtual servers are processing traffic', command: 'tmsh show /ltm virtual', required: true },
-                        { id: '18', phase: 'Post-Upgrade', title: 'Verify all virtual servers', description: 'Check status of all VS', command: 'tmsh show /ltm virtual recursive', required: true },
-                        { id: '19', phase: 'Post-Upgrade', title: 'Check pool member health', description: 'Verify backend pool members are up', command: 'tmsh show /ltm pool members', required: true },
-                        { id: '20', phase: 'Post-Upgrade', title: 'Monitor for errors', description: 'Watch logs for 30 minutes', command: 'tail -f /var/log/ltm', required: true },
-                        { id: '21', phase: 'Post-Upgrade', title: 'Close maintenance window', description: 'Notify stakeholders of completion', command: '', required: true }
-                    ],
-                    created: new Date().toISOString()
-                },
-                {
-                    id: '2',
-                    title: 'Kubernetes Cluster Upgrade',
-                    description: 'Upgrade Kubernetes control plane and worker nodes',
-                    steps: [
-                        { id: '1', phase: 'Pre-Flight', title: 'Check current version', description: 'Verify current K8s version', command: 'kubectl version --short', required: true },
-                        { id: '2', phase: 'Pre-Flight', title: 'Backup etcd', description: 'Create etcd snapshot', command: 'ETCDCTL_API=3 etcdctl snapshot save snapshot.db', required: true },
-                        { id: '3', phase: 'Pre-Flight', title: 'Drain control plane nodes', description: 'Safely evict pods from control plane', command: 'kubectl drain {{node}} --ignore-daemonsets', required: true },
-                        { id: '4', phase: 'Control Plane', title: 'Upgrade kubeadm', description: 'Update kubeadm package', command: 'apt-get update && apt-get install -y kubeadm={{version}}', required: true },
-                        { id: '5', phase: 'Control Plane', title: 'Plan upgrade', description: 'Verify upgrade plan', command: 'kubeadm upgrade plan', required: true },
-                        { id: '6', phase: 'Control Plane', title: 'Apply upgrade', description: 'Execute control plane upgrade', command: 'kubeadm upgrade apply v{{version}}', required: true },
-                        { id: '7', phase: 'Control Plane', title: 'Upgrade kubelet', description: 'Update kubelet and kubectl', command: 'apt-get install -y kubelet={{version}} kubectl={{version}}', required: true },
-                        { id: '8', phase: 'Control Plane', title: 'Restart kubelet', description: 'Restart kubelet service', command: 'systemctl daemon-reload && systemctl restart kubelet', required: true },
-                        { id: '9', phase: 'Control Plane', title: 'Uncordon node', description: 'Mark node schedulable', command: 'kubectl uncordon {{node}}', required: true },
-                        { id: '10', phase: 'Worker Nodes', title: 'Drain worker node', description: 'Evict pods from worker', command: 'kubectl drain {{node}} --ignore-daemonsets --delete-emptydir-data', required: true },
-                        { id: '11', phase: 'Worker Nodes', title: 'Upgrade packages', description: 'Update kubeadm, kubelet, kubectl', command: 'apt-get update && apt-get install -y kubeadm={{version}} kubelet={{version}} kubectl={{version}}', required: true },
-                        { id: '12', phase: 'Worker Nodes', title: 'Upgrade node', description: 'Apply node upgrade', command: 'kubeadm upgrade node', required: true },
-                        { id: '13', phase: 'Worker Nodes', title: 'Restart kubelet', description: 'Restart kubelet service', command: 'systemctl daemon-reload && systemctl restart kubelet', required: true },
-                        { id: '14', phase: 'Worker Nodes', title: 'Uncordon node', description: 'Mark node schedulable', command: 'kubectl uncordon {{node}}', required: true },
-                        { id: '15', phase: 'Worker Nodes', title: 'Repeat for all workers', description: 'Execute steps 10-14 for each worker node', command: '', required: true },
-                        { id: '16', phase: 'Verification', title: 'Check cluster version', description: 'Verify all nodes upgraded', command: 'kubectl get nodes', required: true },
-                        { id: '17', phase: 'Verification', title: 'Check pod status', description: 'Verify all pods running', command: 'kubectl get pods --all-namespaces', required: true },
-                        { id: '18', phase: 'Verification', title: 'Run smoke tests', description: 'Execute cluster validation tests', command: '', required: true }
-                    ],
-                    created: new Date().toISOString()
-                }
-            ];
+            return [{
+                id: '1',
+                title: 'F5 BigIP Upgrade',
+                description: 'Complete procedure for upgrading F5 BigIP load balancer firmware',
+                steps: [
+                    { id: '1', phase: 'Pre-Upgrade', title: 'Backup current configuration', description: 'Create UCS archive of current config', command: 'tmsh save /sys ucs /var/local/ucs/pre-upgrade-$(date +%Y%m%d).ucs', required: true },
+                    { id: '2', phase: 'Pre-Upgrade', title: 'Document current version', description: 'Record current software version', command: 'tmsh show /sys version', required: true },
+                    { id: '3', phase: 'Pre-Upgrade', title: 'Check available disk space', description: 'Verify enough space for new image', command: 'df -h /shared', required: true },
+                    { id: '4', phase: 'Pre-Upgrade', title: 'Verify HA sync status', description: 'Confirm device group is in sync', command: 'tmsh show /cm sync-status', required: true },
+                    { id: '5', phase: 'Pre-Upgrade', title: 'Create maintenance window', description: 'Schedule and announce maintenance window', command: '', required: true },
+                    { id: '6', phase: 'Pre-Upgrade', title: 'Notify stakeholders', description: 'Send notifications to affected teams', command: '', required: true },
+                    { id: '7', phase: 'Pre-Upgrade', title: 'Download upgrade image', description: 'Download ISO from F5 Downloads', command: '', required: true },
+                    { id: '8', phase: 'Pre-Upgrade', title: 'Verify image checksum', description: 'Validate MD5 checksum matches F5 website', command: 'md5sum BIGIP-*.iso', required: true },
+                    { id: '9', phase: 'Upgrade', title: 'Upload image to F5', description: 'Transfer ISO to /shared/images/', command: 'scp BIGIP-*.iso root@{{f5-host}}:/shared/images/', required: true },
+                    { id: '10', phase: 'Upgrade', title: 'Install image to volume', description: 'Install software to inactive volume', command: 'tmsh install /sys software image BIGIP-*.iso volume HD1.2', required: true },
+                    { id: '11', phase: 'Upgrade', title: 'Monitor installation progress', description: 'Watch installation logs (takes 15-30 min)', command: 'tail -f /var/log/ltm', required: true },
+                    { id: '12', phase: 'Upgrade', title: 'Set boot location', description: 'Configure system to boot from new volume', command: 'tmsh modify /sys db bootloader.volume value HD1.2', required: true },
+                    { id: '13', phase: 'Upgrade', title: 'Reboot to new image', description: 'Reboot system (5-10 min downtime)', command: 'tmsh reboot', required: true },
+                    { id: '14', phase: 'Upgrade', title: 'Verify boot successful', description: 'Confirm system booted from new volume', command: 'tmsh show /sys software status', required: true },
+                    { id: '15', phase: 'Upgrade', title: 'Check module versions', description: 'Verify all modules upgraded correctly', command: 'tmsh show /sys version', required: true },
+                    { id: '16', phase: 'Post-Upgrade', title: 'Verify license activation', description: 'Confirm license is active', command: 'tmsh show /sys license', required: true },
+                    { id: '17', phase: 'Post-Upgrade', title: 'Test traffic flow', description: 'Verify virtual servers are processing traffic', command: 'tmsh show /ltm virtual', required: true },
+                    { id: '18', phase: 'Post-Upgrade', title: 'Verify all virtual servers', description: 'Check status of all VS', command: 'tmsh show /ltm virtual recursive', required: true },
+                    { id: '19', phase: 'Post-Upgrade', title: 'Check pool member health', description: 'Verify backend pool members are up', command: 'tmsh show /ltm pool members', required: true },
+                    { id: '20', phase: 'Post-Upgrade', title: 'Monitor for errors', description: 'Watch logs for 30 minutes', command: 'tail -f /var/log/ltm', required: true },
+                    { id: '21', phase: 'Post-Upgrade', title: 'Close maintenance window', description: 'Notify stakeholders of completion', command: '', required: true }
+                ],
+                created: new Date().toISOString()
+            }];
         }
 
-        function getCurrentRunbook() {
-            return runbooks.find(r => r.id === currentRunbookId);
-        }
-
-        function getCurrentExecution() {
-            if (!currentRunbookId || !executions[currentRunbookId]) return null;
-            const execs = executions[currentRunbookId];
-            return execs[execs.length - 1];
-        }
-
-        function saveData() {
-            localStorage.setItem('runbooks_v4', JSON.stringify(runbooks));
-            localStorage.setItem('currentRunbookId_v4', currentRunbookId);
-            localStorage.setItem('executions_v4', JSON.stringify(executions));
-            
-            // Debounced auto-sync
-            if (localStorage.getItem('github_pat')) {
-                clearTimeout(saveDebounceTimer);
-                saveDebounceTimer = setTimeout(() => {
-                    syncToGitHub();
-                }, 3000); // 3 second debounce
-            }
-        }
-
-        async function syncToGitHub() {
-            if (syncInProgress) return;
-            
-            const pat = localStorage.getItem('github_pat');
-            if (!pat) return;
-            
-            syncInProgress = true;
-            updateSyncStatus('syncing', 'Syncing...');
-            
-            const gistId = localStorage.getItem('gist_id');
-            const data = {
-                runbooks: runbooks,
-                executions: executions,
-                currentRunbookId: currentRunbookId,
-                lastSync: new Date().toISOString()
-            };
-            
-            const payload = {
-                description: 'Runbook Checklist Data (Auto-synced)',
-                public: false,
-                files: {
-                    'runbooks-data.json': {
-                        content: JSON.stringify(data, null, 2)
-                    }
-                }
-            };
-            
-            try {
-                let response;
-                if (gistId) {
-                    response = await fetch(`${GITHUB_API}/gists/${gistId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Authorization': `token ${pat}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                } else {
-                    response = await fetch(`${GITHUB_API}/gists`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `token ${pat}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    if (response.ok) {
-                        const gist = await response.json();
-                        localStorage.setItem('gist_id', gist.id);
-                    }
-                }
-                
-                if (response.ok) {
-                    updateSyncStatus('synced', 'Synced with GitHub');
-                } else {
-                    const error = await response.json();
-                    console.error('GitHub sync failed:', error);
-                    updateSyncStatus('error', 'Sync failed');
-                }
-            } catch (err) {
-                console.error('GitHub sync error:', err);
-                updateSyncStatus('error', 'Sync error');
-            } finally {
-                syncInProgress = false;
-            }
-        }
-
-        async function syncFromGitHub() {
-            const pat = localStorage.getItem('github_pat');
-            const gistId = localStorage.getItem('gist_id');
-            
-            if (!pat || !gistId) {
-                alert('GitHub sync not configured. Click "Setup Sync" first.');
-                return;
-            }
-            
-            updateSyncStatus('syncing', 'Pulling from GitHub...');
-            
-            try {
-                const response = await fetch(`${GITHUB_API}/gists/${gistId}`, {
-                    headers: {
-                        'Authorization': `token ${pat}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const gist = await response.json();
-                    const content = gist.files['runbooks-data.json'].content;
-                    const data = JSON.parse(content);
-                    
-                    runbooks = data.runbooks;
-                    executions = data.executions;
-                    currentRunbookId = data.currentRunbookId || null;
-                    
-                    saveData();
-                    renderAll();
-                    updateSyncStatus('synced', 'Synced with GitHub');
-                    alert('✅ Data pulled from GitHub successfully!');
-                } else {
-                    const error = await response.json();
-                    console.error('GitHub pull failed:', error);
-                    updateSyncStatus('error', 'Pull failed');
-                    alert('❌ Failed to pull from GitHub. Check console for errors.');
-                }
-            } catch (err) {
-                console.error('GitHub pull error:', err);
-                updateSyncStatus('error', 'Pull error');
-                alert('❌ Error pulling from GitHub: ' + err.message);
-            }
-        }
-
-        function updateSyncStatus(state, text) {
-            const statusEl = document.getElementById('syncStatus');
-            const textEl = document.getElementById('syncStatusText');
-            
-            statusEl.className = 'sync-status';
-            if (state === 'synced') {
-                statusEl.classList.add('synced');
-                textEl.textContent = '☁️ ' + text;
-            } else if (state === 'error') {
-                statusEl.classList.add('error');
-                textEl.textContent = '⚠️ ' + text;
-            } else if (state === 'syncing') {
-                textEl.textContent = '↻ ' + text;
-            } else {
-                textEl.textContent = text;
-            }
-        }
-
-        function showSyncSetupModal() {
-            document.getElementById('syncSetupModal').classList.add('active');
-            document.getElementById('githubPAT').focus();
-        }
-
-        function setupSync(event) {
-            event.preventDefault();
-            
-            const pat = document.getElementById('githubPAT').value.trim();
-            
-            if (!pat.startsWith('ghp_') && !pat.startsWith('github_pat_')) {
-                alert('Invalid token format. GitHub PATs start with "ghp_" or "github_pat_"');
-                return;
-            }
-            
-            localStorage.setItem('github_pat', pat);
-            
-            document.getElementById('syncSetupBtn').style.display = 'none';
-            document.getElementById('syncNowBtn').style.display = 'inline-block';
-            
-            closeModal('syncSetupModal');
-            document.getElementById('githubPAT').value = '';
-            
-            updateSyncStatus('syncing', 'Setting up...');
-            syncToGitHub();
-            
-            alert('✅ GitHub sync enabled! Your data will auto-sync every 3 seconds after changes.');
-        }
-
-        function disableSync() {
-            if (!confirm('Disable GitHub sync? Your data will remain in localStorage but will no longer sync to GitHub.')) {
-                return;
-            }
-            
-            localStorage.removeItem('github_pat');
-            localStorage.removeItem('gist_id');
-            
-            document.getElementById('syncSetupBtn').style.display = 'inline-block';
-            document.getElementById('syncNowBtn').style.display = 'none';
-            
-            updateSyncStatus('offline', 'Offline mode');
-            closeModal('syncSetupModal');
-            
-            alert('✅ GitHub sync disabled. Your local data is intact.');
-        }
-
-        function syncNow() {
-            if (!confirm('Pull latest data from GitHub? This will overwrite any local changes.')) {
-                return;
-            }
-            syncFromGitHub();
-        }
-
-        function formatTimestamp(date) {
-            return new Date(date).toISOString().replace('T', ' ').substr(0, 19) + ' UTC';
-        }
+        function getCurrentRunbook() { return runbooks.find(r => r.id === currentRunbookId); }
+        function getCurrentExecution() { if (!currentRunbookId || !executions[currentRunbookId]) return null; const execs = executions[currentRunbookId]; return execs[execs.length - 1]; }
+        function saveData() { localStorage.setItem('runbooks_v5', JSON.stringify(runbooks)); localStorage.setItem('currentRunbookId_v5', currentRunbookId); localStorage.setItem('executions_v5', JSON.stringify(executions)); }
+        function formatTimestamp(date) { return new Date(date).toISOString().replace('T', ' ').substr(0, 19) + ' UTC'; }
 
         function renderRunbookList() {
             const list = document.getElementById('runbookList');
-            
-            if (runbooks.length === 0) {
-                list.innerHTML = '<div style="color: #665c54; font-size: 12px; text-align: center; padding: 20px;">No runbooks yet</div>';
-                return;
-            }
-
+            if (runbooks.length === 0) { list.innerHTML = '<div style="color: #665c54; font-size: 12px; text-align: center; padding: 20px;">No runbooks yet</div>'; return; }
             let html = '';
             runbooks.forEach(runbook => {
                 const isActive = runbook.id === currentRunbookId;
                 const execution = isActive ? getCurrentExecution() : null;
                 const progress = execution ? calculateProgress(runbook, execution) : 0;
-                
-                html += `
-                    <div class="runbook-item ${isActive ? 'active' : ''}" onclick="selectRunbook('${runbook.id}')">
-                        <div class="runbook-item-title">${escapeHtml(runbook.title)}</div>
-                        <div class="runbook-item-meta">${runbook.steps.length} steps</div>
-                        ${isActive && execution ? `
-                        <div class="runbook-item-progress">
-                            <div class="runbook-item-progress-bar" style="width: ${progress}%"></div>
-                        </div>
-                        ` : ''}
-                    </div>
-                `;
+                html += `<div class="runbook-item ${isActive ? 'active' : ''}" onclick="selectRunbook('${runbook.id}')"><div class="runbook-item-title">${escapeHtml(runbook.title)}</div><div class="runbook-item-meta">${runbook.steps.length} steps</div>${isActive && execution ? `<div class="runbook-item-progress"><div class="runbook-item-progress-bar" style="width: ${progress}%"></div></div>` : ''}</div>`;
             });
-
             list.innerHTML = html;
         }
 
-        function calculateProgress(runbook, execution) {
-            if (!execution || !execution.steps) return 0;
-            const completed = Object.values(execution.steps).filter(s => s.completed).length;
-            return Math.round((completed / runbook.steps.length) * 100);
-        }
-
-        function calculatePhaseProgress(runbook, execution, phaseName) {
-            if (!execution || !execution.steps) return 0;
-            const phaseSteps = runbook.steps.filter(s => s.phase === phaseName);
-            const completed = phaseSteps.filter(s => execution.steps[s.id]?.completed).length;
-            return phaseSteps.length > 0 ? Math.round((completed / phaseSteps.length) * 100) : 0;
-        }
+        function calculateProgress(runbook, execution) { if (!execution || !execution.steps) return 0; const completed = Object.values(execution.steps).filter(s => s.completed).length; return Math.round((completed / runbook.steps.length) * 100); }
+        function calculatePhaseProgress(runbook, execution, phaseName) { if (!execution || !execution.steps) return 0; const phaseSteps = runbook.steps.filter(s => s.phase === phaseName); const completed = phaseSteps.filter(s => execution.steps[s.id]?.completed).length; return phaseSteps.length > 0 ? Math.round((completed / phaseSteps.length) * 100) : 0; }
 
         function selectRunbook(runbookId) {
             currentRunbookId = runbookId;
-            
-            if (!executions[runbookId]) {
-                executions[runbookId] = [];
-            }
-            
+            if (!executions[runbookId]) executions[runbookId] = [];
             const lastExec = executions[runbookId][executions[runbookId].length - 1];
-            if (!lastExec || lastExec.completed) {
-                startNewExecution(runbookId);
-            }
-            
+            if (!lastExec || lastExec.completed) startNewExecution(runbookId);
             const runbook = getCurrentRunbook();
             const phases = [...new Set(runbook.steps.map(s => s.phase))];
             expandedPhases[runbookId] = {};
-            phases.forEach(phase => {
-                expandedPhases[runbookId][phase] = true;
-            });
-            
+            phases.forEach(phase => { expandedPhases[runbookId][phase] = true; });
             saveData();
             renderAll();
         }
 
-        function startNewExecution(runbookId) {
-            if (!executions[runbookId]) {
-                executions[runbookId] = [];
-            }
-            
-            executions[runbookId].push({
-                id: Date.now().toString(),
-                startTime: new Date().toISOString(),
-                endTime: null,
-                completed: false,
-                steps: {}
-            });
-            
-            saveData();
-        }
-
-        function togglePhase(phaseName) {
-            if (!expandedPhases[currentRunbookId]) {
-                expandedPhases[currentRunbookId] = {};
-            }
-            expandedPhases[currentRunbookId][phaseName] = !expandedPhases[currentRunbookId][phaseName];
-            renderRunbookView();
-        }
+        function startNewExecution(runbookId) { if (!executions[runbookId]) executions[runbookId] = []; executions[runbookId].push({ id: Date.now().toString(), startTime: new Date().toISOString(), endTime: null, completed: false, steps: {} }); saveData(); }
+        function togglePhase(phaseName) { if (!expandedPhases[currentRunbookId]) expandedPhases[currentRunbookId] = {}; expandedPhases[currentRunbookId][phaseName] = !expandedPhases[currentRunbookId][phaseName]; renderRunbookView(); }
 
         function renderRunbookView() {
             const view = document.getElementById('runbookView');
             const runbook = getCurrentRunbook();
-
-            if (!runbook) {
-                view.innerHTML = `
-                    <div class="empty-state">
-                        Select a runbook to begin<br><br>
-                        <button onclick="showNewRunbookModal()">+ Create First Runbook</button>
-                    </div>
-                `;
-                document.getElementById('resetBtn').disabled = true;
-                document.getElementById('exportBtn').disabled = true;
-                document.getElementById('historyBtn').disabled = true;
-                return;
-            }
-
+            if (!runbook) { view.innerHTML = `<div class="empty-state">Select a runbook to begin<br><br><button onclick="showNewRunbookModal()">+ Create First Runbook</button></div>`; document.getElementById('resetBtn').disabled = true; document.getElementById('exportBtn').disabled = true; document.getElementById('historyBtn').disabled = true; return; }
             const execution = getCurrentExecution();
             const progress = execution ? calculateProgress(runbook, execution) : 0;
             const completedSteps = execution ? Object.values(execution.steps).filter(s => s.completed).length : 0;
-
             document.getElementById('resetBtn').disabled = false;
             document.getElementById('exportBtn').disabled = false;
             document.getElementById('historyBtn').disabled = false;
-
             const phases = {};
-            runbook.steps.forEach(step => {
-                if (!phases[step.phase]) {
-                    phases[step.phase] = [];
-                }
-                phases[step.phase].push(step);
-            });
-
-            let html = `
-                <div class="runbook-header">
-                    <div class="runbook-title">${escapeHtml(runbook.title)}</div>
-                    <div class="runbook-description">${escapeHtml(runbook.description || '')}</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-label">
-                            <span>Overall Progress</span>
-                            <span>${completedSteps} / ${runbook.steps.length} steps (${progress}%)</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-bar-fill ${progress === 100 ? 'complete' : ''}" style="width: ${progress}%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="checklist">
-            `;
-
+            runbook.steps.forEach(step => { if (!phases[step.phase]) phases[step.phase] = []; phases[step.phase].push(step); });
+            let html = `<div class="runbook-header"><div class="runbook-title">${escapeHtml(runbook.title)}</div><div class="runbook-description">${escapeHtml(runbook.description || '')}</div><div class="progress-bar-container"><div class="progress-label"><span>Overall Progress</span><span>${completedSteps} / ${runbook.steps.length} steps (${progress}%)</span></div><div class="progress-bar"><div class="progress-bar-fill ${progress === 100 ? 'complete' : ''}" style="width: ${progress}%"></div></div></div></div><div class="checklist">`;
             Object.keys(phases).forEach(phaseName => {
                 const phaseSteps = phases[phaseName];
                 const phaseProgress = execution ? calculatePhaseProgress(runbook, execution, phaseName) : 0;
                 const phaseCompleted = phaseSteps.filter(s => execution?.steps[s.id]?.completed).length;
                 const isExpanded = expandedPhases[currentRunbookId]?.[phaseName] !== false;
                 const isComplete = phaseProgress === 100;
-
-                html += `
-                    <div class="phase-section">
-                        <div class="phase-header ${isComplete ? 'complete' : ''}" onclick="togglePhase('${phaseName}')">
-                            <div class="phase-title-container">
-                                <div class="phase-title">${escapeHtml(phaseName)}</div>
-                                <div class="phase-progress-text">${phaseCompleted} / ${phaseSteps.length} steps (${phaseProgress}%)</div>
-                            </div>
-                            <div class="phase-toggle ${isExpanded ? '' : 'collapsed'}">▼</div>
-                        </div>
-                        <div class="phase-progress-bar">
-                            <div class="phase-progress-fill ${isComplete ? 'complete' : ''}" style="width: ${phaseProgress}%"></div>
-                        </div>
-                        <div class="phase-steps ${isExpanded ? 'expanded' : ''}">
-                `;
-
+                html += `<div class="phase-section"><div class="phase-header ${isComplete ? 'complete' : ''}" onclick="togglePhase('${phaseName}')"><div class="phase-title-container"><div class="phase-title">${escapeHtml(phaseName)}</div><div class="phase-progress-text">${phaseCompleted} / ${phaseSteps.length} steps (${phaseProgress}%)</div></div><div class="phase-toggle ${isExpanded ? '' : 'collapsed'}">▼</div></div><div class="phase-progress-bar"><div class="phase-progress-fill ${isComplete ? 'complete' : ''}" style="width: ${phaseProgress}%"></div></div><div class="phase-steps ${isExpanded ? 'expanded' : ''}">`;
                 phaseSteps.forEach((step, index) => {
                     const stepExec = execution?.steps[step.id] || {};
                     const isCompleted = stepExec.completed || false;
                     const notes = stepExec.notes || '';
                     const timestamp = stepExec.timestamp;
-
-                    html += `
-                        <div class="step ${isCompleted ? 'completed' : ''} ${step.required ? 'critical' : ''}">
-                            <div class="step-header">
-                                <div class="checkbox-container ${isCompleted ? 'checked' : ''}" onclick="toggleStep('${step.id}')"></div>
-                                <div class="step-content">
-                                    <div class="step-number">STEP ${index + 1}${step.required ? '<span class="step-required">REQUIRED</span>' : ''}</div>
-                                    <div class="step-title">${escapeHtml(step.title)}</div>
-                                    ${step.description ? `<div class="step-description">${escapeHtml(step.description)}</div>` : ''}
-                                    ${step.command ? `<div class="step-command">${escapeHtml(step.command)}</div>` : ''}
-                                    <div class="step-notes">
-                                        <label class="step-notes-label">Notes (what did you find?)</label>
-                                        <textarea 
-                                            onchange="updateStepNotes('${step.id}', this.value)"
-                                            placeholder="Add notes about this step..."
-                                        >${escapeHtml(notes)}</textarea>
-                                    </div>
-                                    ${timestamp ? `<div class="step-timestamp">✓ Completed: ${formatTimestamp(timestamp)}</div>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    html += `<div class="step ${isCompleted ? 'completed' : ''} ${step.required ? 'critical' : ''}"><div class="step-header"><div class="checkbox-container ${isCompleted ? 'checked' : ''}" onclick="toggleStep('${step.id}')"></div><div class="step-content"><div class="step-number">STEP ${index + 1}${step.required ? '<span class="step-required">REQUIRED</span>' : ''}</div><div class="step-title">${escapeHtml(step.title)}</div>${step.description ? `<div class="step-description">${escapeHtml(step.description)}</div>` : ''}${step.command ? `<div class="step-command">${escapeHtml(step.command)}</div>` : ''}<div class="step-notes"><label class="step-notes-label">Notes</label><textarea onchange="updateStepNotes('${step.id}', this.value)" placeholder="Add notes...">${escapeHtml(notes)}</textarea></div>${timestamp ? `<div class="step-timestamp">✓ Completed: ${formatTimestamp(timestamp)}</div>` : ''}</div></div></div>`;
                 });
-
-                html += `
-                        </div>
-                    </div>
-                `;
+                html += `</div></div>`;
             });
-
-            html += `
-                    <div class="shortcut-hint">
-                        💡 Click phase headers to collapse/expand sections. Data auto-syncs to GitHub every 3 seconds after changes.
-                    </div>
-                </div>
-            `;
-
+            html += `<div class="shortcut-hint">💡 Click phase headers to collapse/expand sections.</div></div>`;
             view.innerHTML = html;
         }
 
         function toggleStep(stepId) {
             const execution = getCurrentExecution();
             if (!execution) return;
-
-            if (!execution.steps[stepId]) {
-                execution.steps[stepId] = {};
-            }
-
+            if (!execution.steps[stepId]) execution.steps[stepId] = {};
             execution.steps[stepId].completed = !execution.steps[stepId].completed;
-            
-            if (execution.steps[stepId].completed) {
-                execution.steps[stepId].timestamp = new Date().toISOString();
-            } else {
-                delete execution.steps[stepId].timestamp;
-            }
-
+            if (execution.steps[stepId].completed) execution.steps[stepId].timestamp = new Date().toISOString();
+            else delete execution.steps[stepId].timestamp;
             saveData();
             renderAll();
         }
 
-        function updateStepNotes(stepId, notes) {
-            const execution = getCurrentExecution();
-            if (!execution) return;
-
-            if (!execution.steps[stepId]) {
-                execution.steps[stepId] = {};
-            }
-
-            execution.steps[stepId].notes = notes;
-            saveData();
-        }
+        function updateStepNotes(stepId, notes) { const execution = getCurrentExecution(); if (!execution) return; if (!execution.steps[stepId]) execution.steps[stepId] = {}; execution.steps[stepId].notes = notes; saveData(); }
 
         function resetCurrentRunbook() {
-            if (!confirm('Reset this runbook? All checkboxes and notes will be cleared and a new execution will start.')) {
-                return;
-            }
-
+            if (!confirm('Reset this runbook? All checkboxes and notes will be cleared and a new execution will start.')) return;
             const execution = getCurrentExecution();
-            if (execution) {
-                execution.endTime = new Date().toISOString();
-                execution.completed = true;
-            }
-
+            if (execution) { execution.endTime = new Date().toISOString(); execution.completed = true; }
             startNewExecution(currentRunbookId);
             renderAll();
         }
 
-        function showNewRunbookModal() {
-            document.getElementById('newRunbookModal').classList.add('active');
-            document.getElementById('runbookTitle').focus();
-        }
+        function showNewRunbookModal() { document.getElementById('newRunbookModal').classList.add('active'); document.getElementById('runbookTitle').focus(); }
 
         function createRunbook(event) {
             event.preventDefault();
-
             const title = document.getElementById('runbookTitle').value.trim();
             const description = document.getElementById('runbookDescription').value.trim();
             const stepsText = document.getElementById('runbookSteps').value.trim();
-
             try {
                 const steps = JSON.parse(stepsText);
-                
-                if (!Array.isArray(steps)) {
-                    alert('Steps must be a JSON array');
-                    return;
-                }
-
-                steps.forEach((step, index) => {
-                    step.id = (index + 1).toString();
-                });
-
-                const runbook = {
-                    id: Date.now().toString(),
-                    title,
-                    description,
-                    steps,
-                    created: new Date().toISOString()
-                };
-
+                if (!Array.isArray(steps)) { alert('Steps must be a JSON array'); return; }
+                steps.forEach((step, index) => { step.id = (index + 1).toString(); });
+                const runbook = { id: Date.now().toString(), title, description, steps, created: new Date().toISOString() };
                 runbooks.unshift(runbook);
                 currentRunbookId = runbook.id;
                 startNewExecution(runbook.id);
-                
                 const phases = [...new Set(steps.map(s => s.phase))];
                 expandedPhases[runbook.id] = {};
-                phases.forEach(phase => {
-                    expandedPhases[runbook.id][phase] = true;
-                });
-                
+                phases.forEach(phase => { expandedPhases[runbook.id][phase] = true; });
                 saveData();
-                
                 closeModal('newRunbookModal');
                 document.getElementById('runbookTitle').value = '';
                 document.getElementById('runbookDescription').value = '';
                 document.getElementById('runbookSteps').value = '';
-                
                 renderAll();
-            } catch (err) {
-                alert('Invalid JSON format in steps field');
-            }
+            } catch (err) { alert('Invalid JSON format in steps field'); }
         }
 
         function showHistoryModal() {
             const runbook = getCurrentRunbook();
             if (!runbook) return;
-
             const execs = executions[runbook.id] || [];
             const content = document.getElementById('historyContent');
-
-            if (execs.length === 0) {
-                content.innerHTML = '<div style="color: #665c54; padding: 20px; text-align: center;">No execution history yet</div>';
-            } else {
+            if (execs.length === 0) { content.innerHTML = '<div style="color: #665c54; padding: 20px; text-align: center;">No execution history yet</div>'; } else {
                 let html = '';
                 execs.slice().reverse().forEach((exec, index) => {
                     const completed = Object.values(exec.steps).filter(s => s.completed).length;
-                    const duration = exec.endTime 
-                        ? Math.round((new Date(exec.endTime) - new Date(exec.startTime)) / 60000) 
-                        : Math.round((new Date() - new Date(exec.startTime)) / 60000);
-                    
-                    html += `
-                        <div class="history-item">
-                            <div class="history-item-header">
-                                <span class="history-item-date">${formatTimestamp(exec.startTime)}</span>
-                                <span class="history-item-duration">${duration} min</span>
-                            </div>
-                            <div class="history-item-steps">Completed: ${completed} / ${runbook.steps.length} steps</div>
-                        </div>
-                    `;
+                    const duration = exec.endTime ? Math.round((new Date(exec.endTime) - new Date(exec.startTime)) / 60000) : Math.round((new Date() - new Date(exec.startTime)) / 60000);
+                    html += `<div class="history-item"><div class="history-item-header"><span class="history-item-date">${formatTimestamp(exec.startTime)}</span><span class="history-item-duration">${duration} min</span></div><div class="history-item-steps">Completed: ${completed} / ${runbook.steps.length} steps</div></div>`;
                 });
                 content.innerHTML = html;
             }
-
             document.getElementById('historyModal').classList.add('active');
         }
 
@@ -1304,47 +367,24 @@
             const runbook = getCurrentRunbook();
             const execution = getCurrentExecution();
             if (!runbook || !execution) return;
-
-            let md = `# Runbook Execution: ${runbook.title}\n\n`;
-            md += `**Description:** ${runbook.description}\n`;
-            md += `**Started:** ${formatTimestamp(execution.startTime)}\n`;
-            if (execution.endTime) {
-                md += `**Completed:** ${formatTimestamp(execution.endTime)}\n`;
-            }
+            let md = `# Runbook Execution: ${runbook.title}\n\n**Description:** ${runbook.description}\n**Started:** ${formatTimestamp(execution.startTime)}\n`;
+            if (execution.endTime) md += `**Completed:** ${formatTimestamp(execution.endTime)}\n`;
             md += `\n---\n\n`;
-
             const phases = {};
-            runbook.steps.forEach(step => {
-                if (!phases[step.phase]) {
-                    phases[step.phase] = [];
-                }
-                phases[step.phase].push(step);
-            });
-
+            runbook.steps.forEach(step => { if (!phases[step.phase]) phases[step.phase] = []; phases[step.phase].push(step); });
             Object.keys(phases).forEach(phaseName => {
                 md += `## ${phaseName}\n\n`;
-
                 phases[phaseName].forEach((step, index) => {
                     const stepExec = execution.steps[step.id] || {};
                     const status = stepExec.completed ? '✅' : '⬜';
-                    
                     md += `### ${status} Step ${index + 1}: ${step.title}\n\n`;
-                    if (step.description) {
-                        md += `**Description:** ${step.description}\n\n`;
-                    }
-                    if (step.command) {
-                        md += `**Command:**\n\`\`\`\n${step.command}\n\`\`\`\n\n`;
-                    }
-                    if (stepExec.notes) {
-                        md += `**Notes:**\n${stepExec.notes}\n\n`;
-                    }
-                    if (stepExec.timestamp) {
-                        md += `**Completed:** ${formatTimestamp(stepExec.timestamp)}\n\n`;
-                    }
+                    if (step.description) md += `**Description:** ${step.description}\n\n`;
+                    if (step.command) md += `**Command:**\n\`\`\`\n${step.command}\n\`\`\`\n\n`;
+                    if (stepExec.notes) md += `**Notes:**\n${stepExec.notes}\n\n`;
+                    if (stepExec.timestamp) md += `**Completed:** ${formatTimestamp(stepExec.timestamp)}\n\n`;
                     md += `---\n\n`;
                 });
             });
-
             const blob = new Blob([md], { type: 'text/markdown' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1354,100 +394,96 @@
             URL.revokeObjectURL(url);
         }
 
-        function exportJSON() {
-            const data = JSON.stringify({ runbooks, executions }, null, 2);
-            const blob = new Blob([data], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `runbooks-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function importJSON() {
-            document.getElementById('importInput').click();
-        }
+        function exportJSON() { const data = JSON.stringify({ runbooks, executions }, null, 2); const blob = new Blob([data], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `runbooks-${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url); }
+        function importJSON() { document.getElementById('importInput').click(); }
 
         function handleImport(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
                     const imported = JSON.parse(e.target.result);
-                    
                     if (imported.runbooks && Array.isArray(imported.runbooks)) {
-                        if (confirm(`Import ${imported.runbooks.length} runbooks? This will replace all current data.`)) {
-                            runbooks = imported.runbooks;
-                            executions = imported.executions || {};
-                            currentRunbookId = runbooks.length > 0 ? runbooks[0].id : null;
-                            saveData();
-                            renderAll();
-                        }
-                    } else {
-                        alert('Invalid file format');
-                    }
-                } catch (err) {
-                    alert('Failed to parse JSON file');
-                }
+                        if (confirm(`Import ${imported.runbooks.length} runbooks? This will replace all current data.`)) { runbooks = imported.runbooks; executions = imported.executions || {}; currentRunbookId = runbooks.length > 0 ? runbooks[0].id : null; saveData(); renderAll(); }
+                    } else { alert('Invalid file format'); }
+                } catch (err) { alert('Failed to parse JSON file'); }
             };
             reader.readAsText(file);
             event.target.value = '';
         }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+        function updateStats() { const totalExecs = Object.values(executions).reduce((sum, execs) => sum + execs.length, 0); document.getElementById('statsRunbooks').textContent = `${runbooks.length} runbooks`; document.getElementById('statsExecutions').textContent = `${totalExecs} total executions`; }
+        function renderAll() { renderRunbookList(); renderRunbookView(); updateStats(); }
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+        document.addEventListener('keydown', (e) => { const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0; const modKey = isMac ? e.metaKey : e.ctrlKey; if (modKey && e.key === 'n') { e.preventDefault(); showNewRunbookModal(); } if (modKey && e.key === 'r') { e.preventDefault(); resetCurrentRunbook(); } if (modKey && e.key === 'e') { e.preventDefault(); exportMarkdown(); } if (e.key === 'Escape') { closeModal('newRunbookModal'); closeModal('historyModal'); closeModal('loginModal'); } });
+
+        // SYNC FUNCTIONS
+        function showLoginModal() { document.getElementById('loginModal').classList.add('active'); document.getElementById('githubToken').focus(); }
+
+        async function login() {
+            const token = document.getElementById('githubToken').value.trim();
+            if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) { alert('Invalid token format.'); return; }
+            localStorage.setItem('runbooks_github_token', token);
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('pushBtn').style.display = 'inline-block';
+            document.getElementById('pullBtn').style.display = 'inline-block';
+            closeModal('loginModal');
+            document.getElementById('githubToken').value = '';
+            updateSyncStatus('syncing', '↻ Pulling...');
+            await pullFromGitHub(true);
         }
 
-        function updateStats() {
-            const totalExecs = Object.values(executions).reduce((sum, execs) => sum + execs.length, 0);
-            document.getElementById('statsRunbooks').textContent = `${runbooks.length} runbooks`;
-            document.getElementById('statsExecutions').textContent = `${totalExecs} total executions`;
+        function logout() { if (!confirm('Logout?')) return; localStorage.removeItem('runbooks_github_token'); localStorage.removeItem('runbooks_gist_id'); document.getElementById('loginBtn').style.display = 'inline-block'; document.getElementById('pushBtn').style.display = 'none'; document.getElementById('pullBtn').style.display = 'none'; updateSyncStatus('', ''); closeModal('loginModal'); }
+
+        async function pushNow() {
+            const token = localStorage.getItem('runbooks_github_token');
+            if (!token) return;
+            updateSyncStatus('syncing', '↻ Pushing...');
+            const gistId = localStorage.getItem('runbooks_gist_id');
+            const data = { runbooks, executions, currentRunbookId, lastSync: new Date().toISOString() };
+            const payload = { description: 'Runbooks Data', public: false, files: { 'runbooks-data.json': { content: JSON.stringify(data, null, 2) } } };
+            try {
+                let response;
+                if (gistId) response = await fetch(`${GITHUB_API}/gists/${gistId}`, { method: 'PATCH', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                else { response = await fetch(`${GITHUB_API}/gists`, { method: 'POST', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if (response.ok) { const gist = await response.json(); localStorage.setItem('runbooks_gist_id', gist.id); } }
+                if (response.ok) updateSyncStatus('synced', '☁️ Pushed');
+                else { console.error('Push failed:', await response.json()); updateSyncStatus('error', '⚠️ Push failed'); }
+            } catch (err) { console.error('Push error:', err); updateSyncStatus('error', '⚠️ Push error'); }
         }
 
-        function renderAll() {
-            renderRunbookList();
-            renderRunbookView();
-            updateStats();
+        async function pullNow() { if (!confirm('Pull from GitHub? This will overwrite your local runbooks.')) return; await pullFromGitHub(false); }
+
+        async function pullFromGitHub(silent) {
+            const token = localStorage.getItem('runbooks_github_token');
+            const gistId = localStorage.getItem('runbooks_gist_id');
+            if (!token) { if (!silent) alert('Not logged in'); return; }
+            if (!gistId) { if (!silent) updateSyncStatus('error', '⚠️ No Gist found'); return; }
+            updateSyncStatus('syncing', '↻ Pulling...');
+            try {
+                const response = await fetch(`${GITHUB_API}/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
+                if (response.ok) {
+                    const gist = await response.json();
+                    const content = gist.files['runbooks-data.json'].content;
+                    const data = JSON.parse(content);
+                    runbooks = data.runbooks;
+                    executions = data.executions;
+                    currentRunbookId = data.currentRunbookId || (runbooks.length > 0 ? runbooks[0].id : null);
+                    saveData();
+                    renderAll();
+                    updateSyncStatus('synced', '☁️ Pulled');
+                } else { console.error('Pull failed:', await response.json()); updateSyncStatus('error', '⚠️ Pull failed'); }
+            } catch (err) { console.error('Pull error:', err); updateSyncStatus('error', '⚠️ Pull error'); }
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        function updateSyncStatus(state, text) { const statusEl = document.getElementById('syncStatus'); const textEl = document.getElementById('syncStatusText'); statusEl.className = 'sync-status'; if (state === 'synced') { statusEl.classList.add('synced'); textEl.textContent = '☁️ ' + text; } else if (state === 'error') { statusEl.classList.add('error'); textEl.textContent = '⚠️ ' + text; } else if (state === 'syncing') { textEl.textContent = '↻ ' + text; } else { textEl.textContent = text; } }
 
-        document.addEventListener('keydown', (e) => {
-            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-            const modKey = isMac ? e.metaKey : e.ctrlKey;
+        if (localStorage.getItem('runbooks_github_token')) { document.getElementById('loginBtn').style.display = 'none'; document.getElementById('pushBtn').style.display = 'inline-block'; document.getElementById('pullBtn').style.display = 'inline-block'; updateSyncStatus('synced', '☁️ Ready'); }
 
-            if (modKey && e.key === 'n') {
-                e.preventDefault();
-                showNewRunbookModal();
-            }
-
-            if (modKey && e.key === 'r') {
-                e.preventDefault();
-                resetCurrentRunbook();
-            }
-
-            if (modKey && e.key === 'e') {
-                e.preventDefault();
-                exportMarkdown();
-            }
-
-            if (e.key === 'Escape') {
-                closeModal('newRunbookModal');
-                closeModal('historyModal');
-                closeModal('syncSetupModal');
-            }
-        });
-
-        // Initialize
         renderAll();
-
-        // Check if sync is configured
-        if (localStorage.getItem('github_pat')) {
-            document.getElementById('
+        if (runbooks.length === 0) setTimeout(() => showNewRunbookModal(), 500);
+    </script>
+</body>
+</html>
