@@ -1,4 +1,4 @@
-// CLI SYNC ADDON
+// CLI SYNC ADDON 
 // Adds GitHub Gist sync to CLI tool without modifying original code
 // Usage: Add <script src="cli-sync-addon.js"></script> before </body> in index.html
 
